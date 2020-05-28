@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'EnProgress',
+      title: "EnProgress",
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -36,10 +36,17 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.teal[200],
+      appBar: AppBar (
+        title: Text("EnProgress"),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row (
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
             CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage("images/icons8-user-96.png"),
@@ -48,6 +55,11 @@ class MyHomePage extends StatelessWidget {
               radius: 50,
               backgroundImage: AssetImage("images/icons8-user-100.png"),
             ),
+            ]
+            ),
+            Row (
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
             CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage("images/icons8-peter-the-great-96.png"),
@@ -55,6 +67,8 @@ class MyHomePage extends StatelessWidget {
             CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage("images/icons8-princess-96.png"),
+            ),
+            ]
             ),
             SizedBox(
               height: 20,
@@ -78,76 +92,41 @@ class MyHomePage extends StatelessWidget {
                     color: Colors.teal.shade700
                 )
             ),
+            FlatButton(
+              onPressed: () {
+                return showDialog<void>(
+                  context: context,
+                  barrierDismissible: false, // user must tap button!
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Thank you for using EnProgress"),
+                      content: SingleChildScrollView(
+                        child: ListBody(
+                          children: <Widget>[
+                            Text("This is a demo app page."),
+                            Text("This app is in active development. Please come back soon for more updates!"),
+                          ],
+                        ),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text("Okay"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Text(
+                "Start Studying!",
+              )
+            )
           ],
         )
       ),
     );
   }
 }
-
-/*class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-}*/
