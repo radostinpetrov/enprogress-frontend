@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'EnProgress',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -20,36 +20,72 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.cyan,
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class MyHomePage extends StatelessWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.teal[200],
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage("images/icons8-user-96.png"),
+            ),
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage("images/icons8-user-100.png"),
+            ),
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage("images/icons8-peter-the-great-96.png"),
+            ),
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage("images/icons8-princess-96.png"),
+            ),
+            SizedBox(
+              height: 20,
+              width: 200,
+              child: Divider(
+                color: Colors.teal.shade700
+              )
+            ),
+            Text(
+              "EnProgress",
+              style:TextStyle(
+                fontSize:30.0,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(
+                height: 20,
+                width: 200,
+                child: Divider(
+                    color: Colors.teal.shade700
+                )
+            ),
+          ],
+        )
+      ),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+/*class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
@@ -114,4 +150,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-}
+}*/
