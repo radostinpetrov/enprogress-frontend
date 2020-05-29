@@ -113,6 +113,7 @@ class TaskCreatePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.teal[200],
       appBar: AppBar(
         title: Text("New Personal Task"),
