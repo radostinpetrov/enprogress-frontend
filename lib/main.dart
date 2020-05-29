@@ -49,6 +49,14 @@ class MyHomePage extends StatelessWidget {
             CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage("images/icons8-user-96.png"),
+              child: FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PersonalPage())
+                  );
+                },
+              ),
             ),
             CircleAvatar(
               radius: 50,
@@ -213,7 +221,133 @@ class TaskCreatePage extends StatelessWidget {
         )
       ),
     );
-
   }
-  
+}
+
+class PersonalPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.teal[200],
+      appBar: AppBar(
+        title: Text("My profile"),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+          child: Column (
+              children: [
+                SizedBox(
+                  height: 20,
+                  width: 200,
+                ),
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage("images/icons8-user-96.png"),
+                ),
+                Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "My tasks",
+                      style: TextStyle(
+                          fontSize:20.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
+                ),
+                ListView(
+                  padding: const EdgeInsets.all(8),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  children: <Widget>[
+                    Container(
+                      height: 50,
+                      color: Colors.grey[400],
+                      child: const Center(child: Text("Research")),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.grey[500],
+                      child: const Center(child: Text("Write Introduction")),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.grey[400],
+                      child: const Center(child: Text("Write Module")),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Your friends",
+                      style: TextStyle(
+                          fontSize:20.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 20,
+                    ),
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: AssetImage("images/icons8-peter-the-great-96.png"),
+                    ),
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: AssetImage("images/icons8-princess-96.png"),
+                    ),
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: AssetImage("images/icons8-user-100.png"),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Your progress",
+                      style: TextStyle(
+                          fontSize:20.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Image(
+                  image: AssetImage("images/graph.png"),
+                ),
+              ]
+          )
+      ),
+    );
+  }
 }
