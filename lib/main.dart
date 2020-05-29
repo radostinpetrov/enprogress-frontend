@@ -176,6 +176,12 @@ class TaskCreatePage extends StatelessWidget {
                 color: Colors.grey[400],
                 child: const Center(child: Text("Write Module")),
               ),
+              RaisedButton(
+                  onPressed: (){},
+                  textColor: Colors.white,
+                  padding: const EdgeInsets.all(0.0),
+                  child: Text("Add new", style: TextStyle(fontSize: 20))
+              )
             ],
             ),
             SizedBox(
