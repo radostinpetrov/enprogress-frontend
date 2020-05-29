@@ -42,7 +42,6 @@ class MyHomePage extends StatelessWidget {
       ),
       body: SafeArea(
         child: Column(
-          //mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row (
               mainAxisAlignment: MainAxisAlignment.center,
@@ -94,30 +93,9 @@ class MyHomePage extends StatelessWidget {
             ),
             FlatButton(
               onPressed: () {
-                return showDialog<void>(
-                  context: context,
-                  barrierDismissible: false, // user must tap button!
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text("Thank you for using EnProgress"),
-                      content: SingleChildScrollView(
-                        child: ListBody(
-                          children: <Widget>[
-                            Text("This is a demo app page."),
-                            Text("This app is in active development. Please come back soon for more updates!"),
-                          ],
-                        ),
-                      ),
-                      actions: <Widget>[
-                        FlatButton(
-                          child: Text("Okay"),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TaskCreatePage())
                 );
               },
               child: Text(
@@ -129,4 +107,113 @@ class MyHomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+class TaskCreatePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.teal[200],
+      appBar: AppBar(
+        title: Text("New Personal Task"),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Column (
+          children: [
+            SizedBox(
+                height: 20,
+                width: 200,
+            ),
+          Text(
+            "Name of Task",
+            style: TextStyle(
+              fontSize:20.0,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextField(
+            decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: "Enter task name"
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+              height: 50,
+              width: 200,
+              child: Divider(
+                  color: Colors.teal.shade700
+              )
+          ),
+          Text(
+            "Add Sections To Work On",
+            style: TextStyle(
+              fontSize:20.0,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          ListView(
+            padding: const EdgeInsets.all(8),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            children: <Widget>[
+              Container(
+                height: 50,
+                color: Colors.grey[600],
+                child: const Center(child: Text("Research")),
+              ),
+              Container(
+                height: 50,
+                color: Colors.grey[500],
+                child: const Center(child: Text("Write Introduction")),
+              ),
+              Container(
+                height: 50,
+                color: Colors.grey[400],
+                child: const Center(child: Text("Write Module")),
+              ),
+            ],
+            ),
+            SizedBox(
+                height: 50,
+                width: 200,
+                child: Divider(
+                    color: Colors.teal.shade700
+                )
+            ),
+            Text(
+              "Use Sections as Template",
+              style: TextStyle(
+                fontSize:20.0,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextField(
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: "Enter template name"
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+                height: 20,
+                width: 200,
+            ),
+            RaisedButton(
+              onPressed: (){},
+              textColor: Colors.white,
+              padding: const EdgeInsets.all(0.0),
+              child: Text("Finish", style: TextStyle(fontSize: 20))
+            )
+          ]
+        )
+      ),
+    );
+
+  }
+  
 }
