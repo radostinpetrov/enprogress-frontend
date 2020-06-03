@@ -17,28 +17,29 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     return SizeTransition(
       sizeFactor: animation,
       child: ListTile(
-          title: Text(item,
-        style: TextStyle(fontSize: 15),
+        title: Text(
+          item,
+          style: TextStyle(fontSize: 15),
+        ),
+        trailing: IconButton(
+            icon: Icon(Icons.remove),
+            onPressed: () {
+              _removeItem(item);
+            }),
       ),
-      trailing: IconButton(
-      icon: Icon(Icons.remove),
-        onPressed: () {
-          _removeItem(item);
-        }),
-
-      ),);
+    );
   }
 
-void _removeItem(String item) {
-  int index = data.indexOf(item);
-  if (index >= 0) {
-    data.removeAt(index);
-    AnimatedListRemovedItemBuilder builder = (context, animation) {
-      return _buildItem(item, animation);
-    };
-    _listKey.currentState.removeItem(index, builder);
+  void _removeItem(String item) {
+    int index = data.indexOf(item);
+    if (index >= 0) {
+      data.removeAt(index);
+      AnimatedListRemovedItemBuilder builder = (context, animation) {
+        return _buildItem(item, animation);
+      };
+      _listKey.currentState.removeItem(index, builder);
+    }
   }
-}
 
   void _insertItem() {
     String item = progressController.text;
@@ -49,22 +50,34 @@ void _removeItem(String item) {
     }
   }
 
+  bool conditions() {
+    return (_dateTime != null) &&
+        (nameController.text.length > 0) &&
+        (data.length > 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget titleSection = Center(
         child: Container(
             height: 75,
             padding: const EdgeInsets.all(10),
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(
-                'Creating A New Task',
-                style: TextStyle(
-                  fontSize: 20,
+            child: ListTile(
+                leading: IconButton(
+                  icon: Icon(Icons.keyboard_arrow_left),
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  alignment: Alignment.centerLeft,
+                  //TODO: NEED TO NAVIGATE BACK TO ALL TASKS
+                  onPressed: () {},
                 ),
-              )
-            ])));
+                title: Text(
+                  'Creating A New Task',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ))));
 
     Widget dateAndName = Container(
         padding: const EdgeInsets.all(10),
@@ -172,9 +185,7 @@ void _removeItem(String item) {
             ],
           ),
           Container(
-              constraints: BoxConstraints(
-                maxHeight: 200
-              ),
+              constraints: BoxConstraints(maxHeight: 200),
               child: AnimatedList(
                 key: _listKey,
                 initialItemCount: 0,
@@ -184,6 +195,38 @@ void _removeItem(String item) {
               )),
         ]));
 
+    Widget submit = InkWell(
+      child: Container(
+          alignment: Alignment.center,
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              color: Colors.white70,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25.0),
+                  bottomRight: Radius.circular(25.0)),
+              boxShadow: [
+                BoxShadow(
+                  color: (conditions()) ? Colors.green : Colors.amber,
+                  offset: Offset(10, 10),
+                  blurRadius: 20,
+                )
+              ]),
+          child: Text(
+            'Create Task',
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.black,
+            ),
+          )),
+      onTap: () {
+        if (conditions()) {
+          //TODO:HTTP POST REQUEST
+        }
+      },
+    );
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xFF1D1C4D),
@@ -192,7 +235,9 @@ void _removeItem(String item) {
           titleSection,
           dateAndName,
           SizedBox(height: 10),
-          subGoals
+          subGoals,
+          SizedBox(height: 10),
+          submit
         ])));
   }
 }
