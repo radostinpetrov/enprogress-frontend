@@ -1,3 +1,4 @@
+import 'package:drp29/main.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -80,7 +81,8 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                   color: Colors.white,
                   alignment: Alignment.centerLeft,
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => TasksPage()));
+                    Navigator.push(context, MaterialPageRoute(builder:
+                        (context) => MyApp()));
                   },
                 ),
                 Spacer(flex: 13,),
@@ -117,6 +119,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           Text(
             'Name of Task',
             style: TextStyle(
+              fontWeight: FontWeight.bold,
               fontSize: 15,
               color: Colors.black,
             ),
@@ -140,6 +143,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                         'Deadline: '
                         '$_dateTime',
                 style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   fontSize: 15,
                   color: Colors.black,
                 ),
@@ -182,6 +186,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           Text(
             'Add Progress Measures',
             style: TextStyle(
+              fontWeight: FontWeight.bold,
               fontSize: 15,
               color: Colors.black,
             ),
@@ -238,6 +243,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           child: Text(
             'Create Task',
             style: TextStyle(
+              fontWeight: FontWeight.bold,
               fontSize: 15,
               color: Colors.black,
             ),
@@ -245,7 +251,8 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       onTap: () {
         if (conditions()) {
           //TODO:HTTP POST REQUEST
-          Navigator.push(context, MaterialPageRoute(builder: (context) => TasksPage()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          MyApp()));
         } else {
           setState(() {
             error = true;
