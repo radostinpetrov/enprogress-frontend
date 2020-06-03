@@ -1,3 +1,4 @@
+import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -72,22 +73,30 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
         child: Container(
             height: 75,
             padding: const EdgeInsets.all(10),
-            child: ListTile(
-                leading: IconButton(
+            child: Row(
+              children: <Widget>[
+                IconButton(
                   icon: Icon(Icons.keyboard_arrow_left),
                   color: Colors.white,
                   alignment: Alignment.centerLeft,
-                  //TODO: NEED TO NAVIGATE BACK TO ALL TASKS
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => TasksPage()));
+                  },
                 ),
-                title: Text(
+                Spacer(flex: 13,),
+                Text(
                   'Creating A New Task',
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
-                ))));
+                ),
+                Spacer(flex: 24,),
+              ],
+            ),
+        )
+    );
 
     Widget dateAndName = Container(
         padding: const EdgeInsets.all(10),
@@ -236,6 +245,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       onTap: () {
         if (conditions()) {
           //TODO:HTTP POST REQUEST
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TasksPage()));
         } else {
           setState(() {
             error = true;

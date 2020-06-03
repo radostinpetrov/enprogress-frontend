@@ -1,3 +1,4 @@
+import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:drp29/Globals.dart';
@@ -39,7 +40,7 @@ class TasksPage extends StatelessWidget {
               flex: 4,
               child: FloatingActionButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
                 },
                 backgroundColor: Colors.white,
                 elevation: 5,
