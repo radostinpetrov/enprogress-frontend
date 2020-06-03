@@ -269,6 +269,22 @@ class WorkModePageState extends State<WorkMode> {
     });
   }
 
+
+  Future<void> _turnWorkModeOn() async {
+    log("onestla");
+    try {
+      final int result = await platform.invokeMethod('turnWorkModeOn');
+      log("oke");
+      if (result == 0) {
+        log("fokc");
+      } else {
+        log("yek");
+      }
+    } on PlatformException catch (e) {
+      log(e.message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -278,7 +294,7 @@ class WorkModePageState extends State<WorkMode> {
           children: [
             RaisedButton(
               child: Text('Get Battery Level'),
-              onPressed: _getBatteryLevel,
+              onPressed: _turnWorkModeOn,
             ),
             Text(_batteryLevel),
           ],
