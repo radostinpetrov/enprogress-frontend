@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:flutter/services.dart';
+import 'dart:developer';
+import 'package:flutter/foundation.dart';
 
 void main() {
   runApp(MyApp());
@@ -61,6 +66,14 @@ class MyHomePage extends StatelessWidget {
             CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage("images/icons8-user-100.png"),
+              child: FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => WorkMode())
+                  );
+                },
+              ),
             ),
             ]
             ),
@@ -231,6 +244,50 @@ class TaskCreatePage extends StatelessWidget {
   }
 }
 
+
+class WorkMode extends StatefulWidget {
+  @override
+  WorkModePageState createState() => WorkModePageState();
+}
+
+class WorkModePageState extends State<WorkMode> {
+  static const platform = const MethodChannel('flutter/enprogress');
+
+  String _batteryLevel = "Unknown battery level";
+  Future<void> _getBatteryLevel() async {
+    String batteryLevel;
+    try {
+      final int result = await platform.invokeMethod('getBatteryLevel');
+      batteryLevel = 'Battery level at $result % .';
+      log("result is: $result");
+    } on PlatformException catch (e) {
+      batteryLevel = "Failed to get battery level: '${e.message}'.";
+    }
+
+    setState(() {
+      _batteryLevel = batteryLevel;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            RaisedButton(
+              child: Text('Get Battery Level'),
+              onPressed: _getBatteryLevel,
+            ),
+            Text(_batteryLevel),
+          ],
+        ),
+      ),
+    );
+  }
+  
+}
 class PersonalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
