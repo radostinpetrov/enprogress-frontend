@@ -2,6 +2,8 @@ import 'package:drp29/page_widgets/ArchivePage.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:drp29/page_widgets/FriendsPage.dart';
 import 'package:flutter/material.dart';
+import 'work_mode_page.dart';
+import 'dart:math' as math;
 import 'package:drp29/Globals.dart';
 
 void main() {
