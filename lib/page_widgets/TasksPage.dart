@@ -95,7 +95,9 @@ class TasksPage extends StatelessWidget {
             Spacer(flex: 2,)
           ],
         )
-      )
+      ),
+      floatingActionButton: FloatingButton(
+      ),
     );
   }
 }
