@@ -1,7 +1,8 @@
 import 'package:drp29/main.dart';
-import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class CreateTaskPage extends StatefulWidget {
   @override
@@ -66,6 +67,28 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     setState(() {
       submitColor = conditions() ? Colors.green : Colors.amber;
     });
+  }
+
+  _makePostRequest() async {
+    String url = "http://146.169.40.203:3000/tasks";
+
+    var subTaskPercentages = [];
+
+    for (int i = 0; i < data.length; i++) {
+      subTaskPercentages.add(0);
+    }
+
+    String text = nameController.text;
+    String name = text.substring(0, text.length);
+
+
+    Map<String, String> headers = {"Content-type": "application/json"};
+    Map<String,dynamic> body = {'name' : name, 'percentage' : 0,
+      'subtasks' : data, 'subtaskPercentages' :
+      subTaskPercentages};
+
+    Response resp = await post(url,headers: headers,body: json.encode(body));
+
   }
 
   @override
@@ -250,7 +273,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           )),
       onTap: () {
         if (conditions()) {
-          //TODO:HTTP POST REQUEST
+          _makePostRequest();
           Navigator.push(context, MaterialPageRoute(builder: (context) =>
           MyApp()));
         } else {
