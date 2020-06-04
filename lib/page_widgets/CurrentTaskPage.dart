@@ -3,10 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CurrentTaskPage extends StatelessWidget {
-  int index;
+  final int index;
+  final String title;
 
   CurrentTaskPage({
-    this.index
+    this.index, this.title
   });
 
   @override
@@ -17,34 +18,37 @@ class CurrentTaskPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Spacer(flex: 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Hero(
-                  tag: "title",
-                  child: Text(
-                    "assigment1",
-                    style: Theme.of(context).textTheme.headline1,
+            Expanded(
+              flex: 3,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Hero(
+                    tag: "title",
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.headline1,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Spacer(flex: 1),
-            Spacer(flex: 2,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Hero(
-                  tag: "current_task" + index.toString(),
-                  child: Container(
+            Expanded(
+              flex: 23,
+              child: Hero(
+                tag: "current_task" + index.toString(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                     color: Globals.buttonColor,
-                    height: 500,
-                    width: 300,
                   ),
+                  height: 500,
+                  width: 300,
                 ),
-              ],
+              ),
             ),
-            Spacer(flex: 5,),
+            Spacer(flex: 9,),
           ],
         )
       ),
