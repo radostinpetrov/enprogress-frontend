@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
+import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:drp29/Globals.dart';
@@ -52,18 +53,11 @@ class TasksPage extends StatelessWidget {
                         return new Text("Loading...");
                       case(ConnectionState.active):
                         return new Text("Active");
-//                      case(ConnectionState.done):
-//                        print(snapshot.data);
-//                        return new Text("Done");
                       default:
                         if (snapshot.hasError)
-                          return new Text("Error");
+                          return new Text("Error :(");
                         else {
-                          print(snapshot.data);
                           List<dynamic> decoded = jsonDecode(snapshot.data);
-                          for (Map<String, dynamic> elem in decoded) {
-                            print(elem.values.toList()[1]);
-                          }
                           return new ListView.separated(
                             shrinkWrap: true,
                             itemBuilder: (_, index) {
@@ -83,14 +77,37 @@ class TasksPage extends StatelessWidget {
             Spacer(flex: 3,),
             Expanded(
               flex: 4,
-              child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
-                },
-                backgroundColor: Colors.white,
-                elevation: 5,
-                child: Icon(Icons.add, color: Globals.primaryOrange, size: 50,),
-              )
+              child: Row(
+                children: <Widget>[
+                  Spacer(flex: 5,),
+                  Expanded(
+                    flex: 5,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
+                      },
+                      color: Globals.buttonColor,
+                      child: Container(
+                        child: Text("Add new page", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                  Spacer(flex: 3,),
+                  Expanded(
+                    flex: 5,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => WorkModePage()));
+                      },
+                      color: Globals.buttonColor,
+                      child: Container(
+                        child: Text("Study mode", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                  Spacer(flex: 5,),
+                ],
+              ),
             ),
             Spacer(flex: 2,)
           ],
