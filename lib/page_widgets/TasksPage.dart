@@ -2,6 +2,7 @@ import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:drp29/Globals.dart';
+import 'package:drp29/widgets/FloatingButton.dart';
 
 import 'FriendsPage.dart';
 
@@ -50,7 +51,9 @@ class TasksPage extends StatelessWidget {
             Spacer(flex: 2,)
           ],
         )
-      )
+      ),
+      floatingActionButton: FloatingButton(
+      ),
     );
   }
 }
