@@ -1,3 +1,5 @@
+import 'package:drp29/main.dart';
+import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -12,6 +14,8 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   List<String> data = [];
   final nameController = TextEditingController();
   final progressController = TextEditingController();
+  bool error = false;
+  Color submitColor = Colors.amber;
 
   Widget _buildItem(String item, Animation<double> animation) {
     return SizeTransition(
@@ -25,6 +29,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
             icon: Icon(Icons.remove),
             onPressed: () {
               _removeItem(item);
+              updateSubmitColor('');
             }),
       ),
     );
@@ -47,6 +52,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       data.insert(0, item);
       _listKey.currentState.insertItem(0);
       progressController.clear();
+      updateSubmitColor('');
     }
   }
 
@@ -56,28 +62,43 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
         (data.length > 0);
   }
 
+  void updateSubmitColor(String s) {
+    setState(() {
+      submitColor = conditions() ? Colors.green : Colors.amber;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget titleSection = Center(
         child: Container(
             height: 75,
             padding: const EdgeInsets.all(10),
-            child: ListTile(
-                leading: IconButton(
+            child: Row(
+              children: <Widget>[
+                IconButton(
                   icon: Icon(Icons.keyboard_arrow_left),
                   color: Colors.white,
                   alignment: Alignment.centerLeft,
-                  //TODO: NEED TO NAVIGATE BACK TO ALL TASKS
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder:
+                        (context) => MyApp()));
+                  },
                 ),
-                title: Text(
+                Spacer(flex: 13,),
+                Text(
                   'Creating A New Task',
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
-                ))));
+                ),
+                Spacer(flex: 24,),
+              ],
+            ),
+        )
+    );
 
     Widget dateAndName = Container(
         padding: const EdgeInsets.all(10),
@@ -98,6 +119,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           Text(
             'Name of Task',
             style: TextStyle(
+              fontWeight: FontWeight.bold,
               fontSize: 15,
               color: Colors.black,
             ),
@@ -105,6 +127,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           TextField(
             controller: nameController,
             textAlign: TextAlign.center,
+            onChanged: updateSubmitColor,
             decoration: InputDecoration(
               border: UnderlineInputBorder(),
               hintText: 'Enter Here',
@@ -120,6 +143,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                         'Deadline: '
                         '$_dateTime',
                 style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   fontSize: 15,
                   color: Colors.black,
                 ),
@@ -135,6 +159,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                     ).then((date) {
                       setState(() {
                         _dateTime = DateFormat('d-MM-yyyy').format(date);
+                        updateSubmitColor('');
                       });
                     });
                   })
@@ -161,6 +186,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           Text(
             'Add Progress Measures',
             style: TextStyle(
+              fontWeight: FontWeight.bold,
               fontSize: 15,
               color: Colors.black,
             ),
@@ -208,7 +234,8 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                   bottomRight: Radius.circular(25.0)),
               boxShadow: [
                 BoxShadow(
-                  color: (conditions()) ? Colors.green : Colors.amber,
+                  color: submitColor, // (conditions() ? Colors.green :
+                  // Colors.amber)
                   offset: Offset(10, 10),
                   blurRadius: 20,
                 )
@@ -216,6 +243,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           child: Text(
             'Create Task',
             style: TextStyle(
+              fontWeight: FontWeight.bold,
               fontSize: 15,
               color: Colors.black,
             ),
@@ -223,6 +251,12 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       onTap: () {
         if (conditions()) {
           //TODO:HTTP POST REQUEST
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          MyApp()));
+        } else {
+          setState(() {
+            error = true;
+          });
         }
       },
     );
@@ -237,7 +271,16 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           SizedBox(height: 10),
           subGoals,
           SizedBox(height: 10),
-          submit
+          submit,
+          SizedBox(height: 10),
+          Visibility(
+              visible: error,
+              child: Text('Please fill out all fields!',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.red,
+                    fontStyle: FontStyle.italic,
+                  )))
         ])));
   }
 }
