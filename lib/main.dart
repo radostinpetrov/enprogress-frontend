@@ -2,6 +2,7 @@ import 'package:drp29/page_widgets/ArchivePage.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:drp29/page_widgets/FriendsPage.dart';
 import 'package:flutter/material.dart';
+import 'page_widgets/WorkModePage.dart';
 import 'package:drp29/Globals.dart';
 
 void main() {
@@ -20,10 +21,11 @@ class MyApp extends StatelessWidget {
         controller: PageController(
           initialPage: 1,
         ),
-        children: <Widget>[
+        children: [
           FriendsPage(),
           TasksPage(),
-          ArchivePage()
+          ArchivePage(),
+          WorkModePage(),
         ],
       ),
     );
