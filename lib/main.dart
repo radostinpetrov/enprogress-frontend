@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-import 'dart:developer';
-import 'package:flutter/foundation.dart';
+import 'work_mode_page.dart';
+import 'dart:math' as math;
 
 void main() {
   runApp(MyApp());
@@ -41,25 +38,21 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.teal[200],
-      appBar: AppBar (
+      appBar: AppBar(
         title: Text("EnProgress"),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Row (
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+          child: Column(
+        children: [
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage("images/icons8-user-96.png"),
               child: FlatButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PersonalPage())
-                  );
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => PersonalPage()));
                 },
               ),
             ),
@@ -70,62 +63,49 @@ class MyHomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => WorkMode())
-                  );
+                      MaterialPageRoute(
+                          builder: (context) => WorkModePage()));
                 },
               ),
             ),
-            ]
-            ),
-            Row (
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+          ]),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage("images/icons8-peter-the-great-96.png"),
+              backgroundImage:
+                  AssetImage("images/icons8-peter-the-great-96.png"),
             ),
             CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage("images/icons8-princess-96.png"),
             ),
-            ]
-            ),
-            SizedBox(
+          ]),
+          SizedBox(
               height: 20,
               width: 200,
-              child: Divider(
-                color: Colors.teal.shade700
-              )
+              child: Divider(color: Colors.teal.shade700)),
+          Text(
+            "EnProgress",
+            style: TextStyle(
+              fontSize: 30.0,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
-            Text(
-              "EnProgress",
-              style:TextStyle(
-                fontSize:30.0,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(
-                height: 20,
-                width: 200,
-                child: Divider(
-                    color: Colors.teal.shade700
-                )
-            ),
-            FlatButton(
+          ),
+          SizedBox(
+              height: 20,
+              width: 200,
+              child: Divider(color: Colors.teal.shade700)),
+          FlatButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TaskCreatePage())
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => TaskCreatePage()));
               },
               child: Text(
                 "Start Studying!",
-              )
-            )
-          ],
-        )
-      ),
+              ))
+        ],
+      )),
     );
   }
 }
@@ -141,169 +121,95 @@ class TaskCreatePage extends StatelessWidget {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Column (
-          children: [
-            SizedBox(
-                height: 20,
-                width: 200,
-            ),
-          Text(
-            "Name of Task",
-            style: TextStyle(
-              fontSize:20.0,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Column(children: [
+        SizedBox(
+          height: 20,
+          width: 200,
+        ),
+        Text(
+          "Name of Task",
+          style: TextStyle(
+            fontSize: 20.0,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          TextField(
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: "Enter task name"
-            ),
-            textAlign: TextAlign.center,
+        ),
+        TextField(
+          decoration: InputDecoration(
+              border: InputBorder.none, hintText: "Enter task name"),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(
+            height: 50,
+            width: 200,
+            child: Divider(color: Colors.teal.shade700)),
+        Text(
+          "Add Sections To Work On",
+          style: TextStyle(
+            fontSize: 20.0,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          SizedBox(
+        ),
+        ListView(
+          padding: const EdgeInsets.all(8),
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          children: <Widget>[
+            Container(
               height: 50,
-              width: 200,
-              child: Divider(
-                  color: Colors.teal.shade700
-              )
-          ),
-          Text(
-            "Add Sections To Work On",
-            style: TextStyle(
-              fontSize:20.0,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+              color: Colors.grey[600],
+              child: const Center(child: Text("Research")),
             ),
-          ),
-          ListView(
-            padding: const EdgeInsets.all(8),
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            children: <Widget>[
-              Container(
-                height: 50,
-                color: Colors.grey[600],
-                child: const Center(child: Text("Research")),
-              ),
-              Container(
-                height: 50,
-                color: Colors.grey[500],
-                child: const Center(child: Text("Write Introduction")),
-              ),
-              Container(
-                height: 50,
-                color: Colors.grey[400],
-                child: const Center(child: Text("Write Module")),
-              ),
-              RaisedButton(
-                  onPressed: (){},
-                  textColor: Colors.white,
-                  padding: const EdgeInsets.all(0.0),
-                  child: Text("Add new", style: TextStyle(fontSize: 20))
-              )
-            ],
+            Container(
+              height: 50,
+              color: Colors.grey[500],
+              child: const Center(child: Text("Write Introduction")),
             ),
-            SizedBox(
-                height: 50,
-                width: 200,
-                child: Divider(
-                    color: Colors.teal.shade700
-                )
-            ),
-            Text(
-              "Use Sections as Template",
-              style: TextStyle(
-                fontSize:20.0,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextField(
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Enter template name"
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-                height: 20,
-                width: 200,
+            Container(
+              height: 50,
+              color: Colors.grey[400],
+              child: const Center(child: Text("Write Module")),
             ),
             RaisedButton(
-              onPressed: (){},
-              textColor: Colors.white,
-              padding: const EdgeInsets.all(0.0),
-              child: Text("Finish", style: TextStyle(fontSize: 20))
-            )
-          ]
-        )
-      ),
-    );
-  }
-}
-
-
-class WorkMode extends StatefulWidget {
-  @override
-  WorkModePageState createState() => WorkModePageState();
-}
-
-class WorkModePageState extends State<WorkMode> {
-  static const platform = const MethodChannel('flutter/enprogress');
-
-  String _batteryLevel = "Unknown battery level";
-  Future<void> _getBatteryLevel() async {
-    String batteryLevel;
-    try {
-      final int result = await platform.invokeMethod('getBatteryLevel');
-      batteryLevel = 'Battery level at $result % .';
-      log("result is: $result");
-    } on PlatformException catch (e) {
-      batteryLevel = "Failed to get battery level: '${e.message}'.";
-    }
-
-    setState(() {
-      _batteryLevel = batteryLevel;
-    });
-  }
-
-
-  Future<void> _turnWorkModeOn() async {
-    log("onestla");
-    try {
-      final int result = await platform.invokeMethod('turnWorkModeOn');
-      log("oke");
-      if (result == 0) {
-        log("fokc");
-      } else {
-        log("yek");
-      }
-    } on PlatformException catch (e) {
-      log(e.message);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            RaisedButton(
-              child: Text('Get Battery Level'),
-              onPressed: _turnWorkModeOn,
-            ),
-            Text(_batteryLevel),
+                onPressed: () {},
+                textColor: Colors.white,
+                padding: const EdgeInsets.all(0.0),
+                child: Text("Add new", style: TextStyle(fontSize: 20)))
           ],
         ),
-      ),
+        SizedBox(
+            height: 50,
+            width: 200,
+            child: Divider(color: Colors.teal.shade700)),
+        Text(
+          "Use Sections as Template",
+          style: TextStyle(
+            fontSize: 20.0,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        TextField(
+          decoration: InputDecoration(
+              border: InputBorder.none, hintText: "Enter template name"),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(
+          height: 20,
+          width: 200,
+        ),
+        RaisedButton(
+            onPressed: () {},
+            textColor: Colors.white,
+            padding: const EdgeInsets.all(0.0),
+            child: Text("Finish", style: TextStyle(fontSize: 20)))
+      ])),
     );
   }
-  
 }
+
+
 class PersonalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -314,120 +220,115 @@ class PersonalPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-          child: Column (
-              children: [
-                SizedBox(
-                  height: 20,
-                  width: 200,
-                ),
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage("images/icons8-user-96.png"),
-                ),
-                Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      "My tasks",
-                      style: TextStyle(
-                          fontSize:20.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-                ListView(
-                  padding: const EdgeInsets.all(8),
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  children: <Widget>[
-                    Container(
-                      height: 50,
-                      color: Colors.grey[400],
-                      child: const Center(child: Text("Research")),
-                    ),
-                    Container(
-                      height: 50,
-                      color: Colors.grey[500],
-                      child: const Center(child: Text("Write Introduction")),
-                    ),
-                    Container(
-                      height: 50,
-                      color: Colors.grey[400],
-                      child: const Center(child: Text("Write Module")),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      "Your friends",
-                      style: TextStyle(
-                          fontSize:20.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundImage: AssetImage("images/icons8-peter-the-great-96.png"),
-                    ),
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundImage: AssetImage("images/icons8-princess-96.png"),
-                    ),
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundImage: AssetImage("images/icons8-user-100.png"),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      "Your progress",
-                      style: TextStyle(
-                          fontSize:20.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Image(
-                  image: AssetImage("images/graph.png"),
-                ),
-              ]
-          )
-      ),
+          child: Column(children: [
+        SizedBox(
+          height: 20,
+          width: 200,
+        ),
+        CircleAvatar(
+          radius: 50,
+          backgroundImage: AssetImage("images/icons8-user-96.png"),
+        ),
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 20,
+            ),
+            Text(
+              "My tasks",
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
+        ListView(
+          padding: const EdgeInsets.all(8),
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          children: <Widget>[
+            Container(
+              height: 50,
+              color: Colors.grey[400],
+              child: const Center(child: Text("Research")),
+            ),
+            Container(
+              height: 50,
+              color: Colors.grey[500],
+              child: const Center(child: Text("Write Introduction")),
+            ),
+            Container(
+              height: 50,
+              color: Colors.grey[400],
+              child: const Center(child: Text("Write Module")),
+            ),
+          ],
+        ),
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 20,
+            ),
+            Text(
+              "Your friends",
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 20,
+            ),
+            CircleAvatar(
+              radius: 25,
+              backgroundImage:
+                  AssetImage("images/icons8-peter-the-great-96.png"),
+            ),
+            CircleAvatar(
+              radius: 25,
+              backgroundImage: AssetImage("images/icons8-princess-96.png"),
+            ),
+            CircleAvatar(
+              radius: 25,
+              backgroundImage: AssetImage("images/icons8-user-100.png"),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 20,
+            ),
+            Text(
+              "Your progress",
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Image(
+          image: AssetImage("images/graph.png"),
+        ),
+      ])),
     );
   }
 }
