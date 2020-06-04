@@ -1,12 +1,23 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:drp29/Globals.dart';
-import 'package:drp29/widgets/FloatingButton.dart';
-
-import 'FriendsPage.dart';
+import 'package:http/http.dart';
 
 class TasksPage extends StatelessWidget {
+
+  final Client client = new Client();
+  final uri = Uri.parse("http://146.169.40.203:3000/tasks");
+
+  Future<String> _getNumberOfTasks() async {
+    Response response = await client.get(uri);
+    String jsonResponse = response.body;
+    return jsonResponse;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,29 +26,62 @@ class TasksPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Spacer(flex: 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Hero(
-                  tag: "title",
-                  child: Text(
+            Expanded(
+              flex: 3,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
                     "Assignments",
                     style: Theme.of(context).textTheme.headline1,
                   ),
-                )
-              ],
+                ],
+              ),
             ),
+
             Spacer(flex: 1),
-            Flexible(
+            Expanded(
                 flex: 23,
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (_, index) => TaskWidget(index: index,),
-                  separatorBuilder: (_, index) => Divider(),
-                  itemCount: 30),
+                child: FutureBuilder<String>(
+                  future: _getNumberOfTasks(),
+                  builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    switch(snapshot.connectionState) {
+                      case(ConnectionState.none):
+                        return new Text("Not active");
+                      case(ConnectionState.waiting):
+                        return new Text("Loading...");
+                      case(ConnectionState.active):
+                        return new Text("Active");
+//                      case(ConnectionState.done):
+//                        print(snapshot.data);
+//                        return new Text("Done");
+                      default:
+                        if (snapshot.hasError)
+                          return new Text("Error");
+                        else {
+                          print(snapshot.data);
+                          List<dynamic> decoded = jsonDecode(snapshot.data);
+                          for (Map<String, dynamic> elem in decoded) {
+                            print(elem.values.toList()[1]);
+                          }
+                          return new ListView.separated(
+                            shrinkWrap: true,
+                            itemBuilder: (_, index) {
+                              return TaskWidget(
+                                index: index,
+                                title: decoded[index].values.toList()[1],
+                              );
+                            },
+                            separatorBuilder: (_, index) => Divider(),
+                            itemCount: decoded.length,
+                          );
+                        }
+                    }
+                  },
+                ),
             ),
             Spacer(flex: 3,),
-            Flexible(
+            Expanded(
               flex: 4,
               child: FloatingActionButton(
                 onPressed: () {

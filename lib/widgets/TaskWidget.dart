@@ -6,10 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TaskWidget extends StatelessWidget {
-  int index;
+  final int index;
+  final String title;
 
   TaskWidget({
-    this.index
+    this.index, this.title
   });
 
   @override
@@ -31,9 +32,9 @@ class TaskWidget extends StatelessWidget {
                 textTheme: ButtonTextTheme.primary,
                 child: RaisedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index,);} ));
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title,);} ));
                   },
-                  child: Text("Stop procrastinating"),
+                  child: Text(title),
                 ),
               )
             ),
