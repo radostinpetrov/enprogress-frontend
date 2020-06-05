@@ -12,6 +12,7 @@ class TasksPage extends StatelessWidget {
 
   final Client client = new Client();
   final uri = Uri.parse("http://146.169.40.203:3000/tasks");
+//  final uri = Uri.parse("http://localhost:3000/tasks");
 
   Future<String> _getNumberOfTasks() async {
     Response response = await client.get(uri);
@@ -63,7 +64,7 @@ class TasksPage extends StatelessWidget {
                             itemBuilder: (_, index) {
                               return TaskWidget(
                                 index: index,
-                                title: decoded[index].values.toList()[1],
+                                body: decoded[index],
                               );
                             },
                             separatorBuilder: (_, index) => Divider(),
