@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:drp29/widgets/FriendWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -53,11 +52,6 @@ class _FriendsPageState extends State<FriendsPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-//                IconButton(icon: Icon(Icons.refresh), onPressed: () {
-//                  setState() {
-//                    friends = _getNumberOfFriends();
-//                  }
-//                }),
                     Text(
                       "Friends",
                       style: Theme.of(context).textTheme.headline1,
@@ -79,9 +73,6 @@ class _FriendsPageState extends State<FriendsPage> {
                         return new Text("Loading...");
                       case (ConnectionState.active):
                         return new Text("Active");
-//                      case(ConnectionState.done):
-//                        print(snapshot.data);
-//                        return new Text("Done");
                       default:
                         if (snapshot.hasError)
                           return new Text("Error");
