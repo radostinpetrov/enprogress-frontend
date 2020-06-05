@@ -1,6 +1,6 @@
 import 'package:drp29/page_widgets/ArchivePage.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
-import 'package:drp29/page_widgets/FriendsPage.dart';
+import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
 import 'page_widgets/WorkModePage.dart';
