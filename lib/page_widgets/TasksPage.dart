@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
+import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:drp29/Globals.dart';
@@ -113,6 +114,7 @@ class TasksPage extends StatelessWidget {
           ],
         )
       ),
+      floatingActionButton: FloatingButton(),
     );
   }
 }

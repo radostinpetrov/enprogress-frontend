@@ -76,7 +76,7 @@ class HiddenState extends State<FloatingButton>
                 return new Transform(
                   transform: new Matrix4.rotationZ(_controller.value * 0.5 * math.pi),
                   alignment: FractionalOffset.center,
-                  child: new Icon(_controller.isDismissed ? Icons.share : Icons.close),
+                  child: new Icon(_controller.isDismissed ? Icons.list : Icons.close),
                 );
               },
             ),
