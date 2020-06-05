@@ -90,7 +90,7 @@ class TasksPage extends StatelessWidget {
                       },
                       color: Globals.buttonColor,
                       child: Container(
-                        child: Text("Add new page", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+                        child: Text("Add new task", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ),
