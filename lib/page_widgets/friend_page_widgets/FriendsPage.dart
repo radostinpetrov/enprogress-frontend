@@ -77,11 +77,7 @@ class _FriendsPageState extends State<FriendsPage> {
                         if (snapshot.hasError)
                           return new Text("Error");
                         else {
-                          print(snapshot.data);
                           List<dynamic> decoded = jsonDecode(snapshot.data);
-                          for (Map<String, dynamic> elem in decoded) {
-                            print(elem.values.toList()[1]);
-                          }
                           return new ListView.separated(
                             shrinkWrap: true,
                             itemBuilder: (_, index) {
@@ -133,6 +129,6 @@ class _FriendsPageState extends State<FriendsPage> {
     Map<String, dynamic> body = {'name': name, 'email': 'example@abc.com'};
 
     Response resp = await post(url, headers: headers, body: json.encode(body));
-    print(resp.body);
+//    print(resp.body);
   }
 }
