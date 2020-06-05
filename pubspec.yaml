@@ -23,11 +23,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.15.8
+  intl: ^0.16.1
   http: ^0.12.1
   timer_count_down: ^1.0.0
   circular_countdown_timer: 0.0.1
   numberpicker: 1.2.0
+  flutter_driver:
+    sdk: flutter
+  test: any
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
