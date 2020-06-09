@@ -100,7 +100,6 @@ class CurrentTaskPage extends StatelessWidget {
                                     return new ListView.separated(
                                       shrinkWrap: true,
                                       itemBuilder: (_, index) {
-                                        print(decoded);
                                         return Row(
                                           children: <Widget>[
                                             Spacer(flex: 1,),
