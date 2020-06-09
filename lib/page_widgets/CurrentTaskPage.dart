@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:drp29/Globals.dart';
+import 'package:drp29/top_level/Globals.dart';
+import 'package:drp29/top_level/MyApp.dart';
 import 'package:drp29/main.dart';
 import 'package:drp29/page_widgets/UpdateTaskPage.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,7 +71,12 @@ class CurrentTaskPage extends StatelessWidget {
                   ),
                   height: 800,
                   width: 340,
-                  child:Column(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context, MaterialPageRoute(builder: (context) => MyApp()));
+                    },
+                    behavior: HitTestBehavior.translucent,
+                    child: Column(
                       children: <Widget>[
                         Spacer(
                           flex: 1,

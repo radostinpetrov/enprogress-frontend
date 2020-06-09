@@ -6,7 +6,7 @@ import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:drp29/Globals.dart';
+import 'package:drp29/top_level/Globals.dart';
 import 'package:http/http.dart';
 
 class ArchivePage extends StatelessWidget {
@@ -120,7 +120,6 @@ class ArchivePage extends StatelessWidget {
             ],
           )
       ),
-      floatingActionButton: FloatingButton(),
     );
   }
 }

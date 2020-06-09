@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:drp29/Globals.dart';
+import 'package:drp29/top_level/Globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
