@@ -15,6 +15,7 @@ class TaskWidget extends StatelessWidget {
   String title;
   final Map<String, dynamic> body;
   Future<String> subtasks;
+  var deadline;
 
   TaskWidget({
     this.index,
@@ -51,7 +52,7 @@ class TaskWidget extends StatelessWidget {
                 textTheme: ButtonTextTheme.primary,
                 child: RaisedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title, subtasks: subtasks);} ));
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title, subtasks: subtasks, deadline: deadline);} ));
                   },
                   child: Text(title),
                 ),
