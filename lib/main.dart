@@ -5,6 +5,7 @@ import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
 import 'page_widgets/WorkModePage.dart';
 import 'package:drp29/Globals.dart';
+import 'package:drp29/page_widgets/SignInPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
           TasksPage(),
           ArchivePage(),
           WorkModePage(),
+          LandingPage(),
         ],
       ),
     );
