@@ -11,15 +11,11 @@ import 'package:http/http.dart';
 
 class TasksPage extends StatelessWidget {
 
-  final Client client = new Client();
-  final uri = Uri.parse("http://146.169.40.203:3000/tasks");
-//  final uri = Uri.parse("http://localhost:3000/tasks");
+  final Future<String> data;
 
-  Future<String> _getNumberOfTasks() async {
-    Response response = await client.get(uri);
-    String jsonResponse = response.body;
-    return jsonResponse;
-  }
+  TasksPage({
+    this.data
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +42,7 @@ class TasksPage extends StatelessWidget {
             Expanded(
                 flex: 23,
                 child: FutureBuilder<String>(
-                  future: _getNumberOfTasks(),
+                  future: this.data,
                   builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                     switch(snapshot.connectionState) {
                       case(ConnectionState.none):
@@ -60,16 +56,26 @@ class TasksPage extends StatelessWidget {
                           return new Text("Error :(");
                         else {
                           List<dynamic> decoded = jsonDecode(snapshot.data);
+                          List<dynamic> filteredDecoded = new List();
+                          for (var elem in decoded) {
+                            if (elem != null && elem["deadline"] != null) {
+                              DateTime deadline = DateTime.parse(elem["deadline"]);
+                              if (deadline != null && DateTime.now().isBefore(deadline)) {
+                                filteredDecoded.add(elem);
+                              }
+                            }
+                          }
+//                          print(decoded);
                           return new ListView.separated(
                             shrinkWrap: true,
                             itemBuilder: (_, index) {
                               return TaskWidget(
                                 index: index,
-                                body: decoded[index],
+                                body: filteredDecoded[index],
                               );
                             },
                             separatorBuilder: (_, index) => Divider(),
-                            itemCount: decoded.length,
+                            itemCount: filteredDecoded.length,
                           );
                         }
                     }
