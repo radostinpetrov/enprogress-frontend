@@ -64,7 +64,6 @@ class CurrentFriendPage extends StatelessWidget {
                           case(ConnectionState.none):
                             return new Text("Not active");
                           case(ConnectionState.waiting):
-                            print("Hello");
                             return new Text("Loading...", style: TextStyle
                               (fontSize: 15),);
                           case(ConnectionState.active):
