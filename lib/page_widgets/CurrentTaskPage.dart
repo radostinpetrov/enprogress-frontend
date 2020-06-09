@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:drp29/Globals.dart';
-import 'package:drp29/main.dart';
+import 'package:drp29/page_widgets/UpdateTaskPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,9 +9,10 @@ class CurrentTaskPage extends StatelessWidget {
   final int index;
   final String title;
   final Future<String> subtasks;
+  int taskID;
 
   CurrentTaskPage({
-    this.index, this.title, this.subtasks
+    this.index, this.title, this.subtasks, this.taskID
   });
 
   @override
@@ -51,7 +52,9 @@ class CurrentTaskPage extends StatelessWidget {
                   width: 340,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
+                      Navigator.push(context, MaterialPageRoute(builder:
+                          (context) => UpdateTaskPage(title, subtasks,
+                              taskID)));
                     },
                     behavior: HitTestBehavior.translucent,
                     child: Column(
