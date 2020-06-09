@@ -15,13 +15,17 @@ class TaskWidget extends StatelessWidget {
   String title;
   final Map<String, dynamic> body;
   Future<String> subtasks;
+  int taskID;
+  var deadline;
 
   TaskWidget({
     this.index,
     this.body,
   }) {
+    this.taskID = this.body['id'];
     this.title = this.body.values.toList()[1];
     this.subtasks = _getSubTasks(this.body.values.toList()[0]);
+    this.deadline = this.body.values.toList()[3];
   }
 
   Future<String> _getSubTasks(int id) async {
@@ -55,9 +59,7 @@ class TaskWidget extends StatelessWidget {
                 textTheme: ButtonTextTheme.primary,
                 child: RaisedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return CurrentTaskPage(index: index, title: title, subtasks: subtasks);
-                    } ));
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title, subtasks: subtasks, taskID: taskID, deadline: deadline);} ));
                   },
                   child: Text(title),
                 ),
