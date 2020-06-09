@@ -71,7 +71,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   }
 
   _makePostRequest() async {
-    String url = "http://localhost:3000/tasks";
+    String url = "http://146.169.40.203:3000/tasks";
 
     var subTaskPercentages = [];
 
