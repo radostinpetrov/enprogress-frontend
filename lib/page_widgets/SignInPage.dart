@@ -1,7 +1,9 @@
+import 'package:drp29/page_widgets/ArchivePage.dart';
+import 'package:drp29/page_widgets/TasksPage.dart';
+import 'package:drp29/page_widgets/WorkModePage.dart';
+import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-
 
 class LandingPage extends StatelessWidget {
   @override
@@ -14,7 +16,7 @@ class LandingPage extends StatelessWidget {
           if (user == null) {
             return SignInPage();
           }
-          return HomePage();
+          return HomePage(user);
         } else {
           return Scaffold(
             body: Center(
@@ -27,7 +29,12 @@ class LandingPage extends StatelessWidget {
   }
 }
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends StatefulWidget {
+  @override
+  SignInPageState createState() => SignInPageState();
+}
+
+class SignInPageState extends State<SignInPage> {
   Future<void> _signInAnonymously() async {
     try {
       await FirebaseAuth.instance.signInAnonymously();
@@ -37,17 +44,35 @@ class SignInPage extends StatelessWidget {
   }
 
   Future<void> _signInWithEmail() async {
+    print(_email);
+    print(_password);
     try {
       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: null, password: null);
+          .signInWithEmailAndPassword(email: _email, password: _password);
     } catch (e) {
       print(e); // TODO: show dialog with error
     }
   }
 
+  Future<void> _registerWithEmail() async {
+    print(_email);
+    print(_password);
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: _email, password: _password);
+    } catch (e) {
+      print(e); // TODO: show dialog with error
+    }
+  }
+
+  String _email = " ";
+  String _password = " ";
+
+  TextEditingController _emailcontroller = TextEditingController();
+  TextEditingController _passwordcontroller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    ThemeData themeData = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: Text('Sign in')),
       body: Center(
@@ -60,12 +85,72 @@ class SignInPage extends StatelessWidget {
             ),
             onPressed: _signInAnonymously,
           ),
-          RaisedButton(
-            child: Text(
-              'Sign in with email',
-              style: TextStyle(fontSize: 20.0, color: Colors.white),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
+            child: new TextFormField(
+              controller: _emailcontroller,
+              maxLines: 1,
+              keyboardType: TextInputType.emailAddress,
+              autofocus: false,
+              autovalidate: true,
+              decoration: new InputDecoration(
+                  hintText: 'Email',
+                  icon: new Icon(
+                    Icons.mail,
+                    color: Colors.grey,
+                  )),
+              validator: (value) =>
+                  value.isEmpty ? 'Email can\'t be empty' : null,
+              onSaved: (String value) {
+                print("here");
+                _email = value.trim();
+              },
             ),
-            onPressed: _signInWithEmail,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+            child: new TextFormField(
+              controller: _passwordcontroller,
+              maxLines: 1,
+              obscureText: true,
+              autofocus: false,
+              autovalidate: true,
+              decoration: new InputDecoration(
+                  hintText: 'Password',
+                  icon: new Icon(
+                    Icons.lock,
+                    color: Colors.grey,
+                  )),
+              validator: (value) =>
+                  value.isEmpty ? 'Password can\'t be empty' : null,
+              onSaved: (value) => _password = value.trim(),
+            ),
+          ),
+          Column(
+            children: [
+              RaisedButton(
+                child: Text(
+                  'Sign in with email',
+                  style: TextStyle(fontSize: 20.0, color: Colors.white),
+                ),
+                onPressed: () {
+                  _email = _emailcontroller.text.toString();
+                  _password = _passwordcontroller.text.toString();
+                  _signInWithEmail();
+                },
+              ),
+              RaisedButton(
+                child: Text(
+                  'Register with email',
+                  style: TextStyle(fontSize: 20.0, color: Colors.white),
+                ),
+                onPressed: () {
+                  _email = _emailcontroller.text.toString();
+                  _password = _passwordcontroller.text.toString();
+                  _registerWithEmail();
+                },
+              ),
+            ],
           ),
         ],
       )),
@@ -73,7 +158,18 @@ class SignInPage extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  FirebaseUser _user;
+
+  HomePage(FirebaseUser user) {
+    this._user = user;
+  }
+
+  @override
+  HomePageState createState() => HomePageState();
+}
+
+class HomePageState extends State<HomePage> {
   Future<void> _signOut() async {
     try {
       await FirebaseAuth.instance.signOut();
@@ -84,6 +180,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String username = widget._user.email.toString();
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Page'),
@@ -98,6 +195,18 @@ class HomePage extends StatelessWidget {
             ),
             onPressed: _signOut,
           ),
+        ],
+      ),
+      body: PageView(
+        allowImplicitScrolling: false,
+        controller: PageController(
+          initialPage: 1,
+        ),
+        children: [
+          FriendsPage(),
+          TasksPage(),
+          ArchivePage(),
+          WorkModePage(),
         ],
       ),
     );

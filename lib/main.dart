@@ -1,9 +1,5 @@
-import 'package:drp29/page_widgets/ArchivePage.dart';
-import 'package:drp29/page_widgets/TasksPage.dart';
-import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
-import 'page_widgets/WorkModePage.dart';
 import 'package:drp29/Globals.dart';
 import 'package:drp29/page_widgets/SignInPage.dart';
 
@@ -21,19 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "EnProgress",
       theme: Globals.theme,
-      home: PageView(
-        allowImplicitScrolling: false,
-        controller: PageController(
-          initialPage: 1,
-        ),
-        children: [
-          FriendsPage(),
-          TasksPage(),
-          ArchivePage(),
-          WorkModePage(),
-          LandingPage(),
-        ],
-      ),
+      home: LandingPage()
     );
   }
 }
