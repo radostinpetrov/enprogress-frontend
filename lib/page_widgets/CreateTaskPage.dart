@@ -2,6 +2,7 @@ import 'package:drp29/main.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 
 class CreateTaskPage extends StatefulWidget {
@@ -81,11 +82,13 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     String text = nameController.text;
     String name = text.substring(0, text.length);
 
+    var deadline = _dateTime;
+
 
     Map<String, String> headers = {"Content-type": "application/json"};
     Map<String,dynamic> body = {'name' : name, 'percentage' : 0,
       'subtasks' : data, 'subtaskPercentages' :
-      subTaskPercentages};
+      subTaskPercentages, 'deadline' : deadline};
 
     Response resp = await post(url,headers: headers,body: json.encode(body));
 
@@ -166,6 +169,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                         'Deadline: '
                         '$_dateTime',
                 style: TextStyle(
+                  letterSpacing: 0,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                   color: Colors.black,
@@ -181,7 +185,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       lastDate: DateTime(2021),
                     ).then((date) {
                       setState(() {
-                        _dateTime = DateFormat('d-MM-yyyy').format(date);
+                        _dateTime = DateFormat('yyyy-mm-dd').format(date);
                         updateSubmitColor('');
                       });
                     });
