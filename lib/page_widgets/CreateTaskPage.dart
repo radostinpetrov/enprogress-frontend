@@ -87,8 +87,8 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
 
     Map<String, String> headers = {"Content-type": "application/json"};
     Map<String,dynamic> body = {'name' : name, 'percentage' : 0,
-      'subtasks' : data, 'subtaskPercentages' :
-      subTaskPercentages, 'deadline' : deadline};
+      'deadline' : deadline, 'subtasks' : data, 'subtaskPercentages' :
+      subTaskPercentages};
 
     Response resp = await post(url,headers: headers,body: json.encode(body));
 
@@ -185,7 +185,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       lastDate: DateTime(2021),
                     ).then((date) {
                       setState(() {
-                        _dateTime = DateFormat('yyyy-mm-dd').format(date);
+                        _dateTime = DateFormat('yyyy-MM-dd').format(date);
                         updateSubmitColor('');
                       });
                     });
