@@ -169,7 +169,7 @@ class CurrentTaskPage extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute
                             (builder: (context) => UpdateTaskPage(title, subtasks,
-                                taskID)));
+                                taskID, deadline)));
                           },
                           child: Container(
                             child: Text("Update", textAlign: TextAlign

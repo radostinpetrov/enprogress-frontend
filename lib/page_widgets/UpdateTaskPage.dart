@@ -10,12 +10,13 @@ class UpdateTaskPage extends StatefulWidget {
   final String title;
   final Future<String> subtasks;
   int id;
+  var deadline;
 
-  UpdateTaskPage(this.title, this.subtasks, this.id);
+  UpdateTaskPage(this.title, this.subtasks, this.id, this.deadline);
 
   @override
   _UpdateTaskPageState createState() =>
-      _UpdateTaskPageState(title, subtasks, id);
+      _UpdateTaskPageState(title, subtasks, id, deadline);
 }
 
 class _UpdateTaskPageState extends State<UpdateTaskPage> {
@@ -24,8 +25,9 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
   List<dynamic> decoded;
   Map<int, int> updatedPercentages = Map();
   int taskID;
+  var deadline;
 
-  _UpdateTaskPageState(this.title, this.subtasks, this.taskID);
+  _UpdateTaskPageState(this.title, this.subtasks, this.taskID, this.deadline);
 
   _makePutRequest() async {
     String url = "http://146.169.40.203:3000/tasks/" + taskID.toString();
@@ -51,7 +53,8 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
       'name': title,
       'percentage': totalPercentage.floor(),
       'subtasks': subTasks,
-      'subtaskPercentages': subTaskPercentages
+      'subtaskPercentages': subTaskPercentages,
+      'deadline': deadline
     };
 
     Map<String, String> headers = {"Content-type": "application/json"};
