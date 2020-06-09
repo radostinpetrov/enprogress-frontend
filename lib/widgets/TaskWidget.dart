@@ -23,6 +23,7 @@ class TaskWidget extends StatelessWidget {
   }) {
     this.title = this.body.values.toList()[1];
     this.subtasks = _getSubTasks(this.body.values.toList()[0]);
+    this.deadline = this.body.values.toList()[3];
   }
 
   Future<String> _getSubTasks(int id) async {
