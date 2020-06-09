@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drp29/Globals.dart';
+import 'package:drp29/main.dart';
 import 'package:drp29/page_widgets/UpdateTaskPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,14 +51,7 @@ class CurrentTaskPage extends StatelessWidget {
                   ),
                   height: 800,
                   width: 340,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder:
-                          (context) => UpdateTaskPage(title, subtasks,
-                              taskID)));
-                    },
-                    behavior: HitTestBehavior.translucent,
-                    child: Column(
+                  child:Column(
                       children: <Widget>[
                         Spacer(flex: 1,),
                         Expanded(
@@ -119,7 +113,6 @@ class CurrentTaskPage extends StatelessWidget {
                                               flex: 2,
                                               child: Text(
                                                 decoded[index].values.toList()[2].toString() + "%",
-
                                               ),
                                             )
                                           ],
@@ -133,12 +126,23 @@ class CurrentTaskPage extends StatelessWidget {
                             },
                           ),
                         ),
+                        FlatButton(
+                          color: Globals.primaryBlue,
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute
+                            (builder: (context) => UpdateTaskPage(title, subtasks,
+                                taskID)));
+                          },
+                          child: Container(
+                            child: Text("Update", textAlign: TextAlign
+                                .center, style: Theme.of(context).textTheme.bodyText2),
+                          ),
+                        )
                       ],
                     ),
                   )
                 ),
               ),
-            ),
             Spacer(flex: 2,),
           ],
         )
