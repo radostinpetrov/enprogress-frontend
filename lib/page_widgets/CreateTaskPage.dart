@@ -71,7 +71,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   }
 
   _makePostRequest() async {
-    String url = "http://146.169.40.203:3000/tasks";
+    String url = "http://localhost:3000/tasks";
 
     var subTaskPercentages = [];
 
@@ -98,31 +98,31 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   Widget build(BuildContext context) {
     Widget titleSection = Center(
         child: Container(
-            height: 75,
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.keyboard_arrow_left),
+          height: 75,
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.keyboard_arrow_left),
+                color: Colors.white,
+                alignment: Alignment.centerLeft,
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder:
+                      (context) => MyApp()));
+                },
+              ),
+              Spacer(flex: 13,),
+              Text(
+                'Creating A New Task',
+                style: TextStyle(
+                  fontSize: 20,
                   color: Colors.white,
-                  alignment: Alignment.centerLeft,
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder:
-                        (context) => MyApp()));
-                  },
+                  fontWeight: FontWeight.bold,
                 ),
-                Spacer(flex: 13,),
-                Text(
-                  'Creating A New Task',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Spacer(flex: 24,),
-              ],
-            ),
+              ),
+              Spacer(flex: 24,),
+            ],
+          ),
         )
     );
 
@@ -166,8 +166,8 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                 _dateTime == null
                     ? 'Tap to Select Deadline'
                     : 'Selected '
-                        'Deadline: '
-                        '$_dateTime',
+                    'Deadline: '
+                    '$_dateTime',
                 style: TextStyle(
                   letterSpacing: 0,
                   fontWeight: FontWeight.bold,
@@ -223,13 +223,13 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
             children: [
               Flexible(
                   child: TextField(
-                controller: progressController,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(),
-                  hintText: 'Enter Here',
-                ),
-              )),
+                    controller: progressController,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      border: UnderlineInputBorder(),
+                      hintText: 'Enter Here',
+                    ),
+                  )),
               IconButton(
                   icon: Icon(Icons.add),
                   onPressed: () {
@@ -279,7 +279,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
         if (conditions()) {
           _makePostRequest();
           Navigator.push(context, MaterialPageRoute(builder: (context) =>
-          MyApp()));
+              MyApp()));
         } else {
           setState(() {
             error = true;
@@ -293,21 +293,21 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
         backgroundColor: Color(0xFF1D1C4D),
         body: SafeArea(
             child: Column(children: [
-          titleSection,
-          dateAndName,
-          SizedBox(height: 10),
-          subGoals,
-          SizedBox(height: 10),
-          submit,
-          SizedBox(height: 10),
-          Visibility(
-              visible: error,
-              child: Text('Please fill out all fields!',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.red,
-                    fontStyle: FontStyle.italic,
-                  )))
-        ])));
+              titleSection,
+              dateAndName,
+              SizedBox(height: 10),
+              subGoals,
+              SizedBox(height: 10),
+              submit,
+              SizedBox(height: 10),
+              Visibility(
+                  visible: error,
+                  child: Text('Please fill out all fields!',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.red,
+                        fontStyle: FontStyle.italic,
+                      )))
+            ])));
   }
 }
