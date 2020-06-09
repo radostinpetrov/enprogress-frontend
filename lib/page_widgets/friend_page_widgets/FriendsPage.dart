@@ -129,6 +129,5 @@ class _FriendsPageState extends State<FriendsPage> {
     Map<String, dynamic> body = {'name': name, 'email': 'example@abc.com'};
 
     Response resp = await post(url, headers: headers, body: json.encode(body));
-//    print(resp.body);
   }
 }

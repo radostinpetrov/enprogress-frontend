@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:drp29/Globals.dart';
+import 'package:drp29/top_level/Globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -64,7 +64,6 @@ class CurrentFriendPage extends StatelessWidget {
                           case(ConnectionState.none):
                             return new Text("Not active");
                           case(ConnectionState.waiting):
-                            print("Hello");
                             return new Text("Loading...", style: TextStyle
                               (fontSize: 15),);
                           case(ConnectionState.active):
