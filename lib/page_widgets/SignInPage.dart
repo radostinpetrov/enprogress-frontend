@@ -3,6 +3,7 @@ import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:drp29/top_level/Globals.dart';
+import 'package:drp29/user/User.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class LandingPage extends StatelessWidget {
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          FirebaseUser user = snapshot.data;
+          User user = User("name", 0, snapshot.data);
           if (user == null) {
             return SignInPage();
           }
@@ -164,9 +165,9 @@ class SignInPageState extends State<SignInPage> {
 }
 
 class HomePage extends StatefulWidget {
-  FirebaseUser _user;
+  User _user;
 
-  HomePage(FirebaseUser user) {
+  HomePage(User user) {
     this._user = user;
   }
 
@@ -194,7 +195,6 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    String username = widget._user.email.toString();
     Future<String> data = _getTasks();
     return Scaffold(
       appBar: AppBar(
