@@ -1,17 +1,40 @@
 import 'dart:io';
 
-import 'package:drp29/Globals.dart';
+import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/page_widgets/CurrentTaskPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class TaskWidget extends StatelessWidget {
+
+  final Client client = new Client();
+  var uri;
+
   final int index;
-  final String title;
+  String title;
+  final Map<String, dynamic> body;
+  Future<String> subtasks;
+  int taskID;
+  var deadline;
 
   TaskWidget({
-    this.index, this.title
-  });
+    this.index,
+    this.body,
+  }) {
+    this.taskID = this.body['id'];
+    this.title = this.body.values.toList()[1];
+    this.subtasks = _getSubTasks(this.body.values.toList()[0]);
+    this.deadline = this.body.values.toList()[3];
+  }
+
+  Future<String> _getSubTasks(int id) async {
+    uri = Uri.parse("http://146.169.40.203:3000/tasks/" + id.toString() + "/subtasks");
+//    print(uri);
+    Response response = await client.get(uri);
+    String jsonResponse = response.body;
+    return jsonResponse;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +45,11 @@ class TaskWidget extends StatelessWidget {
           Hero(
             tag: "current_task" + index.toString(),
             child: Container(
-              color: Globals.buttonColor,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: Globals.buttonColor,
+                ),
+//              color: Globals.buttonColor,
               width: 250,
               height: 50,
               child: ButtonTheme(
@@ -32,7 +59,7 @@ class TaskWidget extends StatelessWidget {
                 textTheme: ButtonTextTheme.primary,
                 child: RaisedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title,);} ));
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title, subtasks: subtasks, taskID: taskID, deadline: deadline);} ));
                   },
                   child: Text(title),
                 ),
