@@ -56,21 +56,16 @@ class SignInPageState extends State<SignInPage> {
   }
 
   final Client client = new Client();
-  final uri = Uri.parse("http://146.169.40.203:3000/users");
+  final Uri uri = Uri.parse("http://192.168.0.15:3000/users");
 
   Future<int> _makePostRequest() async {
-    try {
-      Map<String, String> headers = {"Content-type": "application/json"};
+    Map<String, String> headers = {"Content-type": "application/json"};
 
-      Map<String, dynamic> body = {'name': _username, 'email': _email};
-      Response resp = await client.post(
-          uri, headers: headers, body: json.encode(body));
-      print("${json.decode(resp.body)['id']}");
-      return int.tryParse(resp.body);
-    } catch (e) {
-      print(e);
-    } finally {
-    }
+    Map<String, dynamic> body = {'name': _username, 'email': _email};
+    Response resp =
+        await client.post(uri, headers: headers, body: json.encode(body));
+    print("${json.decode(resp.body)['id']}");
+    return int.tryParse(resp.body);
   }
 
   Future<void> _signInWithEmail() async {
@@ -92,7 +87,6 @@ class SignInPageState extends State<SignInPage> {
     }
   }
 
-
   TextEditingController _emailcontroller = TextEditingController();
   TextEditingController _passwordcontroller = TextEditingController();
   TextEditingController _usernamecontroller = TextEditingController();
@@ -112,64 +106,63 @@ class SignInPageState extends State<SignInPage> {
 //            onPressed: _signInAnonymously,
 //          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _usernamecontroller,
-                  maxLines: 1,
-                  keyboardType: TextInputType.text,
-                  autofocus: true,
-                  autovalidate: true,
-                  decoration: InputDecoration(
-                      hintText: 'Username',
-                      icon: Icon(
-                        Icons.supervised_user_circle,
-                        color: Colors.grey,
-                      )),
-                  validator: (value) =>
-                  value.isEmpty ? 'Username can\'t be empty' : null,
-                  onSaved: (String value) {
-                    _username = value.trim();
-                  },
-                ),
-                TextFormField(
-                  controller: _emailcontroller,
-                  maxLines: 1,
-                  keyboardType: TextInputType.emailAddress,
-                  autofocus: true,
-                  autovalidate: true,
-                  decoration: InputDecoration(
-                      hintText: 'Email',
-                      icon: Icon(
-                        Icons.mail,
-                        color: Colors.grey,
-                      )),
-                  validator: (value) =>
-                  value.isEmpty ? 'Email can\'t be empty' : null,
-                  onSaved: (String value) {
-                    _email = value.trim();
-                  },
-                ),
-                TextFormField(
-                  controller: _passwordcontroller,
-                  maxLines: 1,
-                  obscureText: true,
-                  autofocus: true,
-                  autovalidate: true,
-                  decoration: InputDecoration(
-                      hintText: 'Password',
-                      icon: Icon(
-                        Icons.lock,
-                        color: Colors.grey,
-                      )),
-                  validator: (value) =>
-                  value.isEmpty ? 'Password can\'t be empty' : null,
-                  onSaved: (value) => _password = value.trim(),
-                ),
-              ],
-            )
-          ),
+              padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _usernamecontroller,
+                    maxLines: 1,
+                    keyboardType: TextInputType.text,
+                    autofocus: true,
+                    autovalidate: true,
+                    decoration: InputDecoration(
+                        hintText: 'Username',
+                        icon: Icon(
+                          Icons.supervised_user_circle,
+                          color: Colors.grey,
+                        )),
+                    validator: (value) =>
+                        value.isEmpty ? 'Username can\'t be empty' : null,
+                    onSaved: (String value) {
+                      _username = value.trim();
+                    },
+                  ),
+                  TextFormField(
+                    controller: _emailcontroller,
+                    maxLines: 1,
+                    keyboardType: TextInputType.emailAddress,
+                    autofocus: true,
+                    autovalidate: true,
+                    decoration: InputDecoration(
+                        hintText: 'Email',
+                        icon: Icon(
+                          Icons.mail,
+                          color: Colors.grey,
+                        )),
+                    validator: (value) =>
+                        value.isEmpty ? 'Email can\'t be empty' : null,
+                    onSaved: (String value) {
+                      _email = value.trim();
+                    },
+                  ),
+                  TextFormField(
+                    controller: _passwordcontroller,
+                    maxLines: 1,
+                    obscureText: true,
+                    autofocus: true,
+                    autovalidate: true,
+                    decoration: InputDecoration(
+                        hintText: 'Password',
+                        icon: Icon(
+                          Icons.lock,
+                          color: Colors.grey,
+                        )),
+                    validator: (value) =>
+                        value.isEmpty ? 'Password can\'t be empty' : null,
+                    onSaved: (value) => _password = value.trim(),
+                  ),
+                ],
+              )),
           Column(
             children: [
               RaisedButton(
@@ -224,13 +217,13 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  final uri = Uri.parse("http://146.169.40.203:3000/tasks");
+  Uri uri = Uri.parse("http://192.168.0.15:3000/tasks?fk_user_id=" + userID.toString());
   final Client client = Client();
 
   Future<String> _getTasks() async {
-    Response response = await client.get(uri);
-    String jsonResponse = response.body;
-    return jsonResponse;
+    print("${user.firebaseUser.email.toString()}");
+    Response resp = await client.get(uri);
+    return resp.body;
   }
 
   @override
@@ -271,6 +264,7 @@ class HomePageState extends State<HomePage> {
                 FriendsPage(),
                 TasksPage(
                   data: data,
+                  user: user,
                 ),
                 ArchivePage(
                   data: data,
