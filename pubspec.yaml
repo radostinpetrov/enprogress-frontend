@@ -29,6 +29,7 @@ dependencies:
   circular_countdown_timer: 0.0.1
   google_fonts: ^1.1.0
   numberpicker: 1.2.0
+  percent_indicator: "^2.1.1"
   flutter_driver:
     sdk: flutter
   test: any

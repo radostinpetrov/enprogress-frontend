@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/top_level/MyApp.dart';
-import 'package:drp29/main.dart';
 import 'package:drp29/page_widgets/UpdateTaskPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+
 
 class CurrentTaskPage extends StatelessWidget {
   final int index;
@@ -15,6 +16,28 @@ class CurrentTaskPage extends StatelessWidget {
   var deadline;
 
   CurrentTaskPage({this.index, this.title, this.subtasks, this.taskID, this.deadline});
+
+
+  List<dynamic> _SeparateList(BuildContext context ,List<dynamic> list) {
+
+    List<dynamic> items = List();
+    List<dynamic> separated = List();
+
+    for(int i = 0; i < list.length; i++) {
+      items.add(list[i]);
+
+      if (((i + 1) % 2) == 0) {
+        separated.add(items);
+        items = List();
+      }
+    }
+
+    if (items.length > 0) {
+      separated.add(items);
+    }
+
+    return separated;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,43 +150,50 @@ class CurrentTaskPage extends StatelessWidget {
                                     else {
                                       List<dynamic> decoded =
                                           jsonDecode(snapshot.data);
+                                      List<dynamic> separated = _SeparateList
+                                        (context, decoded);
                                       return new ListView.separated(
                                         shrinkWrap: true,
+                                        itemCount: separated.length,
                                         itemBuilder: (_, index) {
-                                          return Row(
-                                            children: <Widget>[
-                                              Spacer(
-                                                flex: 1,
-                                              ),
-                                              Expanded(
-                                                flex: 5,
-                                                child: Text(
-                                                  decoded[index]
-                                                      .values
-                                                      .toList()[1],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText2,
-                                                ),
-                                              ),
-                                              Spacer(
-                                                flex: 1,
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: Text(
-                                                  decoded[index]
-                                                          .values
-                                                          .toList()[2]
-                                                          .toString() +
-                                                      "%",
-                                                ),
-                                              )
-                                            ],
-                                          );
-                                        },
+                                          return Container(
+                                              alignment: Alignment.center,
+                                              height: 170,
+                                              width: 340,
+                                              child: ListView.separated(
+                                                  shrinkWrap: true,
+                                                  scrollDirection: Axis.horizontal,
+                                                  itemCount: separated[index].length,
+                                                  itemBuilder: (_, newIndex) {
+                                                    return
+                                                      CircularPercentIndicator(
+                                                        radius: 120.0,
+                                                        lineWidth: 13.0,
+                                                        animation: true,
+                                                        percent:
+                                                        separated[index][newIndex]['percentage']/100,
+                                                        center: Text(
+                                                          separated[index][newIndex]['percentage']
+                                                              .toString() + "%",
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText2,
+                                                        ),
+                                                        footer: Text(
+                                                          separated[index][newIndex]['name'],
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText2,
+                                                        ),
+                                                      );
+                                                    },
+                                                  separatorBuilder:
+                                                      (BuildContext context,
+                                                      int index) {
+                                                    return SizedBox(width: 20);
+                                                  }));
+                                          },
                                         separatorBuilder: (_, index) => Divider(),
-                                        itemCount: decoded.length,
                                       );
                                     }
                                 }
