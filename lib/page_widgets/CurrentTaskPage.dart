@@ -59,136 +59,137 @@ class CurrentTaskPage extends StatelessWidget {
           ),
           ]
           ),
-          Spacer(flex: 1),
-          Expanded(
-            flex: 30,
-            child: Hero(
-              tag: "current_task" + index.toString(),
-              child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Globals.buttonColor,
-                  ),
-                  height: 800,
-                  width: 340,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context, MaterialPageRoute(builder: (context) => MyApp()));
-                    },
-                    behavior: HitTestBehavior.translucent,
-                    child: Column(
-                      children: <Widget>[
-                        Spacer(
-                          flex: 1,
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Row(
-                            children: <Widget>[
-                              Spacer(
-                                flex: 1,
-                              ),
-                              Expanded(
-                                flex: 5,
-                                child: Text(
-                                  "Subtasks",
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Spacer(
-                                flex: 1,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Divider(
-                            color: Colors.black,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 20,
-                          child: FutureBuilder<String>(
-                            future: subtasks,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<String> snapshot) {
-                              switch (snapshot.connectionState) {
-                                case (ConnectionState.none):
-                                  return new Text("Not active");
-                                case (ConnectionState.waiting):
-                                  return new Text("Loading...");
-                                case (ConnectionState.active):
-                                  return new Text("Active");
-                                default:
-                                  if (snapshot.hasError)
-                                    return new Text("Error :(");
-                                  else {
-                                    List<dynamic> decoded =
-                                        jsonDecode(snapshot.data);
-                                    return new ListView.separated(
-                                      shrinkWrap: true,
-                                      itemBuilder: (_, index) {
-                                        return Row(
-                                          children: <Widget>[
-                                            Spacer(
-                                              flex: 1,
-                                            ),
-                                            Expanded(
-                                              flex: 5,
-                                              child: Text(
-                                                decoded[index]
-                                                    .values
-                                                    .toList()[1],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText2,
-                                              ),
-                                            ),
-                                            Spacer(
-                                              flex: 1,
-                                            ),
-                                            Expanded(
-                                              flex: 2,
-                                              child: Text(
-                                                decoded[index]
-                                                        .values
-                                                        .toList()[2]
-                                                        .toString() +
-                                                    "%",
-                                              ),
-                                            )
-                                          ],
-                                        );
-                                      },
-                                      separatorBuilder: (_, index) => Divider(),
-                                      itemCount: decoded.length,
-                                    );
-                                  }
-                              }
-                            },
-                          ),
-                        ),
-                        FlatButton(
-                          color: Globals.primaryBlue,
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute
-                            (builder: (context) => UpdateTaskPage(title, subtasks,
-                                taskID, deadline)));
-                          },
-                          child: Container(
-                            child: Text("Update", textAlign: TextAlign
-                                .center, style: Theme.of(context).textTheme.bodyText2),
-                          ),
-                        )
-                      ],
+            Spacer(flex: 1),
+            Expanded(
+              flex: 30,
+              child: Hero(
+                tag: "current_task" + index.toString(),
+                child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      color: Globals.buttonColor,
                     ),
-                  )
+                    height: 800,
+                    width: 340,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context, MaterialPageRoute(builder: (context) => MyApp()));
+                      },
+                      behavior: HitTestBehavior.translucent,
+                      child: Column(
+                        children: <Widget>[
+                          Spacer(
+                            flex: 1,
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Row(
+                              children: <Widget>[
+                                Spacer(
+                                  flex: 1,
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: Text(
+                                    "Subtasks",
+                                    style: Theme.of(context).textTheme.bodyText2,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Spacer(
+                                  flex: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Divider(
+                              color: Colors.black,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 20,
+                            child: FutureBuilder<String>(
+                              future: subtasks,
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String> snapshot) {
+                                switch (snapshot.connectionState) {
+                                  case (ConnectionState.none):
+                                    return new Text("Not active");
+                                  case (ConnectionState.waiting):
+                                    return new Text("Loading...");
+                                  case (ConnectionState.active):
+                                    return new Text("Active");
+                                  default:
+                                    if (snapshot.hasError)
+                                      return new Text("Error :(");
+                                    else {
+                                      List<dynamic> decoded =
+                                          jsonDecode(snapshot.data);
+                                      return new ListView.separated(
+                                        shrinkWrap: true,
+                                        itemBuilder: (_, index) {
+                                          return Row(
+                                            children: <Widget>[
+                                              Spacer(
+                                                flex: 1,
+                                              ),
+                                              Expanded(
+                                                flex: 5,
+                                                child: Text(
+                                                  decoded[index]
+                                                      .values
+                                                      .toList()[1],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText2,
+                                                ),
+                                              ),
+                                              Spacer(
+                                                flex: 1,
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  decoded[index]
+                                                          .values
+                                                          .toList()[2]
+                                                          .toString() +
+                                                      "%",
+                                                ),
+                                              )
+                                            ],
+                                          );
+                                        },
+                                        separatorBuilder: (_, index) => Divider(),
+                                        itemCount: decoded.length,
+                                      );
+                                    }
+                                }
+                              },
+                            ),
+                          ),
+                          FlatButton(
+                            color: Globals.primaryBlue,
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute
+                              (builder: (context) => UpdateTaskPage(title, subtasks,
+                                  taskID, deadline)));
+                            },
+                            child: Container(
+                              child: Text("Update", textAlign: TextAlign
+                                  .center, style: Theme.of(context).textTheme.bodyText2),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ),
                 ),
-              ),
-            Spacer(flex: 2,),
-          ],
+            ),
+              Spacer(flex: 2,),
+            ],
         )
       ),
     );
