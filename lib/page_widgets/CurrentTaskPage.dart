@@ -166,6 +166,8 @@ class CurrentTaskPage extends StatelessWidget {
                                                   itemCount: separated[index].length,
                                                   itemBuilder: (_, newIndex) {
                                                     return
+                                                    Container( width: 170,
+                                                        child:
                                                       CircularPercentIndicator(
                                                         radius: 120.0,
                                                         lineWidth: 13.0,
@@ -179,18 +181,20 @@ class CurrentTaskPage extends StatelessWidget {
                                                               .textTheme
                                                               .bodyText2,
                                                         ),
-                                                        footer: Text(
+                                                        footer: FittedBox(
+                                                          fit: BoxFit.fitWidth,
+                                                          child: Text(
                                                           separated[index][newIndex]['name'],
+                                                          softWrap: true,
+//                                                          textWidthBasis: t,
                                                           style: Theme.of(context)
                                                               .textTheme
                                                               .bodyText2,
                                                         ),
-                                                      );
+                                                        )));
                                                     },
-                                                  separatorBuilder:
-                                                      (BuildContext context,
-                                                      int index) {
-                                                    return SizedBox(width: 20);
+                                                  separatorBuilder: (_, index) {
+                                                    return SizedBox(width: 0);
                                                   }));
                                           },
                                         separatorBuilder: (_, index) => Divider(),
