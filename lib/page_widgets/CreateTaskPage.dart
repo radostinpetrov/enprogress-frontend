@@ -78,7 +78,6 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
 
   _makePostRequest() async {
     String url = "http://146.169.40.203:3000/tasks";
-
     var subTaskPercentages = [];
 
     for (int i = 0; i < data.length; i++) {
@@ -97,6 +96,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       subTaskPercentages};
 
     Response resp = await post(url,headers: headers,body: json.encode(body));
+    print(resp.body);
 
   }
 

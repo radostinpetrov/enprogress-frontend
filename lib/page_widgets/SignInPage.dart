@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drp29/page_widgets/ArchivePage.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
@@ -23,7 +25,6 @@ class LandingPage extends StatelessWidget {
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-//          User user = User("name", 0, snapshot.data);
           if (snapshot.data == null) {
             return SignInPage();
           }
@@ -46,12 +47,17 @@ class SignInPage extends StatefulWidget {
   SignInPageState createState() => SignInPageState();
 }
 
-_getUserInfo() async {
-  Uri uri = Uri.parse("http://192.168.0.15:3000/users?email=" + user.firebaseUser.email.toString());
-  Response resp = await Client().get(uri);
-  String username = json.decode(resp.body)['name'];
-  int userID = json.decode(resp.body)['id'];
-  user = User(username, userID, user.firebaseUser);
+Future<dynamic> _getUserInfo() async {
+  try {
+    Uri uri = Uri.parse("http://146.169.40.203:3000/users?email=" + user.firebaseUser.email.toString());
+    Response resp = await Client().get(uri);
+    Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
+    _username = jsonResp['name'];
+    userID = jsonResp['id'];
+    user = User(_username, userID, user.firebaseUser);
+  } catch (e) {
+    print(e);
+  }
 }
 
 class SignInPageState extends State<SignInPage> {
@@ -63,15 +69,15 @@ class SignInPageState extends State<SignInPage> {
     }
   }
 
-  final Client client = new Client();
-  final Uri uri = Uri.parse("http://192.168.0.15:3000/users");
 
   _makePostRequest() async {
+    final Uri uri = Uri.parse("http://146.169.40.203:3000/users");
+
     Map<String, String> headers = {"Content-type": "application/json"};
 
     Map<String, dynamic> body = {'name': _username, 'email': _email};
     Response resp =
-        await client.post(uri, headers: headers, body: json.encode(body));
+        await Client().post(uri, headers: headers, body: json.encode(body));
     userID = json.decode(resp.body)['id'];
   }
 
@@ -229,7 +235,7 @@ class HomePageState extends State<HomePage> {
     if (user.userID == null || user.userID == -1) {
       await _getUserInfo();
     }
-    Uri uri = Uri.parse("http://192.168.0.15:3000/tasks?fk_user_id=" + userID.toString());
+    Uri uri = Uri.parse("http://146.169.40.203:3000/tasks?fk_user_id=" + userID.toString());
     Response resp = await Client().get(uri);
     return resp.body;
   }
