@@ -6,6 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/page_widgets/WorkingFriendsPage.dart';
+import 'package:drp29/user/User.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,14 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 class TasksPage extends StatefulWidget {
 
   final Future<String> data;
+  final User user;
 
   TasksPage({
     this.data
 });
+    this.data,
+    this.user
+  });
 
   @override
   State<StatefulWidget> createState() {

@@ -19,11 +19,13 @@ class TaskWidget extends StatelessWidget {
   final Map<String, dynamic> body;
   Future<String> subtasks;
   int taskID;
+  final user;
   String deadline;
 
   TaskWidget({
     @required this.index,
     @required this.body,
+    this.user,
   }) {
     this.taskID = this.body['id'];
     this.title = this.body.values.toList()[1];

@@ -1,23 +1,37 @@
 import 'package:drp29/top_level/MyApp.dart';
-import 'package:drp29/main.dart';
+import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
 class CreateTaskPage extends StatefulWidget {
+  User user;
+
+  CreateTaskPage(User user) {
+    this.user = user;
+  }
+
   @override
-  _CreateTaskPageState createState() => _CreateTaskPageState();
+  _CreateTaskPageState createState() => _CreateTaskPageState(user.userID);
 }
 
 class _CreateTaskPageState extends State<CreateTaskPage> {
-  var _dateTime;
+  int userID;
+
+  _CreateTaskPageState(userID) {
+    this.userID = userID;
+  }
+
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<String> data = [];
   final nameController = TextEditingController();
   final progressController = TextEditingController();
   bool error = false;
   Color submitColor = Colors.amber;
+  DateTime selectedDate;
+  final DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm');
+
 
   Widget _buildItem(String item, Animation<double> animation) {
     return SizeTransition(
@@ -59,7 +73,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   }
 
   bool conditions() {
-    return (_dateTime != null) &&
+    return (selectedDate != null) &&
         (nameController.text.length > 0) &&
         (data.length > 0);
   }
@@ -70,9 +84,15 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     });
   }
 
+  dynamic myEncode(dynamic item) {
+    if(item is DateTime) {
+      return item.toIso8601String();
+    }
+    return item;
+  }
+
   _makePostRequest() async {
     String url = "http://146.169.40.203:3000/tasks";
-
     var subTaskPercentages = [];
 
     for (int i = 0; i < data.length; i++) {
@@ -82,16 +102,33 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     String text = nameController.text;
     String name = text.substring(0, text.length);
 
-    var deadline = _dateTime;
+    var deadline = selectedDate;
 
 
     Map<String, String> headers = {"Content-type": "application/json"};
     Map<String,dynamic> body = {'name' : name, 'percentage' : 0,
-      'deadline' : deadline, 'subtasks' : data, 'subtaskPercentages' :
+      'deadline' : deadline, 'fk_user_id' : userID, 'subtasks' : data, 'subtaskPercentages' :
       subTaskPercentages};
 
-    Response resp = await post(url,headers: headers,body: json.encode(body));
+    Response resp = await post(url,headers: headers,body: json.encode(body, toEncodable: myEncode));
+    print(resp.body);
 
+  }
+
+  Future<DateTime> _selectDateTime(BuildContext context) => showDatePicker(
+    context: context,
+    initialDate: DateTime.now().add(Duration(seconds: 1)),
+    firstDate: DateTime.now(),
+    lastDate: DateTime(2100),
+  );
+
+  Future<TimeOfDay> _selectTime(BuildContext context) {
+    final now = DateTime.now();
+
+    return showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
+    );
   }
 
   @override
@@ -163,11 +200,9 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                _dateTime == null
+                selectedDate == null
                     ? 'Tap to Select Deadline'
-                    : 'Selected '
-                    'Deadline: '
-                    '$_dateTime',
+                    : dateFormat.format(selectedDate),
                 style: TextStyle(
                   letterSpacing: 0,
                   fontWeight: FontWeight.bold,
@@ -177,20 +212,27 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
               ),
               IconButton(
                   icon: Icon(Icons.calendar_today),
-                  onPressed: () {
-                    showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2021),
-                    ).then((date) {
-                      setState(() {
-                        _dateTime = DateFormat('yyyy-MM-dd').format(date);
-                        updateSubmitColor('');
-                      });
+                  onPressed: () async {
+                    final selectedDate = await _selectDateTime(context);
+                    if (selectedDate == null) return;
+
+                    final selectedTime = await _selectTime(context);
+                    if (selectedTime == null) return;
+                    print(selectedTime.hour);
+                    print(selectedTime.minute);
+
+                    setState(() {
+                      this.selectedDate = DateTime(
+                        selectedDate.year,
+                        selectedDate.month,
+                        selectedDate.day,
+                        selectedTime.hour,
+                        selectedTime.minute,
+                      );
+                    print(selectedDate);
+                    print(selectedDate.hour);
                     });
-                  })
-            ],
+                  })],
           ),
         ]));
 
