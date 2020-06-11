@@ -291,11 +291,15 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     Future<String> data = _getTasks();
+    Widget tasksPage = TasksPage(data: data);
+
+
     List<Widget> children = [
       FriendsPage(),
-      TasksPage(data: data,),
-//      WorkModePage(),
+      tasksPage,
+      WorkModePage(data: data, user: user,),
     ];
 
     return Scaffold(
