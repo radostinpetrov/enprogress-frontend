@@ -1,18 +1,42 @@
+import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'dart:math' as math;
 
+import 'UpdateTaskPage.dart';
+
 
 class WorkModePage extends StatefulWidget {
-  @override
-  WorkModeState createState() => WorkModeState();
 
+  final String title;
+  final Future<String> subtasks;
+  int taskID;
+  var deadline;
+  final User user;
+
+  WorkModePage(this.user, this.title, this.subtasks, this.taskID, this
+      .deadline);
+
+  @override
+  WorkModeState createState() => WorkModeState(user, title, subtasks, taskID,
+      deadline);
 
 }
 
 class WorkModeState extends State<WorkModePage>
     with TickerProviderStateMixin {
+
+  final String title;
+  final Future<String> subtasks;
+  int taskID;
+  var deadline;
+  final User user;
+
+  WorkModeState(this.user, this.title, this.subtasks, this.taskID, this
+      .deadline);
+
   static const platform = const MethodChannel('flutter/enprogress');
   AnimationController controller;
 
@@ -23,6 +47,30 @@ class WorkModeState extends State<WorkModePage>
 
   bool _isTiming = false;
   int _workModeDuration = 0;
+  double _totalTimeWorked = 0;
+
+
+  _PostUserPointsAndUpdateTask(context) async {
+
+    if (controller.value > 0) {
+      _totalTimeWorked -= controller.value;
+    }
+
+    Map<String, dynamic> body = {
+      'points' : _totalTimeWorked.floor() / 60
+    };
+
+    Map<String, String> headers = {"Content-type": "application/json"};
+
+    String url = "http://146.169.40.203:3000/users/" + user.userID.toString();
+
+    Response response = await patch(url, headers: headers, body: body);
+
+    Navigator.push(context, MaterialPageRoute
+      (builder: (context) => UpdateTaskPage(title, subtasks,
+        taskID, deadline)));
+  }
+
 
   @override
   void initState() {
@@ -116,15 +164,19 @@ class WorkModeState extends State<WorkModePage>
                         alignment: Alignment.center,
                         child: Row(
                           children: [
+                            Column( children: [
                             Padding(
                               padding: EdgeInsets.only(right: 40.0, left: 50.0, bottom: 50.0),
                               child: AnimatedBuilder(
                                   animation: controller,
                                   builder: (context, child) {
                                     return FloatingActionButton.extended(
+                                      heroTag: "timerStartBtn",
                                         onPressed: () async {
                                           if (controller.value == 0.0) {
                                             controller.duration = Duration(seconds: _workModeDuration);
+                                            _totalTimeWorked +=
+                                                _workModeDuration;
                                             await platform.invokeMethod("turnDoNotDisturbModeOn");
                                           }
                                           if (controller.isAnimating)
@@ -148,11 +200,24 @@ class WorkModeState extends State<WorkModePage>
                                         Text(_isTiming ? "Pause" : "Play"));
                                   }),
                             ),
+
+                            Padding(
+                              padding: EdgeInsets.only(right: 40.0, left: 50.0, bottom: 50.0),
+                              child: Visibility(
+                                  visible: !_isTiming,
+                                  child: FloatingActionButton.extended(
+                                    heroTag: "finishBtn",
+                                      onPressed: () {
+                                        _PostUserPointsAndUpdateTask(context);
+                                      },
+                                      label: Text("Finish"),)),
+                            ),
+                            ]),
                             Padding(
                                 padding:
                                 EdgeInsets.only(bottom: 50.0, left: 40.0),
                                 child: Visibility(
-                                    visible: true,
+                                    visible: !_isTiming,
                                     child: NumberPicker.integer(
                                       initialValue: _workModeDuration,
                                       minValue: 0,

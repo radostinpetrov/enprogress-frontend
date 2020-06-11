@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 
+User user;
+
 class LandingPage extends StatelessWidget {
 
   @override
@@ -229,9 +231,8 @@ class HomePageState extends State<HomePage> {
                   ),
                   children: [
                     FriendsPage(),
-                    TasksPage(data: data,),
+                    TasksPage(data: data, user: user),
                     ArchivePage(data: data,),
-                    WorkModePage(),
                   ],
                 ),
               ),

@@ -99,19 +99,19 @@ class ArchivePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Spacer(flex: 3,),
-                    Expanded(
-                      flex: 5,
-                      child: FlatButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => WorkModePage()));
-                        },
-                        color: Globals.buttonColor,
-                        child: Container(
-                          child: Text("Study mode", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ),
+//                    Spacer(flex: 3,),
+//                    Expanded(
+//                      flex: 5,
+//                      child: FlatButton(
+//                        onPressed: () {
+////                          Navigator.push(context, MaterialPageRoute(builder: (context) => WorkModePage()));
+//                        },
+//                        color: Globals.buttonColor,
+//                        child: Container(
+//                          child: Text("Study mode", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+//                        ),
+//                      ),
+//                    ),
                     Spacer(flex: 5,),
                   ],
                 ),

@@ -17,8 +17,10 @@ class TaskWidget extends StatelessWidget {
   Future<String> subtasks;
   int taskID;
   var deadline;
+  final user;
 
   TaskWidget({
+    this.user,
     this.index,
     this.body,
   }) {
@@ -59,7 +61,10 @@ class TaskWidget extends StatelessWidget {
                 textTheme: ButtonTextTheme.primary,
                 child: RaisedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title, subtasks: subtasks, taskID: taskID, deadline: deadline);} ));
+                    Navigator.push(context, MaterialPageRoute(builder: (_)
+                    {return CurrentTaskPage(user: user, index: index, title:
+                    title,
+                        subtasks: subtasks, taskID: taskID, deadline: deadline);} ));
                   },
                   child: Text(title),
                 ),
