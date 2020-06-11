@@ -9,9 +9,10 @@ class FriendWidget extends StatelessWidget {
   final int index;
   final String title;
   int points;
+  int id;
 
   FriendWidget({
-    this.index, this.points, this.title
+    this.index, this.points, this.id, this.title
   });
 
 
@@ -47,7 +48,8 @@ class FriendWidget extends StatelessWidget {
                 child: RaisedButton(
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_)
-                    {return CurrentFriendPage(index: index, title: title,);}
+                    {return CurrentFriendPage(id: id, index: index, title:
+                    title,);}
                     ));
                   },
                   child: Row(
