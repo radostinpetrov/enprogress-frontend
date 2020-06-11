@@ -18,8 +18,8 @@ import 'dart:convert';
 User user;
 String _email = " ";
 String _password = " ";
-String _username = " ";
-int userID = -1;
+String _username = "moe";
+int userID = 111;
 
 class LandingPage extends StatelessWidget {
   @override
@@ -28,9 +28,9 @@ class LandingPage extends StatelessWidget {
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          if (snapshot.data == null) {
-            return SignInPage();
-          }
+//          if (snapshot.data == null) {
+//            return SignInPage();
+//          }
           user = User(_username, userID, snapshot.data);
           return HomePage(user);
         } else {
@@ -295,7 +295,7 @@ class HomePageState extends State<HomePage> {
     List<Widget> children = [
       FriendsPage(),
       TasksPage(data: data,),
-      WorkModePage(),
+//      WorkModePage(),
     ];
 
     return Scaffold(

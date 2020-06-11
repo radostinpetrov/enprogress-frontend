@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
+import 'package:drp29/page_widgets/SignInPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/page_widgets/WorkingFriendsPage.dart';
 import 'package:drp29/user/User.dart';
@@ -21,8 +22,6 @@ class TasksPage extends StatefulWidget {
   final User user;
 
   TasksPage({
-    this.data
-});
     this.data,
     this.user
   });
@@ -306,7 +305,7 @@ class TasksPageState extends State<TasksPage> {
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
+                                context, MaterialPageRoute(builder: (context) => CreateTaskPage(user)));
                           },
                           child: Icon(Icons.add, color: Colors.white,),
                         )
