@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -57,14 +59,17 @@ class WorkModeState extends State<WorkModePage>
     }
 
     Map<String, dynamic> body = {
-      'points' : _totalTimeWorked.floor() / 60
+      'points' : (_totalTimeWorked.floor() / 60).floor()
     };
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    String url = "http://146.169.40.203:3000/users/" + user.userID.toString();
+    String url = "http://146.169.40.203:3000/users/" + user.userID.toString() ;
 
-    Response response = await patch(url, headers: headers, body: body);
+    Response response = await patch(url, headers: headers, body:
+    jsonEncode(body));
+
+    print(jsonEncode(body));
 
     Navigator.push(context, MaterialPageRoute
       (builder: (context) => UpdateTaskPage(title, subtasks,

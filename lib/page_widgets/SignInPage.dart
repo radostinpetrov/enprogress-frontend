@@ -20,8 +20,8 @@ class LandingPage extends StatelessWidget {
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          User user = User("name", 0, snapshot.data);
-          if (user == null) {
+          user = User("name", 0, snapshot.data);
+          if (snapshot.data == null) {
             return SignInPage();
           }
           return HomePage(user);
