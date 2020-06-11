@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/page_widgets/WorkingFriendsPage.dart';
+import 'package:drp29/user/User.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,11 @@ import 'package:http/http.dart';
 class TasksPage extends StatelessWidget {
 
   final Future<String> data;
+  final User user;
 
   TasksPage({
-    this.data
+    this.data,
+    this.user
   });
 
   @override
@@ -25,7 +28,7 @@ class TasksPage extends StatelessWidget {
       body: SafeArea(
         child: GestureDetector(
           onDoubleTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage(user)));
           },
           onVerticalDragUpdate: (DragUpdateDetails details) {
             Navigator.push(context, MaterialPageRoute(builder: (context) => WorkingFriendsPage()));
@@ -78,6 +81,7 @@ class TasksPage extends StatelessWidget {
                             shrinkWrap: true,
                             itemBuilder: (_, index) {
                               return TaskWidget(
+                                user: user,
                                 index: index,
                                 body: filteredDecoded[index],
                               );

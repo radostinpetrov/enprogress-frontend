@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/top_level/MyApp.dart';
 import 'package:drp29/page_widgets/UpdateTaskPage.dart';
+import 'package:drp29/user/User.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -14,8 +16,10 @@ class CurrentTaskPage extends StatelessWidget {
   final Future<String> subtasks;
   int taskID;
   var deadline;
+  final User user;
 
-  CurrentTaskPage({this.index, this.title, this.subtasks, this.taskID, this.deadline});
+  CurrentTaskPage({this.user, this.index, this.title, this.subtasks, this
+      .taskID, this.deadline});
 
 
   List<dynamic> _SeparateList(BuildContext context ,List<dynamic> list) {
@@ -213,6 +217,20 @@ class CurrentTaskPage extends StatelessWidget {
                             },
                             child: Container(
                               child: Text("Update", textAlign: TextAlign
+                                  .center, style: Theme.of(context).textTheme.bodyText2),
+                            ),
+                          ),
+                          FlatButton(
+                            color: Globals.primaryBlue,
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute
+                                (builder: (context) => WorkModePage(user, title,
+                                  subtasks,
+                                  taskID, deadline)));
+                            },
+                            child: Container(
+                              child: Text("Work On This Task", textAlign:
+                              TextAlign
                                   .center, style: Theme.of(context).textTheme.bodyText2),
                             ),
                           )
