@@ -19,8 +19,8 @@ class TaskWidget extends StatelessWidget {
   var deadline;
 
   TaskWidget({
-    this.index,
-    this.body,
+    @required this.index,
+    @required this.body,
   }) {
     this.taskID = this.body['id'];
     this.title = this.body.values.toList()[1];
@@ -39,36 +39,47 @@ class TaskWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
-        children: <Widget>[
-          Spacer(flex: 5,),
-          Hero(
-            tag: "current_task" + index.toString(),
-            child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Globals.buttonColor,
-                ),
-//              color: Globals.buttonColor,
-              width: 250,
-              height: 50,
-              child: ButtonTheme(
-                minWidth: 250,
-                height: 50,
-                buttonColor: Globals.buttonColor,
-                textTheme: ButtonTextTheme.primary,
-                child: RaisedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title, subtasks: subtasks, taskID: taskID, deadline: deadline);} ));
-                  },
-                  child: Text(title),
-                ),
-              )
-            ),
-          ),
-          Spacer(flex: 5,)
-        ],
-      )
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.symmetric(horizontal: 4.0),
+        height: 200,
+//          color: Colors.white,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(3)),
+          color: Colors.white,
+        )
     );
+
+//    return Container(
+//      child: Row(
+//        children: <Widget>[
+//          Spacer(flex: 5,),
+//          Hero(
+//            tag: "current_task" + index.toString(),
+//            child: Container(
+//                decoration: BoxDecoration(
+//                  borderRadius: BorderRadius.all(Radius.circular(10)),
+//                  color: Globals.buttonColor,
+//                ),
+////              color: Globals.buttonColor,
+//              width: 250,
+//              height: 50,
+//              child: ButtonTheme(
+//                minWidth: 250,
+//                height: 50,
+//                buttonColor: Globals.buttonColor,
+//                textTheme: ButtonTextTheme.primary,
+//                child: RaisedButton(
+//                  onPressed: () {
+//                    Navigator.push(context, MaterialPageRoute(builder: (_) {return CurrentTaskPage(index: index, title: title, subtasks: subtasks, taskID: taskID, deadline: deadline);} ));
+//                  },
+//                  child: Text(title),
+//                ),
+//              )
+//            ),
+//          ),
+//          Spacer(flex: 5,)
+//        ],
+//      )
+//    );
   }
 }

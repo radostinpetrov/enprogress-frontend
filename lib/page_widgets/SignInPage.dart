@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drp29/page_widgets/ArchivePage.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
@@ -5,6 +6,7 @@ import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/user/User.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
+import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -176,16 +178,17 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  Future<void> _signOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-    } catch (e) {
-      print(e); // TODO: show dialog with error
-    }
-  }
+
+  int _currentIndex = 1;
 
   final uri = Uri.parse("http://146.169.40.203:3000/tasks");
   final Client client = new Client();
+
+  void _onNavBarTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   Future<String> _getTasks() async {
     Response response = await client.get(uri);
@@ -193,54 +196,79 @@ class HomePageState extends State<HomePage> {
     return jsonResponse;
   }
 
+//  Future<void> _signOut() async {
+//    try {
+//      await FirebaseAuth.instance.signOut();
+//    } catch (e) {
+//      print(e); // TODO: show dialog with error
+//    }
+//  }
+
+
+  /// *     Widgets   ***/
+
+  BottomNavigationBar _bottomNavigationBar() {
+    return BottomNavigationBar(
+      backgroundColor: Globals.primaryBlue,
+      unselectedItemColor: Colors.white,
+      selectedItemColor: Colors.blue,
+      onTap: _onNavBarTapped,
+      currentIndex: _currentIndex,
+      items: <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person_pin),
+            title: Text("Friends")
+        ),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.assignment),
+            title: Text("Tasks")
+        ),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.timer),
+            title: Text("Study")
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<String> data = _getTasks();
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home Page'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text(
-              'Logout',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.white,
-              ),
-            ),
-            onPressed: _signOut,
-          ),
-        ],
-      ),
+//      appBar: AppBar(
+//        title: Text('Home Page'),
+//        actions: <Widget>[
+//          FlatButton(
+//            child: Text(
+//              'Logout',
+//              style: TextStyle(
+//                fontSize: 18.0,
+//                color: Colors.white,
+//              ),
+//            ),
+//            onPressed: _signOut,
+//          ),
+//        ],
+//      ),
+      bottomNavigationBar: _bottomNavigationBar(),
       backgroundColor: Globals.primaryBlue,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 50.0),
-        child: FloatingButton(),
-      ),
+//      floatingActionButton: Padding(
+//        padding: const EdgeInsets.only(bottom: 50.0),
+//        child: FloatingButton(),
+//      ),
       body: SafeArea(
           child: Column(
             children: <Widget>[
               Expanded(
                 flex: 100,
-                child: PageView(
-                  allowImplicitScrolling: false,
-                  controller: PageController(
-                    initialPage: 1,
-                  ),
-                  children: [
-                    FriendsPage(),
-                    TasksPage(data: data,),
-                    ArchivePage(data: data,),
-                    WorkModePage(),
-                  ],
-                ),
+                child: TasksPage(),
               ),
               Expanded(
                 flex: 1,
-                child: Row(
-                  children: <Widget>[],
+                child: Divider(
+                  color: Colors.white,
                 ),
-              ),
+              )
             ],
           )
       ),
