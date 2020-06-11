@@ -97,7 +97,7 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
 
   Future<bool> _warnAboutExitingWorkMode() {
     // flutter defined function
-    showDialog(
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
