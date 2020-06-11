@@ -181,7 +181,7 @@ class HomePageState extends State<HomePage> {
 
   int _currentIndex = 1;
 
-  final uri = Uri.parse("http://146.169.40.203:3000/tasks");
+  final uri = Uri.parse("http://10.0.2.2:3000/tasks");
   final Client client = new Client();
 
   void _onNavBarTapped(int index) {
@@ -261,7 +261,7 @@ class HomePageState extends State<HomePage> {
             children: <Widget>[
               Expanded(
                 flex: 100,
-                child: TasksPage(),
+                child: TasksPage(data: data,),
               ),
               Expanded(
                 flex: 1,
