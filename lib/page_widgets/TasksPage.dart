@@ -20,15 +20,17 @@ class TasksPage extends StatefulWidget {
 
   final Future<String> data;
   final User user;
+  var signoutCallback;
 
   TasksPage({
     this.data,
-    this.user
+    this.user,
+    this.signoutCallback
   });
 
   @override
   State<StatefulWidget> createState() {
-    return TasksPageState(data: data);
+    return TasksPageState(data: data, user: user, signoutCallback: signoutCallback);
   }
 
 }
@@ -41,9 +43,13 @@ class TasksPageState extends State<TasksPage> {
   final Future<String> data;
   Future<String> subtasks;
   List<dynamic> filteredDecoded;
+  final User user;
+  var signoutCallback;
 
   TasksPageState({
-    this.data
+    this.data,
+    this.user,
+    this.signoutCallback
   });
 
   int _currentIndex = 0;
@@ -298,7 +304,12 @@ class TasksPageState extends State<TasksPage> {
                   children: <Widget>[
                     Spacer(),
                     Expanded(
-                      child: Icon(Icons.menu, color: Colors.white,),
+                      child: GestureDetector(
+                        onTap: () {
+                          signoutCallback();
+                        },
+                        child: Icon(Icons.menu, color: Colors.white,),
+                      )
                     ),
                     Spacer(flex: 8,),
                     Expanded(
