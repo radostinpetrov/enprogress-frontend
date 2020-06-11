@@ -18,6 +18,8 @@ String _password = " ";
 String _username = " ";
 int userID = -1;
 
+User user;
+
 class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

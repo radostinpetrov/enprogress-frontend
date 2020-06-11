@@ -81,6 +81,7 @@ class TasksPage extends StatelessWidget {
                             shrinkWrap: true,
                             itemBuilder: (_, index) {
                               return TaskWidget(
+                                user: user,
                                 index: index,
                                 body: filteredDecoded[index],
                               );
