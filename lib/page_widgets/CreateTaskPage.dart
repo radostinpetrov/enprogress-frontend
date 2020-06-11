@@ -13,10 +13,16 @@ class CreateTaskPage extends StatefulWidget {
   }
 
   @override
-  _CreateTaskPageState createState() => _CreateTaskPageState();
+  _CreateTaskPageState createState() => _CreateTaskPageState(user.userID);
 }
 
 class _CreateTaskPageState extends State<CreateTaskPage> {
+  int userID;
+
+  _CreateTaskPageState(userID) {
+    this.userID = userID;
+  }
+
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<String> data = [];
   final nameController = TextEditingController();
@@ -101,7 +107,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
 
     Map<String, String> headers = {"Content-type": "application/json"};
     Map<String,dynamic> body = {'name' : name, 'percentage' : 0,
-      'deadline' : deadline, 'fk_user_id' : widget.user.userID, 'subtasks' : data, 'subtaskPercentages' :
+      'deadline' : deadline, 'fk_user_id' : userID, 'subtasks' : data, 'subtaskPercentages' :
       subTaskPercentages};
 
     Response resp = await post(url,headers: headers,body: json.encode(body, toEncodable: myEncode));

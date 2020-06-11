@@ -79,8 +79,8 @@ class CurrentFriendPage extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                     color: Globals.buttonColor,
                   ),
-                  height: 500,
-                  width: 300,
+                  height: 800,
+                  width: 340,
                   child: FutureBuilder<String>(
                       future: _getNumberOfTasks(),
                       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
