@@ -87,6 +87,7 @@ class _FriendsPageState extends State<FriendsPage> {
                             itemBuilder: (_, index) {
                               return FriendWidget(
                                 index: index,
+                                points: decoded[index]['points'],
                                 title: decoded[index].values.toList()[1],
                               );
                             },

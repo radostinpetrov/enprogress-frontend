@@ -8,10 +8,25 @@ import 'package:drp29/page_widgets/friend_page_widgets/CurrentFriendPage.dart';
 class FriendWidget extends StatelessWidget {
   final int index;
   final String title;
+  int points;
 
   FriendWidget({
-    this.index, this.title
+    this.index, this.points, this.title
   });
+
+
+  Color _setColor(index) {
+    switch(index) {
+      case 0:
+        return Colors.amberAccent; // Gold
+      case 1:
+        return Colors.grey; // Silver
+      case 2:
+        return Colors.brown; // Bronze
+      default:
+        return Globals.buttonColor;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +37,12 @@ class FriendWidget extends StatelessWidget {
           Hero(
             tag: "current_friend" + index.toString(),
             child: Container(
-              color: Globals.buttonColor,
               width: 250,
               height: 50,
               child: ButtonTheme(
                 minWidth: 250,
                 height: 50,
-                buttonColor: Globals.buttonColor,
+                buttonColor: _setColor(index),
                 textTheme: ButtonTextTheme.primary,
                 child: RaisedButton(
                   onPressed: () {
@@ -36,7 +50,14 @@ class FriendWidget extends StatelessWidget {
                     {return CurrentFriendPage(index: index, title: title,);}
                     ));
                   },
-                  child: Text(title),
+                  child: Row(
+                      children: [
+                        Expanded(child: Text(title)),
+                        Text(points.toString()),
+                        Icon(Icons.hourglass_empty, color: Colors.green, size:
+                        15),
+                      ]
+                  )
                 ),
               )
             ),
