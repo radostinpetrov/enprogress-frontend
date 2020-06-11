@@ -78,7 +78,7 @@ class SignInPageState extends State<SignInPage> {
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    Map<String, dynamic> body = {'name': _username, 'email': _email};
+    Map<String, dynamic> body = {'name': _username, 'email': "moe@moe.com"};
     Response resp =
         await Client().post(uri, headers: headers, body: json.encode(body));
     userID = json.decode(resp.body)['id'];
@@ -87,7 +87,7 @@ class SignInPageState extends State<SignInPage> {
   Future<void> _signInWithEmail() async {
     try {
       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: _email, password: _password);
+          .signInWithEmailAndPassword(email: "moe@moe.com", password: _password);
       await _getUserInfo();
     } catch (e) {
       print(e); // TODO: show dialog with error
@@ -293,7 +293,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
 
     Future<String> data = _getTasks();
-    Widget tasksPage = TasksPage(data: data, signoutCallback: _signOut);
+    Widget tasksPage = TasksPage(user: user, data: data, signoutCallback: _signOut);
 
 
     List<Widget> children = [
