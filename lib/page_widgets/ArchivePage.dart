@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
+import 'package:drp29/user/User.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +11,12 @@ import 'package:drp29/top_level/Globals.dart';
 import 'package:http/http.dart';
 
 class ArchivePage extends StatelessWidget {
-
+  User user;
   final Future<String> data;
 
   ArchivePage({
-    this.data
+    this.data,
+    this.user,
   });
 
   @override
@@ -91,7 +93,7 @@ class ArchivePage extends StatelessWidget {
                       flex: 5,
                       child: FlatButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage(user)));
                         },
                         color: Globals.buttonColor,
                         child: Container(

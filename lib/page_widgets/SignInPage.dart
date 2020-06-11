@@ -46,6 +46,14 @@ class SignInPage extends StatefulWidget {
   SignInPageState createState() => SignInPageState();
 }
 
+_getUserInfo() async {
+  Uri uri = Uri.parse("http://192.168.0.15:3000/users?email=" + user.firebaseUser.email.toString());
+  Response resp = await Client().get(uri);
+  String username = json.decode(resp.body)['name'];
+  int userID = json.decode(resp.body)['id'];
+  user = User(username, userID, user.firebaseUser);
+}
+
 class SignInPageState extends State<SignInPage> {
   Future<void> _signInAnonymously() async {
     try {
@@ -58,20 +66,20 @@ class SignInPageState extends State<SignInPage> {
   final Client client = new Client();
   final Uri uri = Uri.parse("http://192.168.0.15:3000/users");
 
-  Future<int> _makePostRequest() async {
+  _makePostRequest() async {
     Map<String, String> headers = {"Content-type": "application/json"};
 
     Map<String, dynamic> body = {'name': _username, 'email': _email};
     Response resp =
         await client.post(uri, headers: headers, body: json.encode(body));
-    print("${json.decode(resp.body)['id']}");
-    return int.tryParse(resp.body);
+    userID = json.decode(resp.body)['id'];
   }
 
   Future<void> _signInWithEmail() async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: _email, password: _password);
+      await _getUserInfo();
     } catch (e) {
       print(e); // TODO: show dialog with error
     }
@@ -79,7 +87,7 @@ class SignInPageState extends State<SignInPage> {
 
   Future<void> _registerWithEmail() async {
     try {
-      userID = await _makePostRequest();
+      await _makePostRequest();
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: _email, password: _password);
     } catch (e) {
@@ -217,12 +225,12 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  Uri uri = Uri.parse("http://192.168.0.15:3000/tasks?fk_user_id=" + userID.toString());
-  final Client client = Client();
-
   Future<String> _getTasks() async {
-    print("${user.firebaseUser.email.toString()}");
-    Response resp = await client.get(uri);
+    if (user.userID == null || user.userID == -1) {
+      await _getUserInfo();
+    }
+    Uri uri = Uri.parse("http://192.168.0.15:3000/tasks?fk_user_id=" + userID.toString());
+    Response resp = await Client().get(uri);
     return resp.body;
   }
 
