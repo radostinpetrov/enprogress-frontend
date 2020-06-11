@@ -28,7 +28,7 @@ class TasksPage extends StatelessWidget {
       body: SafeArea(
         child: GestureDetector(
           onDoubleTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage(user)));
           },
           onVerticalDragUpdate: (DragUpdateDetails details) {
             Navigator.push(context, MaterialPageRoute(builder: (context) => WorkingFriendsPage()));

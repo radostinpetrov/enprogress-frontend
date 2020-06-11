@@ -12,4 +12,8 @@ class User {
     this.firebaseUser = firebaseUser;
   }
 
+  @override
+  String toString() {
+    print("USERNAME: $username  USERID: $userID");
+  }
 }

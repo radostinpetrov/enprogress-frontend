@@ -1,11 +1,17 @@
 import 'package:drp29/top_level/MyApp.dart';
-import 'package:drp29/main.dart';
+import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
 class CreateTaskPage extends StatefulWidget {
+  User user;
+
+  CreateTaskPage(User user) {
+    this.user = user;
+  }
+
   @override
   _CreateTaskPageState createState() => _CreateTaskPageState();
 }
@@ -72,7 +78,6 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
 
   _makePostRequest() async {
     String url = "http://146.169.40.203:3000/tasks";
-
     var subTaskPercentages = [];
 
     for (int i = 0; i < data.length; i++) {
@@ -87,10 +92,11 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
 
     Map<String, String> headers = {"Content-type": "application/json"};
     Map<String,dynamic> body = {'name' : name, 'percentage' : 0,
-      'deadline' : deadline, 'subtasks' : data, 'subtaskPercentages' :
+      'deadline' : deadline, 'fk_user_id' : widget.user.userID, 'subtasks' : data, 'subtaskPercentages' :
       subTaskPercentages};
 
     Response resp = await post(url,headers: headers,body: json.encode(body));
+    print(resp.body);
 
   }
 
