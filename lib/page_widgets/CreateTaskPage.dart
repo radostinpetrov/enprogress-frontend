@@ -107,7 +107,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                 color: Colors.white,
                 alignment: Alignment.centerLeft,
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder:
+                  Navigator.pop(context, MaterialPageRoute(builder:
                       (context) => MyApp()));
                 },
               ),

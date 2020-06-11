@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:drp29/top_level/Globals.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class TasksPage extends StatefulWidget {
 
@@ -30,8 +31,11 @@ class TasksPage extends StatefulWidget {
 
 class TasksPageState extends State<TasksPage> {
 
+  final Client client = new Client();
+  var uri;
+
   final Future<String> data;
-  
+  Future<String> subtasks;
   List<dynamic> filteredDecoded;
 
   TasksPageState({
@@ -39,6 +43,13 @@ class TasksPageState extends State<TasksPage> {
   });
 
   int _currentIndex = 0;
+
+  Future<String> _getSubTasks(int id) async {
+    uri = Uri.parse("http://146.169.40.203:3000/tasks/" + id.toString() + "/subtasks");
+    Response response = await client.get(uri);
+    String jsonResponse = response.body;
+    return jsonResponse;
+  }
 
   FutureBuilder<String> _futureBuilder0(BuildContext context) {
     return FutureBuilder<String>(
@@ -67,18 +78,42 @@ class TasksPageState extends State<TasksPage> {
                 }
               }
               this.filteredDecoded = filteredDecoded;
+              this.subtasks = _getSubTasks(filteredDecoded[_currentIndex]["id"]);
               return _carouselSlider0(filteredDecoded);
-              return new ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: (_, index) {
-                  return TaskWidget(
-                    index: index,
-                    body: filteredDecoded[index],
-                  );
-                },
-                separatorBuilder: (_, index) => Divider(),
-                itemCount: filteredDecoded.length,
-              );
+            }
+        }
+      },
+    );
+  }
+
+  FutureBuilder<String> _futureBuilder1(BuildContext context) {
+    return FutureBuilder<String>(
+      future: this.data,
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        switch (snapshot.connectionState) {
+          case(ConnectionState.none):
+            return new Text("Not active");
+          case(ConnectionState.waiting):
+            return new Text("Loading...");
+          case(ConnectionState.active):
+            return new Text("Active");
+          default:
+            if (snapshot.hasError)
+              return new Text("An error occurred while connecting to the server :(",
+                textAlign: TextAlign.center,);
+            else {
+              List<dynamic> decoded = jsonDecode(snapshot.data);
+              List<dynamic> filteredDecoded = new List();
+              for (var elem in decoded) {
+                if (elem != null && elem["deadline"] != null) {
+                  DateTime deadline = DateTime.parse(elem["deadline"]);
+                  if (deadline != null && DateTime.now().isBefore(deadline)) {
+                    filteredDecoded.add(elem);
+                  }
+                }
+              }
+              this.filteredDecoded = filteredDecoded;
+              return _currentTaskSubpage(filteredDecoded);
             }
         }
       },
@@ -106,22 +141,179 @@ class TasksPageState extends State<TasksPage> {
     });
   }
 
+  List<dynamic> _SeparateList(BuildContext context ,List<dynamic> list) {
+
+    List<dynamic> items = List();
+    List<dynamic> separated = List();
+
+    for(int i = 0; i < list.length; i++) {
+      items.add(list[i]);
+
+      if (((i + 1) % 2) == 0) {
+        separated.add(items);
+        items = List();
+      }
+    }
+
+    if (items.length > 0) {
+      separated.add(items);
+    }
+
+    return separated;
+  }
+
+  Column _currentTaskSubpage(List<dynamic> filteredDecoded) {
+
+    int _taskID = filteredDecoded[_currentIndex]["id"];
+    DateTime deadline = DateTime.parse(filteredDecoded[_currentIndex]["deadline"]);
+
+    return Column(
+      children: <Widget>[
+        Expanded(
+          flex: 8,
+          child: Row(
+            children: <Widget>[
+              Spacer(flex: 1,),
+              Expanded(
+                flex: 4,
+                child: Icon(Icons.timer, size: 40, color: Color(0xDFFFFFFF),),
+              ),
+              Spacer(flex: 1,),
+              Expanded(
+                flex: 8,
+                child: AutoSizeText(
+                  DateFormat.yMd().format(deadline),
+                  maxLines: 1,
+                ),
+              ),
+              Spacer(flex: 1,),
+              Expanded(
+                flex: 5,
+                child: AutoSizeText(
+                  DateFormat.Hm().format(deadline),
+                  maxLines: 1,
+                ),
+              ),
+              Spacer(flex: 1,)
+            ],
+          ),
+        ),
+        Spacer(flex: 1,),
+        Expanded(
+          flex: 20,
+          child: FutureBuilder<String>(
+            future: subtasks,
+            builder: (BuildContext context,
+                AsyncSnapshot<String> snapshot) {
+              switch (snapshot.connectionState) {
+                case (ConnectionState.none):
+                  return new Text("Not active");
+                case (ConnectionState.waiting):
+                  return new Text("Loading...");
+                case (ConnectionState.active):
+                  return new Text("Active");
+                default:
+                  if (snapshot.hasError)
+                    return new Text("Error :(");
+                  else {
+                    List<dynamic> decoded =
+                    jsonDecode(snapshot.data);
+                    List<dynamic> separated = _SeparateList
+                      (context, decoded);
+                    return new ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: separated.length,
+                      itemBuilder: (_, index) {
+                        return Container(
+                            alignment: Alignment.center,
+                            height: 170,
+                            width: 340,
+                            child: ListView.separated(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: separated[index].length,
+                                itemBuilder: (_, newIndex) {
+                                  return
+                                    Container( width: 170,
+                                        child:
+                                        CircularPercentIndicator(
+                                            radius: 80.0,
+                                            lineWidth: 11.0,
+                                            animation: true,
+                                            percent:
+                                            separated[index][newIndex]['percentage']/100,
+                                            center: Text(
+                                              separated[index][newIndex]['percentage']
+                                                  .toString() + "%",
+                                              style: TextStyle(
+                                                letterSpacing: 1,
+                                                fontSize: 14
+                                              )
+                                            ),
+                                            footer: FittedBox(
+                                              fit: BoxFit.fitWidth,
+                                              child: Text(
+                                                separated[index][newIndex]['name'],
+                                                textAlign: TextAlign.center,
+                                                softWrap: true,
+//                                                          textWidthBasis: t,
+                                                style: TextStyle(
+                                                  fontSize: 20
+                                                )
+                                              ),
+                                            )));
+                                },
+                                separatorBuilder: (_, index) {
+                                  return SizedBox(width: 0);
+                                }));
+                      },
+                      separatorBuilder: (_, index) => Divider(),
+                    );
+                  }
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Globals.primaryBlue,
       body: SafeArea(
-        child: GestureDetector(
-          onDoubleTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
-          },
-          onVerticalDragUpdate: (DragUpdateDetails details) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => WorkingFriendsPage()));
-          },
-          behavior: HitTestBehavior.translucent,
-          child: Column(
+        child: Column(
             children: <Widget>[
-              Spacer(flex: 5,),
+              Spacer(flex: 1,),
+              Expanded(
+                flex: 4,
+                child: Row(
+                  children: <Widget>[
+                    Spacer(),
+                    Expanded(
+                      child: Icon(Icons.menu, color: Colors.white,),
+                    ),
+                    Spacer(flex: 8,),
+                    Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => CreateTaskPage()));
+                          },
+                          child: Icon(Icons.add, color: Colors.white,),
+                        )
+                    ),
+                    Spacer()
+                  ],
+                ),
+              ),
+              Spacer(),
+              Expanded(
+                child: Divider(color: Colors.black,),
+              ),
               Expanded(
                 flex: 30,
                 child: _futureBuilder0(context),
@@ -146,36 +338,12 @@ class TasksPageState extends State<TasksPage> {
                   ],
                 ),
               ),
-              Spacer(flex: 5,),
+//              Spacer(flex: 5,),
               Expanded(
                 flex: 45,
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: Row(
-                        children: <Widget>[
-                          Spacer(flex: 1,),
-                          Expanded(
-                            child: Icon(Icons.timer, size: 40, color: Color(0xDFFFFFFF),),
-                          ),
-                          Spacer(flex: 1,),
-                          Expanded(
-                            flex: 10,
-                            child: AutoSizeText(
-                              ""
-                            ),
-                          ),
-                          Spacer(flex: 1,),
-                        ],
-                      ),
-                    ),
-                    Spacer(flex: 30,)
-                  ],
-                ),
+                child: _futureBuilder1(context),
               ),
             ]
-          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drp29/page_widgets/ArchivePage.dart';
+import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
@@ -181,7 +182,7 @@ class HomePageState extends State<HomePage> {
 
   int _currentIndex = 1;
 
-  final uri = Uri.parse("http://10.0.2.2:3000/tasks");
+  final uri = Uri.parse("http://146.169.40.203:3000/tasks");
   final Client client = new Client();
 
   void _onNavBarTapped(int index) {
@@ -209,7 +210,7 @@ class HomePageState extends State<HomePage> {
 
   BottomNavigationBar _bottomNavigationBar() {
     return BottomNavigationBar(
-      backgroundColor: Globals.primaryBlue,
+      backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
       unselectedItemColor: Colors.white,
       selectedItemColor: Colors.blue,
       onTap: _onNavBarTapped,
@@ -217,7 +218,7 @@ class HomePageState extends State<HomePage> {
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
             icon: Icon(Icons.person_pin),
-            title: Text("Friends")
+            title: Text("Friends"),
         ),
         BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
@@ -234,34 +235,21 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Future<String> data = _getTasks();
+    List<Widget> children = [
+      FriendsPage(),
+      TasksPage(data: data,),
+      WorkModePage(),
+    ];
+
     return Scaffold(
-//      appBar: AppBar(
-//        title: Text('Home Page'),
-//        actions: <Widget>[
-//          FlatButton(
-//            child: Text(
-//              'Logout',
-//              style: TextStyle(
-//                fontSize: 18.0,
-//                color: Colors.white,
-//              ),
-//            ),
-//            onPressed: _signOut,
-//          ),
-//        ],
-//      ),
       bottomNavigationBar: _bottomNavigationBar(),
-      backgroundColor: Globals.primaryBlue,
-//      floatingActionButton: Padding(
-//        padding: const EdgeInsets.only(bottom: 50.0),
-//        child: FloatingButton(),
-//      ),
+      backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
       body: SafeArea(
           child: Column(
             children: <Widget>[
               Expanded(
                 flex: 100,
-                child: TasksPage(data: data,),
+                child: children[_currentIndex],
               ),
               Expanded(
                 flex: 1,
@@ -270,7 +258,7 @@ class HomePageState extends State<HomePage> {
                 ),
               )
             ],
-          )
+        ),
       ),
     );
   }

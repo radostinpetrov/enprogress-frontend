@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:drp29/page_widgets/UpdateTaskPage.dart';
 import 'package:drp29/top_level/Globals.dart';
-import 'package:drp29/page_widgets/CurrentTaskPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,8 +32,7 @@ class TaskWidget extends StatelessWidget {
   }
 
   Future<String> _getSubTasks(int id) async {
-    uri = Uri.parse("http://10.0.2.2:3000/tasks/" + id.toString() + "/subtasks");
-//    print(uri);
+    uri = Uri.parse("http://146.169.40.203:3000/tasks/" + id.toString() + "/subtasks");
     Response response = await client.get(uri);
     String jsonResponse = response.body;
     return jsonResponse;
@@ -48,13 +47,9 @@ class TaskWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => CurrentTaskPage(
-          index: index,
-          title: title,
-          subtasks: subtasks,
-          taskID: taskID,
-          deadline: deadline,
-        )));
+        Navigator.push(context, MaterialPageRoute
+          (builder: (context) => UpdateTaskPage(title, subtasks,
+            taskID, deadline)));
       },
       child: Container(
           width: MediaQuery.of(context).size.width,
