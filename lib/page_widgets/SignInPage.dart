@@ -245,9 +245,12 @@ class HomePageState extends State<HomePage> {
     Future<String> data = _getTasks();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text("    " + user.username),
         actions: <Widget>[
-          FlatButton(
+          ButtonTheme(
+            minWidth: 150,
+          buttonColor: Globals.buttonColor,
+          child: FlatButton(
             child: Text(
               'Logout',
               style: TextStyle(
@@ -256,7 +259,7 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             onPressed: _signOut,
-          ),
+          )),
         ],
       ),
       backgroundColor: Globals.primaryBlue,
