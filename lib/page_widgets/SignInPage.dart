@@ -1,12 +1,15 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:io';
 
 import 'package:drp29/page_widgets/ArchivePage.dart';
+import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
 import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/user/User.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
+import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -75,7 +78,7 @@ class SignInPageState extends State<SignInPage> {
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    Map<String, dynamic> body = {'name': _username, 'email': _email};
+    Map<String, dynamic> body = {'name': _username, 'email': "moe@moe.com"};
     Response resp =
         await Client().post(uri, headers: headers, body: json.encode(body));
     userID = json.decode(resp.body)['id'];
@@ -84,7 +87,7 @@ class SignInPageState extends State<SignInPage> {
   Future<void> _signInWithEmail() async {
     try {
       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: _email, password: _password);
+          .signInWithEmailAndPassword(email: "moe@moe.com", password: _password);
       await _getUserInfo();
     } catch (e) {
       print(e); // TODO: show dialog with error
@@ -231,6 +234,17 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+  int _currentIndex = 1;
+
+  final uri = Uri.parse("http://146.169.40.203:3000/tasks");
+  final Client client = new Client();
+
+  void _onNavBarTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   Future<String> _getTasks() async {
     if (user.userID == null || user.userID == -1) {
       await _getUserInfo();
@@ -240,63 +254,73 @@ class HomePageState extends State<HomePage> {
     return resp.body;
   }
 
+//  Future<void> _signOut() async {
+//    try {
+//      await FirebaseAuth.instance.signOut();
+//    } catch (e) {
+//      print(e); // TODO: show dialog with error
+//    }
+//  }
+
+
+  /// *     Widgets   ***/
+
+  BottomNavigationBar _bottomNavigationBar() {
+    return BottomNavigationBar(
+      backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
+      unselectedItemColor: Colors.white,
+      selectedItemColor: Colors.blue,
+      onTap: _onNavBarTapped,
+      currentIndex: _currentIndex,
+      items: <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person_pin),
+            title: Text("Friends"),
+        ),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.assignment),
+            title: Text("Tasks")
+        ),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.timer),
+            title: Text("Study")
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+
     Future<String> data = _getTasks();
+    Widget tasksPage = TasksPage(user: user, data: data, signoutCallback: _signOut);
+
+
+    List<Widget> children = [
+      FriendsPage(),
+      tasksPage,
+      WorkModePage(data: data, user: user,),
+    ];
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("    " + user.username),
-        actions: <Widget>[
-          ButtonTheme(
-            minWidth: 150,
-          buttonColor: Globals.buttonColor,
-          child: FlatButton(
-            child: Text(
-              'Logout',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.white,
-              ),
-            ),
-            onPressed: _signOut,
-          )),
-        ],
-      ),
-      backgroundColor: Globals.primaryBlue,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 50.0),
-        child: FloatingButton(),
-      ),
+      bottomNavigationBar: _bottomNavigationBar(),
+      backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
       body: SafeArea(
           child: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 100,
-            child: PageView(
-              allowImplicitScrolling: false,
-              controller: PageController(
-                initialPage: 1,
+            children: <Widget>[
+              Expanded(
+                flex: 100,
+                child: children[_currentIndex],
               ),
-              children: [
-                FriendsPage(),
-                TasksPage(
-                  data: data,
-                  user: user,
+              Expanded(
+                flex: 1,
+                child: Divider(
+                  color: Colors.white,
                 ),
-                ArchivePage(
-                  data: data,
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Row(
-              children: <Widget>[],
-            ),
-          ),
-        ],
-      )),
+              )
+            ],
+        ),
+      ),
     );
   }
 }
