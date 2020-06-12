@@ -12,6 +12,7 @@ import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
@@ -226,6 +227,29 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+
+  // Stuff for android communcation
+//  static MethodChannel platform = const MethodChannel('flutter/enprogress');
+//
+//
+//  Future<dynamic> myUtilsHandler(MethodCall methodCall) async {
+//    switch (methodCall.method) {
+//      case 'foo':
+//        return 'some string';
+//      case 'bar':
+//        return 123.0;
+//      default:
+//      // todo - throw not implemented
+//    }
+//  }
+//
+//  @override
+//  initState() {
+//    super.initState();
+//    platform.setMethodCallHandler((call) => myUtilsHandler(call));
+//
+//  }
+
   Future<void> _signOut() async {
     try {
       await FirebaseAuth.instance.signOut();

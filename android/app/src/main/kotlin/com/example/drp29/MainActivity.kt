@@ -12,6 +12,11 @@ import android.os.BatteryManager
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.app.NotificationManager
+import android.content.ContentValues.TAG
+import android.util.Log
+import android.os.Bundle
+import java.util.HashMap
+
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "flutter/enprogress"
@@ -39,7 +44,7 @@ class MainActivity : FlutterActivity() {
                 }
 
                 result.success(1)
-            } else if(call.method == "turnDoNotDisturbModeOff") {
+            } else if (call.method == "turnDoNotDisturbModeOff") {
                 val mNotificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
 
@@ -69,5 +74,51 @@ class MainActivity : FlutterActivity() {
         return batteryLevel
     }
 
+//    private val VERBOSE = true
+//
+//
+//    private val TAG = "SampleActivity"
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        if (VERBOSE) Log.v(TAG, "+++ ON CREATE +++")
+//
+//        MethodChannel(getFlutterEngine()!!.dartExecutor!!.binaryMessenger!!, CHANNEL).invokeMethod("foo", null);
+//
+//    }
+//
+//    override fun onStart() {
+//        super.onStart()
+//        if (VERBOSE) Log.v(TAG, "++ ON START ++")
+//        MethodChannel(getFlutterEngine()!!.dartExecutor!!.binaryMessenger!!, CHANNEL).invokeMethod("foo", null);
+//
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//        if (VERBOSE) Log.v(TAG, "+ ON RESUME +")
+//        MethodChannel(getFlutterEngine()!!.dartExecutor!!.binaryMessenger!!, CHANNEL).invokeMethod("foo", null);
+//
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        if (VERBOSE) Log.v(TAG, "- ON PAUSE -")
+//        MethodChannel(getFlutterEngine()!!.dartExecutor!!.binaryMessenger!!, CHANNEL).invokeMethod("foo", null);
+//
+//    }
+//
+//    override fun onStop() {
+//        super.onStop()
+//        if (VERBOSE) Log.v(TAG, "-- ON STOP --")
+//        MethodChannel(getFlutterEngine()!!.dartExecutor!!.binaryMessenger!!, CHANNEL).invokeMethod("foo", null);
+//
+//    }
+//
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        if (VERBOSE) Log.v(TAG, "- ON DESTROY -")
+//        MethodChannel(getFlutterEngine()!!.dartExecutor!!.binaryMessenger!!, CHANNEL).invokeMethod("foo", null);
+//
+//    }
 
 }

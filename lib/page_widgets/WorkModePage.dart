@@ -9,7 +9,6 @@ import 'dart:math' as math;
 
 import 'UpdateTaskPage.dart';
 
-
 class WorkModePage extends StatefulWidget {
 
 //  final String title;
@@ -47,7 +46,6 @@ class WorkModeState extends State<WorkModePage>
   });
 
 
-  static const platform = const MethodChannel('flutter/enprogress');
   AnimationController controller;
 
   String get timerString {
@@ -71,21 +69,20 @@ class WorkModeState extends State<WorkModePage>
 
 
   _PostUserPointsAndUpdateTask(context) async {
-
     if (controller.value > 0) {
       _totalTimeWorked -= controller.value;
     }
 
     Map<String, dynamic> body = {
-      'points' : (_totalTimeWorked.floor() / 60).floor()
+      'points': (_totalTimeWorked.floor() / 60).floor()
     };
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    String url = "http://146.169.40.203:3000/users/" + user.userID.toString() ;
+    String url = "http://146.169.40.203:3000/users/" + user.userID.toString();
 
-    Response response = await patch(url, headers: headers, body:
-    jsonEncode(body));
+    Response response =
+        await patch(url, headers: headers, body: jsonEncode(body));
 
 //    print(jsonEncode(body));
 
@@ -103,11 +100,14 @@ class WorkModeState extends State<WorkModePage>
     Future<String> subtasks = _getSubTasks(taskID);
 
 
-    Navigator.push(context, MaterialPageRoute
-      (builder: (context) => UpdateTaskPage(title, subtasks,
-        taskID, deadline)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                UpdateTaskPage(title, subtasks, taskID, deadline)));
   }
 
+  static MethodChannel platform = const MethodChannel('flutter/enprogress');
 
   @override
   void initState() {
@@ -117,7 +117,7 @@ class WorkModeState extends State<WorkModePage>
       duration: Duration(seconds: _workModeDuration),
     );
     controller.addListener(() async {
-      if(controller.value == 0.0) {
+      if (controller.value == 0.0) {
         setState(() {
           _isTiming = false;
         });
@@ -132,146 +132,190 @@ class WorkModeState extends State<WorkModePage>
     super.dispose();
   }
 
+  Future<bool> _warnAboutExitingWorkMode() {
+    // flutter defined function
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Wait!"),
+          content: new Text(
+              "Are you sure you want to quit the app while in WorkMode?"
+              "all progress will be lost!"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+            ),
+            FlatButton(
+              child: Text("Yes"),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
-    return Scaffold(
-      backgroundColor: Colors.white10,
-      body: AnimatedBuilder(
-          animation: controller,
-          builder: (context, child) {
-            return Stack(
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    color: Colors.amber,
-                    height: MediaQuery.of(context).size.height,
+    return WillPopScope(
+      onWillPop: () async {
+        if (_isTiming) {
+          await _warnAboutExitingWorkMode();
+        }
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white10,
+        body: AnimatedBuilder(
+            animation: controller,
+            builder: (context, child) {
+              return Stack(
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      color: Colors.amber,
+                      height: MediaQuery.of(context).size.height,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        child: Align(
-                          alignment: FractionalOffset.center,
-                          child: AspectRatio(
-                            aspectRatio: 1.0,
-                            child: Stack(
-                              children: <Widget>[
-                                Positioned.fill(
-                                  child: CustomPaint(
-                                      painter: CustomWorkModeTimerPainter(
-                                        animation: controller,
-                                        backgroundColor: Colors.white,
-                                        color: themeData.indicatorColor,
-                                      )),
-                                ),
-                                Align(
-                                  alignment: FractionalOffset.center,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      Text(
-                                        "Work Mode Timer: $_workModeDuration",
-                                        style: TextStyle(
-                                            fontSize: 20.0,
-                                            color: Colors.white),
-                                      ),
-                                      Text(
-                                        timerString,
-                                        style: TextStyle(
-                                            fontSize: 112.0,
-                                            color: Colors.white),
-                                      ),
-                                    ],
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Expanded(
+                          child: Align(
+                            alignment: FractionalOffset.center,
+                            child: AspectRatio(
+                              aspectRatio: 1.0,
+                              child: Stack(
+                                children: <Widget>[
+                                  Positioned.fill(
+                                    child: CustomPaint(
+                                        painter: CustomWorkModeTimerPainter(
+                                      animation: controller,
+                                      backgroundColor: Colors.white,
+                                      color: themeData.indicatorColor,
+                                    )),
                                   ),
-                                ),
-                              ],
+                                  Align(
+                                    alignment: FractionalOffset.center,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text(
+                                          "Work Mode Timer: $_workModeDuration",
+                                          style: TextStyle(
+                                              fontSize: 20.0,
+                                              color: Colors.white),
+                                        ),
+                                        Text(
+                                          timerString,
+                                          style: TextStyle(
+                                              fontSize: 112.0,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Row(
-                          children: [
-                            Column( children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 40.0, left: 50.0, bottom: 50.0),
-                              child: AnimatedBuilder(
-                                  animation: controller,
-                                  builder: (context, child) {
-                                    return FloatingActionButton.extended(
-                                      heroTag: "timerStartBtn",
-                                        onPressed: () async {
-                                          if (controller.value == 0.0) {
-                                            controller.duration = Duration(seconds: _workModeDuration);
-                                            _totalTimeWorked +=
-                                                _workModeDuration;
-                                            await platform.invokeMethod("turnDoNotDisturbModeOn");
-                                          }
-                                          if (controller.isAnimating)
-                                            controller.stop();
-                                          else {
-                                            controller.reverse(
-                                                from: controller.value == 0.0
-                                                    ? 1.0
-                                                    : controller.value);
-                                          }
-                                          setState(() {
-                                            if (controller.value != 0.0) {
-                                              _isTiming = !_isTiming;
-                                            }
-                                          });
-                                        },
-                                        icon: Icon(_isTiming
-                                            ? Icons.pause
-                                            : Icons.play_arrow),
-                                        label:
-                                        Text(_isTiming ? "Pause" : "Play"));
-                                  }),
-                            ),
-
-                            Padding(
-                              padding: EdgeInsets.only(right: 40.0, left: 50.0, bottom: 50.0),
-                              child: Visibility(
-                                  visible: !_isTiming,
-                                  child: FloatingActionButton.extended(
-                                    heroTag: "finishBtn",
-                                      onPressed: () {
-                                        _PostUserPointsAndUpdateTask(context);
-                                      },
-                                      label: Text("Finish"),)),
-                            ),
-                            ]),
-                            Padding(
-                                padding:
-                                EdgeInsets.only(bottom: 50.0, left: 40.0),
-                                child: Visibility(
-                                    visible: !_isTiming,
-                                    child: NumberPicker.integer(
-                                      initialValue: _workModeDuration,
-                                      minValue: 0,
-                                      maxValue: 200,
-                                      onChanged: (newValue) => setState(() {
-                                        _workModeDuration = newValue;
+                        Align(
+                          alignment: Alignment.center,
+                          child: Row(
+                            children: [
+                              Column(children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: 40.0, left: 50.0, bottom: 50.0),
+                                  child: AnimatedBuilder(
+                                      animation: controller,
+                                      builder: (context, child) {
+                                        return FloatingActionButton.extended(
+                                            heroTag: "timerStartBtn",
+                                            onPressed: () async {
+                                              if (controller.value == 0.0) {
+                                                controller.duration = Duration(
+                                                    seconds: _workModeDuration);
+                                                _totalTimeWorked +=
+                                                    _workModeDuration;
+                                                await platform.invokeMethod(
+                                                    "turnDoNotDisturbModeOn");
+                                              }
+                                              if (controller.isAnimating)
+                                                controller.stop();
+                                              else {
+                                                controller.reverse(
+                                                    from:
+                                                        controller.value == 0.0
+                                                            ? 1.0
+                                                            : controller.value);
+                                              }
+                                              setState(() {
+                                                if (controller.value != 0.0) {
+                                                  _isTiming = !_isTiming;
+                                                }
+                                              });
+                                            },
+                                            icon: Icon(_isTiming
+                                                ? Icons.pause
+                                                : Icons.play_arrow),
+                                            label: Text(
+                                                _isTiming ? "Pause" : "Play"));
                                       }),
-                                    ))),
-                          ],
-                        ),
-                      )
-                    ],
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: 40.0, left: 50.0, bottom: 50.0),
+                                  child: Visibility(
+                                      visible: !_isTiming,
+                                      child: FloatingActionButton.extended(
+                                        heroTag: "finishBtn",
+                                        onPressed: () {
+                                          _PostUserPointsAndUpdateTask(context);
+                                        },
+                                        label: Text("Finish"),
+                                      )),
+                                ),
+                              ]),
+                              Padding(
+                                  padding:
+                                      EdgeInsets.only(bottom: 50.0, left: 40.0),
+                                  child: Visibility(
+                                      visible: !_isTiming,
+                                      child: NumberPicker.integer(
+                                        initialValue: _workModeDuration,
+                                        minValue: 0,
+                                        maxValue: 200,
+                                        onChanged: (newValue) => setState(() {
+                                          _workModeDuration = newValue;
+                                        }),
+                                      ))),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          }),
+                ],
+              );
+            }),
+      ),
     );
   }
 }
