@@ -44,6 +44,7 @@ class TaskWidget extends StatelessWidget {
   Widget build(BuildContext context) {
 
     int daysRemaining = DateTime.parse(deadline).difference(DateTime.now()).inDays;
+    if (daysRemaining < 0) daysRemaining = 0;
     double percent = daysRemaining / 50;
     MaterialColor deadlineColor = percent > 1/4 ? Colors.lightGreen : (percent > 1/6 ? Colors.amber : Colors.red);
 

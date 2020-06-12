@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:drp29/page_widgets/ArchivePage.dart';
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/page_widgets/SignInPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
@@ -311,7 +312,17 @@ class TasksPageState extends State<TasksPage> {
                         child: Icon(Icons.menu, color: Colors.white,),
                       )
                     ),
-                    Spacer(flex: 8,),
+                    Spacer(flex: 3,),
+                    Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => ArchivePage(data: data, user: user,)));
+                          },
+                          child: Icon(Icons.archive, color: Colors.white,),
+                        )
+                    ),
+                    Spacer(flex: 3,),
                     Expanded(
                         child: GestureDetector(
                           onTap: () {
