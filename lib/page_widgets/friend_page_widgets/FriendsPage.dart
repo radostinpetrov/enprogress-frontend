@@ -52,9 +52,11 @@ class _FriendsPageState extends State<FriendsPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(
-                      "Friends LeaderBoard",
-                      style: Theme.of(context).textTheme.headline1,
+                    FittedBox(fit: BoxFit.fitWidth,
+                        child: Text(
+                          "Friends LeaderBoard",
+                          style: Theme.of(context).textTheme.headline1,
+                        )
                     ),
                   ],
                 ),
@@ -87,6 +89,8 @@ class _FriendsPageState extends State<FriendsPage> {
                             itemBuilder: (_, index) {
                               return FriendWidget(
                                 index: index,
+                                points: decoded[index]['points'],
+                                id: decoded[index]['id'],
                                 title: decoded[index].values.toList()[1],
                               );
                             },

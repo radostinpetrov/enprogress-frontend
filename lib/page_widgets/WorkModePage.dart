@@ -10,29 +10,41 @@ import 'dart:math' as math;
 import 'UpdateTaskPage.dart';
 
 class WorkModePage extends StatefulWidget {
-  final String title;
-  final Future<String> subtasks;
-  int taskID;
-  var deadline;
-  final User user;
 
-  WorkModePage(
-      this.user, this.title, this.subtasks, this.taskID, this.deadline);
+//  final String title;
+  final Future<String> subtasks;
+//  int taskID;
+//  var deadline;
+  final User user;
+  final Future<String> data;
+
+  WorkModePage({
+    this.data,
+    this.user,
+    this.subtasks
+});
 
   @override
-  WorkModeState createState() =>
-      WorkModeState(user, title, subtasks, taskID, deadline);
+  WorkModeState createState() => WorkModeState(data: data, user: user, subtasks: subtasks);
+
 }
 
-class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
-  final String title;
-  final Future<String> subtasks;
-  int taskID;
-  var deadline;
-  final User user;
+class WorkModeState extends State<WorkModePage>
+    with TickerProviderStateMixin {
 
-  WorkModeState(
-      this.user, this.title, this.subtasks, this.taskID, this.deadline);
+//  final String title;
+  final Future<String> subtasks;
+//  int taskID;
+//  var deadline;
+  final User user;
+  final Future<String> data;
+
+  WorkModeState({
+    this.data,
+    this.user,
+    this.subtasks
+  });
+
 
   AnimationController controller;
 
@@ -44,6 +56,17 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
   bool _isTiming = false;
   int _workModeDuration = 0;
   double _totalTimeWorked = 0;
+
+  final Client client = new Client();
+  var uri;
+
+  Future<String> _getSubTasks(int id) async {
+    uri = Uri.parse("http://146.169.40.203:3000/tasks/" + id.toString() + "/subtasks");
+    Response response = await client.get(uri);
+    String jsonResponse = response.body;
+    return jsonResponse;
+  }
+
 
   _PostUserPointsAndUpdateTask(context) async {
     if (controller.value > 0) {
@@ -61,7 +84,21 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
     Response response =
         await patch(url, headers: headers, body: jsonEncode(body));
 
-    print(jsonEncode(body));
+//    print(jsonEncode(body));
+
+    String dataResponse = await data;
+    List<dynamic> list = jsonDecode(dataResponse);
+    Map<String, dynamic> map = list[0];
+    print(map);
+    String title = map["name"];
+    print(title);
+    int taskID = map["id"];
+    print(taskID);
+    String deadline = map["deadline"];
+    print(deadline);
+
+    Future<String> subtasks = _getSubTasks(taskID);
+
 
     Navigator.push(
         context,

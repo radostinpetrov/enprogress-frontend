@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 class Globals {
+//  static Color primaryBlue = Colors.white;
   static Color primaryBlue = Color(0xFF1D1C4D);
   static Color primaryOrange = Color(0xFFD07948);
   static Color buttonColor = Color(0xFF42528B);
+//  static Color buttonColor = Colors.blue;
+
 
   static MaterialColor colorSwatch = MaterialColor(primaryBlue.value, <int, Color>{
-    50: Color(0xFF1D1C4D),
+    50:  Color(0xFF1D1C4D),
     100: Color(0xFF1D1C4D),
     200: Color(0xFF1D1C4D),
     300: Color(0xFF1D1C4D),

@@ -58,7 +58,7 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
     };
 
     Map<String, String> headers = {"Content-type": "application/json"};
-    print("The JSON is: " + jsonEncode(body));
+//    print("The JSON is: " + jsonEncode(body));
 
     Response resp = await put(url, headers: headers, body: jsonEncode(body));
   }
@@ -98,11 +98,11 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                       return new Text("Error :(");
                     else {
                       this.decoded = jsonDecode(snapshot.data);
-                      print("this is the decoded list: " + decoded.toString());
+//                      print("this is the decoded list: " + decoded.toString());
                       return new ListView.separated(
                         shrinkWrap: true,
                         itemBuilder: (_, index) {
-                          print(decoded);
+//                          print(decoded);
                           return Row(
                             children: <Widget>[
                               Spacer(),
@@ -129,8 +129,8 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                                     minValue: 0,
                                     maxValue: 100,
                                     onChanged: (newValue) => setState(() {
-                                      print(index);
-                                      print(newValue);
+//                                      print(index);
+//                                      print(newValue);
                                       updatedPercentages[index] = newValue;
                                     }),
                                   )),
@@ -176,7 +176,7 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                 )),
             onTap: () {
               _makePutRequest();
-              Navigator.push(
+              Navigator.pop(
                   context, MaterialPageRoute(builder: (context) => MyApp()));
             },
           )
