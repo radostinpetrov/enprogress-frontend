@@ -92,7 +92,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   }
 
   _makePostRequest() async {
-    String url = "http://146.169.40.203:3000/tasks";
+    String url = "http://enprogressbackend.herokuapp.com/tasks";
     var subTaskPercentages = [];
 
     for (int i = 0; i < data.length; i++) {

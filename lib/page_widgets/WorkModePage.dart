@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'dart:math' as math;
 
 import 'UpdateTaskPage.dart';
@@ -61,7 +62,7 @@ class WorkModeState extends State<WorkModePage>
   var uri;
 
   Future<String> _getSubTasks(int id) async {
-    uri = Uri.parse("http://146.169.40.203:3000/tasks/" + id.toString() + "/subtasks");
+    uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks/" + id.toString() + "/subtasks");
     Response response = await client.get(uri);
     String jsonResponse = response.body;
     return jsonResponse;
@@ -79,7 +80,7 @@ class WorkModeState extends State<WorkModePage>
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    String url = "http://146.169.40.203:3000/users/" + user.userID.toString();
+    String url = "http://enprogressbackend.herokuapp.com/users/" + user.userID.toString();
 
     Response response =
         await patch(url, headers: headers, body: jsonEncode(body));
@@ -132,47 +133,57 @@ class WorkModeState extends State<WorkModePage>
     super.dispose();
   }
 
+  var alertStyle = AlertStyle(
+    animationType: AnimationType.fromBottom,
+    isCloseButton: false,
+    isOverlayTapDismiss: false,
+    descStyle: TextStyle(fontWeight: FontWeight.bold),
+    animationDuration: Duration(milliseconds: 400),
+    alertBorder: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(0.0),
+      side: BorderSide(
+        color: Colors.grey,
+      ),
+    ),
+    titleStyle: TextStyle(
+      color: Colors.red,
+    ),
+  );
+
   Future<bool> _warnAboutExitingWorkMode() {
     // flutter defined function
-    return showDialog(
+    return Alert(
       context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("Wait!"),
-          content: new Text(
-              "Are you sure you want to quit the app while in WorkMode?"
-              "all progress will be lost!"),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            FlatButton(
-              child: new Text("No"),
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-            ),
-            FlatButton(
-              child: Text("Yes"),
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-            )
-          ],
-        );
-      },
-    );
+      type: AlertType.warning,
+      style: alertStyle,
+      title: "WAIT!",
+      desc: "You were being so productive! Don't Stop Now!",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Im Done!",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () => Navigator.pop(context, true),
+          color: Color.fromRGBO(255, 0, 0, 1.0),
+        ),
+        DialogButton(
+          child: Text(
+            "I'll stay!",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () => Navigator.pop(context, false),
+          color: Color.fromRGBO(0, 255, 0, 1.0),
+        )
+      ],
+    ).show();
   }
 
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
     return WillPopScope(
-      onWillPop: () async {
-        if (_isTiming) {
-          await _warnAboutExitingWorkMode();
-        }
-        return Future.value(true);
-      },
+      onWillPop: _warnAboutExitingWorkMode,
       child: Scaffold(
         backgroundColor: Colors.white10,
         body: AnimatedBuilder(

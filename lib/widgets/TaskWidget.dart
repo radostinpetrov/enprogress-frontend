@@ -34,7 +34,7 @@ class TaskWidget extends StatelessWidget {
   }
 
   Future<String> _getSubTasks(int id) async {
-    uri = Uri.parse("http://146.169.40.203:3000/tasks/" + id.toString() + "/subtasks");
+    uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks/" + id.toString() + "/subtasks");
     Response response = await client.get(uri);
     String jsonResponse = response.body;
     return jsonResponse;

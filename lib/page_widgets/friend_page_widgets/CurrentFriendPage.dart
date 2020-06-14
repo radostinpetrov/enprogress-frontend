@@ -19,7 +19,7 @@ class CurrentFriendPage extends StatelessWidget {
 
 
   Future<String> _getNumberOfTasks() async {
-    final uri = Uri.parse("http://146.169.40.203:3000/tasks?fk_user_id=" + id.toString());
+    final uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks?fk_user_id=" + id.toString());
     Response response = await client.get(uri);
     String jsonResponse = response.body;
     return jsonResponse;

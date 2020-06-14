@@ -4,9 +4,9 @@ import 'top_level/MyApp.dart';
 
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  PushNotificationsManager pushNotificationsManager = PushNotificationsManager();
-  pushNotificationsManager.init();
+//  WidgetsFlutterBinding.ensureInitialized();
+//  PushNotificationsManager pushNotificationsManager = PushNotificationsManager();
+//  pushNotificationsManager.init();
   runApp(MyApp());
 }
 

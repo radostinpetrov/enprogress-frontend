@@ -53,7 +53,7 @@ class SignInPage extends StatefulWidget {
 
 Future<dynamic> _getUserInfo() async {
   try {
-    Uri uri = Uri.parse("http://146.169.40.203:3000/users?email=" + user.firebaseUser.email.toString());
+    Uri uri = Uri.parse("http://enprogressbackend.herokuapp.com/users?email=" + user.firebaseUser.email.toString());
     Response resp = await Client().get(uri);
     Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
     _username = jsonResp['name'];
@@ -75,7 +75,7 @@ class SignInPageState extends State<SignInPage> {
 
 
   _makePostRequest() async {
-    final Uri uri = Uri.parse("http://146.169.40.203:3000/users");
+    final Uri uri = Uri.parse("http://enprogressbackend.herokuapp.com/users");
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
@@ -260,7 +260,7 @@ class HomePageState extends State<HomePage> {
 
   int _currentIndex = 1;
 
-  final uri = Uri.parse("http://146.169.40.203:3000/tasks");
+  final uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks");
   final Client client = new Client();
 
   void _onNavBarTapped(int index) {
@@ -273,7 +273,7 @@ class HomePageState extends State<HomePage> {
     if (user.userID == null || user.userID == -1) {
       await _getUserInfo();
     }
-    Uri uri = Uri.parse("http://146.169.40.203:3000/tasks?fk_user_id=" + userID.toString());
+    Uri uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks?fk_user_id=" + userID.toString());
     Response resp = await Client().get(uri);
     return resp.body;
   }

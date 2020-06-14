@@ -10,7 +10,7 @@ class FriendsPage extends StatefulWidget {
 
 class _FriendsPageState extends State<FriendsPage> {
   final Client client = new Client();
-  final uri = Uri.parse("http://146.169.40.203:3000/users");
+  final uri = Uri.parse("http://enprogressbackend.herokuapp.com/users");
   TextEditingController addFriend = TextEditingController();
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -128,7 +128,7 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   _makePostRequest() async {
-    String url = "http://146.169.40.203:3000/users";
+    String url = "http://enprogressbackend.herokuapp.com/users";
 
     String text = addFriend.text;
     String name = text.substring(0, text.length);

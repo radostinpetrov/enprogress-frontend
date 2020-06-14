@@ -36,6 +36,10 @@ dependencies:
   percent_indicator: ^2.1.1
   carousel_slider: ^2.1.0
   auto_size_text: ^2.1.0
+  notification_permissions: 0.4.4
+  flutter_local_notifications: 1.4.4+1
+  permission_handler: 5.0.1
+  rflutter_alert: ^1.0.3
   flutter_driver:
     sdk: flutter
   test: any
