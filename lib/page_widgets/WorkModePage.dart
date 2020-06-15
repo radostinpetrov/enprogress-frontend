@@ -41,13 +41,10 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
 
   String get timerString {
     Duration duration = controller.duration * controller.value;
-    if (controller.duration > Duration(minutes:59, seconds:59)) {
-      return '${duration.inHours}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}';
-    } else {
-      return '${duration.inMinutes}:${(duration.inSeconds % 60)
+    return '${duration.inHours}:${(duration.inMinutes % 60)}:${(duration.inSeconds % 60)
           .toString()
           .padLeft(2, '0')}';
-    }
+
   }
 
   bool _isTiming = false;
@@ -210,11 +207,12 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
                                   Align(
                                     alignment: FractionalOffset.center,
                                     child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                      //mainAxisAlignment:
+                                      //    MainAxisAlignment.spaceEvenly,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
+                                        SizedBox(height: 90),
                                         Text(
                                           "Work Mode Timer: $_workModeHours hrs $_workModeMinutes mins",
                                           style: TextStyle(
@@ -225,7 +223,7 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
                                         Text(
                                           timerString,
                                           style: TextStyle(
-                                              fontSize: 108.0,
+                                              fontSize: 82.0,
                                               color: Colors.white),
                                         ),
                                       ],
