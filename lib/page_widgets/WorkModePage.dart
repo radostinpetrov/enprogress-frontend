@@ -11,41 +11,31 @@ import 'dart:math' as math;
 import 'UpdateTaskPage.dart';
 
 class WorkModePage extends StatefulWidget {
-
 //  final String title;
   final Future<String> subtasks;
+
 //  int taskID;
 //  var deadline;
   final User user;
   final Future<String> data;
 
-  WorkModePage({
-    this.data,
-    this.user,
-    this.subtasks
-});
+  WorkModePage({this.data, this.user, this.subtasks});
 
   @override
-  WorkModeState createState() => WorkModeState(data: data, user: user, subtasks: subtasks);
-
+  WorkModeState createState() =>
+      WorkModeState(data: data, user: user, subtasks: subtasks);
 }
 
-class WorkModeState extends State<WorkModePage>
-    with TickerProviderStateMixin {
-
+class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
 //  final String title;
   final Future<String> subtasks;
+
 //  int taskID;
 //  var deadline;
   final User user;
   final Future<String> data;
 
-  WorkModeState({
-    this.data,
-    this.user,
-    this.subtasks
-  });
-
+  WorkModeState({this.data, this.user, this.subtasks});
 
   AnimationController controller;
 
@@ -62,12 +52,13 @@ class WorkModeState extends State<WorkModePage>
   var uri;
 
   Future<String> _getSubTasks(int id) async {
-    uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks/" + id.toString() + "/subtasks");
+    uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks/" +
+        id.toString() +
+        "/subtasks");
     Response response = await client.get(uri);
     String jsonResponse = response.body;
     return jsonResponse;
   }
-
 
   _PostUserPointsAndUpdateTask(context) async {
     if (controller.value > 0) {
@@ -80,7 +71,8 @@ class WorkModeState extends State<WorkModePage>
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    String url = "http://enprogressbackend.herokuapp.com/users/" + user.userID.toString();
+    String url = "http://enprogressbackend.herokuapp.com/users/" +
+        user.userID.toString();
 
     Response response =
         await patch(url, headers: headers, body: jsonEncode(body));
@@ -99,7 +91,6 @@ class WorkModeState extends State<WorkModePage>
     print(deadline);
 
     Future<String> subtasks = _getSubTasks(taskID);
-
 
     Navigator.push(
         context,
@@ -164,8 +155,11 @@ class WorkModeState extends State<WorkModePage>
             "Im Done!",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context, true),
-          color: Color.fromRGBO(255, 0, 0, 1.0),
+          onPressed: () async {
+            await platform.invokeMethod("turnDoNotDisturbModeOff");
+            Navigator.pop(context, true);
+          },
+          color: Colors.red,
         ),
         DialogButton(
           child: Text(
@@ -173,7 +167,7 @@ class WorkModeState extends State<WorkModePage>
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () => Navigator.pop(context, false),
-          color: Color.fromRGBO(0, 255, 0, 1.0),
+          color: Colors.green,
         )
       ],
     ).show();
