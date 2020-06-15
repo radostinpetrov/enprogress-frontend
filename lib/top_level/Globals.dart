@@ -7,6 +7,7 @@ class Globals {
   static Color buttonColor = Color(0xFF42528B);
 //  static Color buttonColor = Colors.blue;
 
+  static String serverIP = "https://enprogress.herokuapp.com/";
 
   static MaterialColor colorSwatch = MaterialColor(primaryBlue.value, <int, Color>{
     50:  Color(0xFF1D1C4D),

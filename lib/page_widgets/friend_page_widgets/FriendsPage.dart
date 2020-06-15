@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/widgets/FriendWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -10,7 +11,7 @@ class FriendsPage extends StatefulWidget {
 
 class _FriendsPageState extends State<FriendsPage> {
   final Client client = new Client();
-  final uri = Uri.parse("http://146.169.40.203:3000/users");
+  final uri = Uri.parse(Globals.serverIP + "users");
   TextEditingController addFriend = TextEditingController();
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -128,7 +129,7 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   _makePostRequest() async {
-    String url = "http://146.169.40.203:3000/users";
+    String url = Globals.serverIP + "users";
 
     String text = addFriend.text;
     String name = text.substring(0, text.length);

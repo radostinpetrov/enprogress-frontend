@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,7 +62,7 @@ class WorkModeState extends State<WorkModePage>
   var uri;
 
   Future<String> _getSubTasks(int id) async {
-    uri = Uri.parse("http://146.169.40.203:3000/tasks/" + id.toString() + "/subtasks");
+    uri = Uri.parse(Globals.serverIP + "tasks/" + id.toString() + "/subtasks");
     Response response = await client.get(uri);
     String jsonResponse = response.body;
     return jsonResponse;
@@ -79,7 +80,7 @@ class WorkModeState extends State<WorkModePage>
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    String url = "http://146.169.40.203:3000/users/" + user.userID.toString();
+    String url = Globals.serverIP + "users/" + user.userID.toString();
 
     Response response =
         await patch(url, headers: headers, body: jsonEncode(body));

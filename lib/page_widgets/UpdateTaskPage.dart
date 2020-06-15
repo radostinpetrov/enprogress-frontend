@@ -30,7 +30,7 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
   _UpdateTaskPageState(this.title, this.subtasks, this.taskID, this.deadline);
 
   _makePutRequest() async {
-    String url = "http://146.169.40.203:3000/tasks/" + taskID.toString();
+    String url = Globals.serverIP + "tasks/" + taskID.toString();
 
     List<int> subTaskPercentages = List();
     List<String> subTasks = List();

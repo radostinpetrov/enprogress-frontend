@@ -56,7 +56,7 @@ class TasksPageState extends State<TasksPage> {
   int _currentIndex = 0;
 
   Future<String> _getSubTasks(int id) async {
-    uri = Uri.parse("http://146.169.40.203:3000/tasks/" + id.toString() + "/subtasks");
+    uri = Uri.parse(Globals.serverIP + "tasks/" + id.toString() + "/subtasks");
     Response response = await client.get(uri);
     String jsonResponse = response.body;
     return jsonResponse;
@@ -309,7 +309,7 @@ class TasksPageState extends State<TasksPage> {
                         onTap: () {
                           signoutCallback();
                         },
-                        child: Icon(Icons.menu, color: Colors.white,),
+                        child: Icon(Icons.power_settings_new, color: Colors.white,),
                       )
                     ),
                     Spacer(flex: 3,),

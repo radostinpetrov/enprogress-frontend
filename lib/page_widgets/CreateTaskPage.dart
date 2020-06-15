@@ -1,3 +1,4 @@
+import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/top_level/MyApp.dart';
 import 'package:drp29/user/User.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +93,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   }
 
   _makePostRequest() async {
-    String url = "http://146.169.40.203:3000/tasks";
+    String url = Globals.serverIP + "tasks";
     var subTaskPercentages = [];
 
     for (int i = 0; i < data.length; i++) {
