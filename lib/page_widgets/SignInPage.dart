@@ -11,8 +11,10 @@ import 'package:drp29/user/User.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
@@ -21,8 +23,76 @@ String _email = " ";
 String _password = " ";
 String _username = " ";
 int userID = -1;
+FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-class LandingPage extends StatelessWidget {
+String FCMToken = "";
+
+class LandingPage extends StatefulWidget {
+  @override
+  LandingPageState createState() => LandingPageState();
+}
+
+class LandingPageState extends State<LandingPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    _firebaseMessaging.requestNotificationPermissions();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+        _showNotificationWithDefaultSound(message['notification']['title'], message['notification']['body']);
+//        onSelectNotification(message['notification']['body']);
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+//        onSelectNotification(message['body']);
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+//        onSelectNotification(message['body']);
+      },
+    );
+
+    // Code for local notification initialization
+    var initializationSettingsAndroid =
+    AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: onSelectNotification);
+
+  }
+
+  Future onSelectNotification(String payload) async {
+    print("oh nana");
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text("This is a notification"),
+          content: Text(
+              "This is the description of the notification. Payload: $payload"),
+        ));
+  }
+
+  Future _showNotificationWithDefaultSound(String title, String body) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: 'Default_Sound',
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<FirebaseUser>(
@@ -51,14 +121,26 @@ class SignInPage extends StatefulWidget {
   SignInPageState createState() => SignInPageState();
 }
 
-Future<dynamic> _getUserInfo() async {
+Future<dynamic> _setUserInfo() async {
   try {
-    Uri uri = Uri.parse("http://enprogressbackend.herokuapp.com/users?email=" + user.firebaseUser.email.toString());
-    Response resp = await Client().get(uri);
+    // Get user info (username, id)
+    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users?email=" + user.firebaseUser.email.toString());
+    final Client client = Client();
+    Response resp = await client.get(uri);
     Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
     _username = jsonResp['name'];
     userID = jsonResp['id'];
     user = User(_username, userID, user.firebaseUser);
+
+    // Update user fcm_token
+    FCMToken = await _firebaseMessaging.getToken();
+    Map<String, String> headers = {"Content-type": "application/json"};
+    Map<String, dynamic> body = {
+      'fcm_token': FCMToken
+    };
+    uri = Uri.parse("https://enprogressbackend.herokuapp.com/users/" + userID.toString());
+    Response response = await client.patch(uri, headers: headers, body: jsonEncode(body));
+//    print(response.body);
   } catch (e) {
     print(e);
   }
@@ -75,7 +157,7 @@ class SignInPageState extends State<SignInPage> {
 
 
   _makePostRequest() async {
-    final Uri uri = Uri.parse("http://enprogressbackend.herokuapp.com/users");
+    final Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users");
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
@@ -89,7 +171,7 @@ class SignInPageState extends State<SignInPage> {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: "moe@moe.com", password: _password);
-      await _getUserInfo();
+      await _setUserInfo();
     } catch (e) {
       print(e); // TODO: show dialog with error
     }
@@ -260,7 +342,7 @@ class HomePageState extends State<HomePage> {
 
   int _currentIndex = 1;
 
-  final uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks");
+  final uri = Uri.parse("https://enprogressbackend.herokuapp.com/tasks");
   final Client client = new Client();
 
   void _onNavBarTapped(int index) {
@@ -271,9 +353,9 @@ class HomePageState extends State<HomePage> {
 
   Future<String> _getTasks() async {
     if (user.userID == null || user.userID == -1) {
-      await _getUserInfo();
+      await _setUserInfo();
     }
-    Uri uri = Uri.parse("http://enprogressbackend.herokuapp.com/tasks?fk_user_id=" + userID.toString());
+    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/tasks?fk_user_id=" + userID.toString());
     Response resp = await Client().get(uri);
     return resp.body;
   }

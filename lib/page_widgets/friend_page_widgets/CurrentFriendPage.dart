@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:drp29/page_widgets/SignInPage.dart';
 import 'package:drp29/top_level/Globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
 
   Future<String> _getNumberOfTasks() async {
     final uri = Uri.parse(
-        "http://enprogressbackend.herokuapp.com/tasks?fk_user_id=" +
+        "https://enprogressbackend.herokuapp.com/tasks?fk_user_id=" +
             widget.id.toString());
     Response response = await client.get(uri);
     String jsonResponse = response.body;
@@ -121,8 +122,6 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                       final selectedDate = DateTime.now();
                       final selectedTime = await _selectTime(context);
                       if (selectedTime == null) return;
-                      print(selectedTime.hour);
-                      print(selectedTime.minute);
 
                       setState(() {
                         selectedDateTime = DateTime(
@@ -132,8 +131,6 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                           selectedTime.hour,
                           selectedTime.minute,
                         );
-                        print(selectedDateTime);
-                        print(selectedDate.hour);
                       });
                     }),
               ],
@@ -142,9 +139,8 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
         ),
         buttons: [
           DialogButton(
-            onPressed: () {
-              print("Selected time is " + selectedDateTime.toString());
-              print("Selected duration is " + _studyMinutes.toString() + " minutes");
+            onPressed: () async {
+              await _sendWorkModeRequest(selectedDateTime, _studyMinutes, 111);
               Navigator.pop(context, true);
             },
             child: Text(
@@ -163,7 +159,52 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
           )
         ]).show();
   }
+  Future<bool> _sendWorkModeRequest(DateTime startTime, int duration, int userID) async {
+    // Get friend's FCM token
+    String recipientToken = await _getFCMTokenByID(userID);
 
+    // Send FCM message to recipient
+    return await sendFcmMessage(user.username + ' would like to work with you', 'From '
+        + selectedDateTime.hour.toString() + ':' + selectedDateTime.minute.toString() +
+        ' for ' + _studyMinutes.toString() + ' minutes.', recipientToken);
+  }
+  
+  Future<String> _getFCMTokenByID(int userID) async {
+    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users/" + userID.toString());
+    Response response = await client.get(uri);
+    return json.decode(response.body)[0]['fcm_token'];
+  }
+
+  static Future<bool> sendFcmMessage(String title, String message, String recipientToken) async {
+    try {
+      var url = 'https://fcm.googleapis.com/fcm/send';
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization":
+        "key=AAAAtChCW9c:APA91bFB8Il2OZLpctWxp3GGPdEGmu5J3P29KREf-wSW0hfxNIB5Z8xEBfoqzVI5Sj-nsPNdM3Omg2mCJRxnAiAAUZvC2kihg-lizb2rRF-FAYO9gfmsBFzdyF_Uizf5wUYo9pZgjPso",
+      };
+      var request = {
+        'notification': {'title': title, 'body': message},
+        'data': {
+          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          'type': 'COMMENT'
+        },
+        'priority' : 'high',
+        'to': recipientToken,
+      };
+
+      var client = new Client();
+      await client.post(url, headers: header, body: json.encode(request));
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<bool> _sendRequest() async {
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
