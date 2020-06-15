@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:drp29/page_widgets/UpdateTaskPage.dart';
-import 'package:drp29/top_level/Globals.dart';
+import 'package:EnProgress/page_widgets/UpdateTaskPage.dart';
+import 'package:EnProgress/top_level/Globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -1,6 +1,6 @@
-import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
+import 'package:EnProgress/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drp29/widgets/FriendWidget.dart';
+import 'package:EnProgress/widgets/FriendWidget.dart';
 
 void main() {
   // Define a test. The TestWidgets function also provides a WidgetTester
