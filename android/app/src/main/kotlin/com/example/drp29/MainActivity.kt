@@ -33,7 +33,7 @@ class MainActivity : FlutterActivity() {
                     result.error("UNAVAILABLE", "Battery level not available.", null)
                 }
             } else if (call.method == "turnDoNotDisturbModeOn") {
-                startActivityForResult(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS), NotificationManager.INTERRUPTION_FILTER_NONE);
+//                startActivityForResult(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS), NotificationManager.INTERRUPTION_FILTER_NONE);
 
                 val mNotificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
@@ -49,10 +49,10 @@ class MainActivity : FlutterActivity() {
                 mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
 
 
-                if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
-                    startActivityForResult(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS), NotificationManager.INTERRUPTION_FILTER_NONE);
-                    result.success(0)
-                }
+//                if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
+//                    startActivityForResult(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS), NotificationManager.INTERRUPTION_FILTER_NONE);
+//                    result.success(0)
+//                }
 
                 result.success(1)
             } else {

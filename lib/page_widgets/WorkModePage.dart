@@ -142,7 +142,7 @@ class WorkModeState extends State<WorkModePage>
           title: new Text("Wait!"),
           content: new Text(
               "Are you sure you want to quit the app while in WorkMode?"
-              "all progress will be lost!"),
+              " All progress will be lost!"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             FlatButton(
@@ -167,12 +167,13 @@ class WorkModeState extends State<WorkModePage>
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
     return WillPopScope(
-      onWillPop: () async {
-        if (_isTiming) {
-          await _warnAboutExitingWorkMode();
-        }
-        return Future.value(true);
-      },
+      onWillPop: _warnAboutExitingWorkMode,
+//      onWillPop: () async {
+//        if (_isTiming) {
+//          await _warnAboutExitingWorkMode();
+//        }
+//        return Future.value(true);
+//      },
       child: Scaffold(
         backgroundColor: Colors.white10,
         body: AnimatedBuilder(

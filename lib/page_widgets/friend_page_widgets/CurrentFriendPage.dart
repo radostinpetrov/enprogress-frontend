@@ -105,7 +105,7 @@ class CurrentFriendPage extends StatelessWidget {
                                 itemBuilder: (_, index) {
                                   return Container(
                                     alignment: Alignment.center,
-                                    height: 170,
+                                    height: 200,
                                     width: 340,
                                     child: ListView.separated(
                                       shrinkWrap: true,
