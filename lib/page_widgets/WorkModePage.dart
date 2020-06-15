@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'dart:math' as math;
+import 'package:flutter_dnd/flutter_dnd.dart';
 
 import 'UpdateTaskPage.dart';
 
@@ -258,17 +259,29 @@ class WorkModeState extends State<WorkModePage>
                                                     seconds: _workModeDuration);
                                                 _totalTimeWorked +=
                                                     _workModeDuration;
-                                                await platform.invokeMethod(
-                                                    "turnDoNotDisturbModeOn");
+                                                if (!await FlutterDnd.isNotificationPolicyAccessGranted) {
+                                                  FlutterDnd.gotoPolicySettings();
+                                                } else {
+                                                  await platform.invokeMethod(
+                                                      "turnDoNotDisturbModeOn");
+                                                }
                                               }
                                               if (controller.isAnimating) {
                                                 controller.stop();
-                                                await platform.invokeMethod(
-                                                    "turnDoNotDisturbModeOff");
+                                                if (!await FlutterDnd.isNotificationPolicyAccessGranted) {
+                                                  FlutterDnd.gotoPolicySettings();
+                                                } else {
+                                                  await platform.invokeMethod(
+                                                      "turnDoNotDisturbModeOn");
+                                                }
                                               }
                                               else {
-                                                await platform.invokeMethod(
-                                                    "turnDoNotDisturbModeOn");
+                                                if (!await FlutterDnd.isNotificationPolicyAccessGranted) {
+                                                  FlutterDnd.gotoPolicySettings();
+                                                } else {
+                                                  await platform.invokeMethod(
+                                                      "turnDoNotDisturbModeOn");
+                                                }
                                                 controller.reverse(
                                                     from:
                                                         controller.value == 0.0
