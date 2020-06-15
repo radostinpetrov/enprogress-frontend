@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:EnProgress/top_level/Globals.dart';
-import 'package:EnProgress/user/User.dart';
 import 'package:flutter/material.dart';
+import 'package:EnProgress/user/User.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -11,50 +11,48 @@ import 'dart:math' as math;
 import 'UpdateTaskPage.dart';
 
 class WorkModePage extends StatefulWidget {
-
 //  final String title;
   final Future<String> subtasks;
+
 //  int taskID;
 //  var deadline;
   final User user;
   final Future<String> data;
 
-  WorkModePage({
-    this.data,
-    this.user,
-    this.subtasks
-});
+  WorkModePage({this.data, this.user, this.subtasks});
 
   @override
-  WorkModeState createState() => WorkModeState(data: data, user: user, subtasks: subtasks);
-
+  WorkModeState createState() =>
+      WorkModeState(data: data, user: user, subtasks: subtasks);
 }
 
-class WorkModeState extends State<WorkModePage>
-    with TickerProviderStateMixin {
-
+class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
 //  final String title;
   final Future<String> subtasks;
+
 //  int taskID;
 //  var deadline;
   final User user;
   final Future<String> data;
 
-  WorkModeState({
-    this.data,
-    this.user,
-    this.subtasks
-  });
-
+  WorkModeState({this.data, this.user, this.subtasks});
 
   AnimationController controller;
 
   String get timerString {
     Duration duration = controller.duration * controller.value;
-    return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
+    if (controller.duration > Duration(minutes:59, seconds:59)) {
+      return '${duration.inHours}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}';
+    } else {
+      return '${duration.inMinutes}:${(duration.inSeconds % 60)
+          .toString()
+          .padLeft(2, '0')}';
+    }
   }
 
   bool _isTiming = false;
+  int _workModeHours = 0;
+  int _workModeMinutes = 0;
   int _workModeDuration = 0;
   double _totalTimeWorked = 0;
 
@@ -67,7 +65,6 @@ class WorkModeState extends State<WorkModePage>
     String jsonResponse = response.body;
     return jsonResponse;
   }
-
 
   _PostUserPointsAndUpdateTask(context) async {
     if (controller.value > 0) {
@@ -100,7 +97,6 @@ class WorkModeState extends State<WorkModePage>
 
     Future<String> subtasks = _getSubTasks(taskID);
 
-
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -115,7 +111,8 @@ class WorkModeState extends State<WorkModePage>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: _workModeDuration),
+      duration: Duration(minutes: _workModeDuration,
+      hours: _workModeHours),
     );
     controller.addListener(() async {
       if (controller.value == 0.0) {
@@ -155,8 +152,7 @@ class WorkModeState extends State<WorkModePage>
             FlatButton(
               child: Text("Yes"),
               onPressed: () async {
-                await platform.invokeMethod(
-                    "turnDoNotDisturbModeOff");
+                await platform.invokeMethod("turnDoNotDisturbModeOff");
                 Navigator.pop(context, true);
               },
             )
@@ -220,15 +216,16 @@ class WorkModeState extends State<WorkModePage>
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Text(
-                                          "Work Mode Timer: $_workModeDuration",
+                                          "Work Mode Timer: $_workModeHours hrs $_workModeMinutes mins",
                                           style: TextStyle(
                                               fontSize: 20.0,
-                                              color: Colors.white),
+                                              color: Colors.white,
+                                          letterSpacing: 0),
                                         ),
                                         Text(
                                           timerString,
                                           style: TextStyle(
-                                              fontSize: 112.0,
+                                              fontSize: 108.0,
                                               color: Colors.white),
                                         ),
                                       ],
@@ -253,9 +250,13 @@ class WorkModeState extends State<WorkModePage>
                                         return FloatingActionButton.extended(
                                             heroTag: "timerStartBtn",
                                             onPressed: () async {
+                                              controller.duration = Duration(
+                                                  minutes: _workModeMinutes,
+                                                  hours: _workModeHours);
                                               if (controller.value == 0.0) {
                                                 controller.duration = Duration(
-                                                    seconds: _workModeDuration);
+                                                    minutes: _workModeMinutes,
+                                                hours: _workModeHours);
                                                 _totalTimeWorked +=
                                                     _workModeDuration;
                                                 await platform.invokeMethod(
@@ -265,8 +266,7 @@ class WorkModeState extends State<WorkModePage>
                                                 controller.stop();
                                                 await platform.invokeMethod(
                                                     "turnDoNotDisturbModeOff");
-                                              }
-                                              else {
+                                              } else {
                                                 await platform.invokeMethod(
                                                     "turnDoNotDisturbModeOn");
                                                 controller.reverse(
@@ -303,31 +303,45 @@ class WorkModeState extends State<WorkModePage>
                                 ),
                               ]),
                               Padding(
-                                  padding:
-                                      EdgeInsets.only(bottom: 50.0, left: 40.0),
+                                  padding: EdgeInsets.only(
+                                      bottom: 50.0, right: 20.0),
                                   child: Visibility(
                                       visible: !_isTiming,
-                                      child: NumberPicker.integer(
-                                        initialValue: _workModeDuration,
-                                        minValue: 0,
-                                        maxValue: 200,
-                                        onChanged: (newValue) => setState(() {
-                                          _workModeDuration = newValue;
-                                        }),
-                                      ))),
+                                      child: Column(children: [
+                                        Text("Hours",
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                letterSpacing: 0)),
+                                        NumberPicker.integer(
+                                          listViewWidth: 40,
+                                          initialValue: _workModeHours,
+                                          minValue: 0,
+                                          maxValue: 23,
+                                          onChanged: (newValue) => setState(() {
+                                            _workModeHours = newValue;
+                                          }),
+                                        ),
+                                      ]))),
                               Padding(
                                   padding:
-                                  EdgeInsets.only(bottom: 50.0, left: 40.0),
+                                      EdgeInsets.only(bottom: 50.0, left: 20.0),
                                   child: Visibility(
                                       visible: !_isTiming,
-                                      child: NumberPicker.integer(
-                                        initialValue: _workModeDuration,
-                                        minValue: 0,
-                                        maxValue: 200,
-                                        onChanged: (newValue) => setState(() {
-                                          _workModeDuration = newValue;
-                                        }),
-                                      ))),
+                                      child: Column(children: [
+                                        Text("Minutes",
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                letterSpacing: 0)),
+                                        NumberPicker.integer(
+                                          listViewWidth: 40,
+                                          initialValue: _workModeMinutes,
+                                          minValue: 0,
+                                          maxValue: 59,
+                                          onChanged: (newValue) => setState(() {
+                                            _workModeMinutes = newValue;
+                                          }),
+                                        ),
+                                      ]))),
                             ],
                           ),
                         )
