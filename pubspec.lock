@@ -168,7 +168,7 @@ packages:
       name: firebase_messaging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.16"
+    version: "4.0.0+4"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -396,7 +396,7 @@ packages:
       name: percent_indicator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.4"
+    version: "2.1.5"
   petitparser:
     dependency: transitive
     description:

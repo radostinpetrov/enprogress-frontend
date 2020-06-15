@@ -1,15 +1,15 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:io';
 
-import 'package:drp29/page_widgets/ArchivePage.dart';
-import 'package:drp29/page_widgets/CreateTaskPage.dart';
-import 'package:drp29/page_widgets/TasksPage.dart';
-import 'package:drp29/page_widgets/WorkModePage.dart';
-import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
-import 'package:drp29/top_level/Globals.dart';
-import 'package:drp29/user/User.dart';
-import 'package:drp29/widgets/FloatingButton.dart';
-import 'package:drp29/widgets/TaskWidget.dart';
+import 'package:EnProgress/page_widgets/ArchivePage.dart';
+import 'package:EnProgress/page_widgets/CreateTaskPage.dart';
+import 'package:EnProgress/page_widgets/TasksPage.dart';
+import 'package:EnProgress/page_widgets/WorkModePage.dart';
+import 'package:EnProgress/page_widgets/friend_page_widgets/FriendsPage.dart';
+import 'package:EnProgress/top_level/Globals.dart';
+import 'package:EnProgress/user/User.dart';
+import 'package:EnProgress/widgets/FloatingButton.dart';
+import 'package:EnProgress/widgets/TaskWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

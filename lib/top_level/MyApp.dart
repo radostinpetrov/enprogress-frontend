@@ -1,6 +1,6 @@
-import 'package:drp29/page_widgets/SignInPage.dart';
+import 'package:EnProgress/page_widgets/SignInPage.dart';
 import 'package:flutter/material.dart';
-import 'package:drp29/top_level/Globals.dart';
+import 'package:EnProgress/top_level/Globals.dart';
 
 class MyApp extends StatelessWidget {
 

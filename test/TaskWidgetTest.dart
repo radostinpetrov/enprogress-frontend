@@ -1,6 +1,6 @@
-import 'package:drp29/page_widgets/TasksPage.dart';
+import 'package:EnProgress/page_widgets/TasksPage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drp29/widgets/TaskWidget.dart';
+import 'package:EnProgress/widgets/TaskWidget.dart';
 
 void main() {
   // Define a test. The TestWidgets function also provides a WidgetTester
