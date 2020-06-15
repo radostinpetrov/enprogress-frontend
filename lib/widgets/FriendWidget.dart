@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:drp29/top_level/Globals.dart';
+import 'package:EnProgress/top_level/Globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:drp29/page_widgets/friend_page_widgets/CurrentFriendPage.dart';
+import 'package:EnProgress/page_widgets/friend_page_widgets/CurrentFriendPage.dart';
 
 class FriendWidget extends StatelessWidget {
   final int index;
