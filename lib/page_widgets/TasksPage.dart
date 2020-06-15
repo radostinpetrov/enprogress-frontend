@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -19,19 +18,17 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class TasksPage extends StatefulWidget {
 
-  final Future<String> data;
   final User user;
   var signoutCallback;
 
   TasksPage({
-    this.data,
     this.user,
     this.signoutCallback
   });
 
   @override
   State<StatefulWidget> createState() {
-    return TasksPageState(data: data, user: user, signoutCallback: signoutCallback);
+    return TasksPageState(user: user, signoutCallback: signoutCallback);
   }
 
 }
@@ -41,19 +38,33 @@ class TasksPageState extends State<TasksPage> {
   final Client client = new Client();
   var uri;
 
-  final Future<String> data;
   Future<String> subtasks;
   List<dynamic> filteredDecoded;
   final User user;
   var signoutCallback;
 
   TasksPageState({
-    this.data,
     this.user,
     this.signoutCallback
   });
 
   int _currentIndex = 0;
+  Future<String> tasks;
+
+  Future<String> _getTasks() async {
+    Uri uri = Uri.parse(Globals.serverIP + "tasks?fk_user_id=" + userID.toString
+      ());
+    Response resp = await Client().get(uri);
+    return resp.body;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      tasks = _getTasks();
+    });
+  }
 
   Future<String> _getSubTasks(int id) async {
     uri = Uri.parse(Globals.serverIP + "tasks/" + id.toString() + "/subtasks");
@@ -64,7 +75,7 @@ class TasksPageState extends State<TasksPage> {
 
   FutureBuilder<String> _futureBuilder0(BuildContext context) {
     return FutureBuilder<String>(
-      future: this.data,
+      future: tasks,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         switch (snapshot.connectionState) {
           case(ConnectionState.none):
@@ -99,7 +110,7 @@ class TasksPageState extends State<TasksPage> {
 
   FutureBuilder<String> _futureBuilder1(BuildContext context) {
     return FutureBuilder<String>(
-      future: this.data,
+      future: tasks,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         switch (snapshot.connectionState) {
           case(ConnectionState.none):
@@ -141,7 +152,8 @@ class TasksPageState extends State<TasksPage> {
       ),
       itemCount: filteredDecoded.length,
       itemBuilder: (BuildContext context, int index) {
-        return TaskWidget(index: index, body: filteredDecoded[index],);
+        return TaskWidget(user: user, index: index, body:
+        filteredDecoded[index],);
       },
     );
   }
@@ -317,7 +329,8 @@ class TasksPageState extends State<TasksPage> {
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => ArchivePage(data: data, user: user,)));
+                                context, MaterialPageRoute(builder: (context)
+                            => ArchivePage(data: tasks, user: user,)));
                           },
                           child: Icon(Icons.archive, color: Colors.white,),
                         )

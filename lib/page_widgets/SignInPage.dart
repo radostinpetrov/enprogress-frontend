@@ -270,15 +270,6 @@ class HomePageState extends State<HomePage> {
     });
   }
 
-  Future<String> _getTasks() async {
-    if (user.userID == null || user.userID == -1) {
-      await _getUserInfo();
-    }
-    Uri uri = Uri.parse(Globals.serverIP + "tasks?fk_user_id=" + userID.toString
-        ());
-    Response resp = await Client().get(uri);
-    return resp.body;
-  }
 
 //  Future<void> _signOut() async {
 //    try {
@@ -318,14 +309,10 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
 
-    Future<String> data = _getTasks();
-    Widget tasksPage = TasksPage(user: user, data: data, signoutCallback: _signOut);
-
-
     List<Widget> children = [
       FriendsPage(),
-      tasksPage,
-      WorkModePage(data: data, user: user,),
+      TasksPage(user: user, signoutCallback: _signOut),
+      WorkModePage(user: user),
     ];
 
     return Scaffold(
