@@ -11,12 +11,14 @@ class UpdateTaskPage extends StatefulWidget {
   final Future<String> subtasks;
   int id;
   var deadline;
+  int userID;
 
-  UpdateTaskPage(this.title, this.subtasks, this.id, this.deadline);
+  UpdateTaskPage(this.userID, this.title, this.subtasks, this.id, this
+      .deadline);
 
   @override
   _UpdateTaskPageState createState() =>
-      _UpdateTaskPageState(title, subtasks, id, deadline);
+      _UpdateTaskPageState(userID, title, subtasks, id, deadline);
 }
 
 class _UpdateTaskPageState extends State<UpdateTaskPage> {
@@ -26,8 +28,10 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
   Map<int, int> updatedPercentages = Map();
   int taskID;
   var deadline;
+  int userID;
 
-  _UpdateTaskPageState(this.title, this.subtasks, this.taskID, this.deadline);
+  _UpdateTaskPageState(this.userID, this.title, this.subtasks, this.taskID, this
+      .deadline);
 
   _makePutRequest() async {
     String url = Globals.serverIP + "tasks/" + taskID.toString();
@@ -50,17 +54,19 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
     }
 
     Map<String, dynamic> body = {
+      'fk_user_id' : userID,
       'name': title,
       'percentage': totalPercentage.floor(),
       'subtasks': subTasks,
       'subtaskPercentages': subTaskPercentages,
-      'deadline': deadline
+      'deadline': deadline,
     };
 
     Map<String, String> headers = {"Content-type": "application/json"};
 //    print("The JSON is: " + jsonEncode(body));
 
     Response resp = await put(url, headers: headers, body: jsonEncode(body));
+    print(resp.body);
   }
 
   @override
@@ -177,7 +183,7 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                 )),
             onTap: () {
               _makePutRequest();
-              Navigator.pop(
+              Navigator.push(
                   context, MaterialPageRoute(builder: (context) => MyApp()));
             },
           )

@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:drp29/page_widgets/UpdateTaskPage.dart';
 import 'package:drp29/top_level/Globals.dart';
+import 'package:drp29/user/User.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -19,13 +19,13 @@ class TaskWidget extends StatelessWidget {
   final Map<String, dynamic> body;
   Future<String> subtasks;
   int taskID;
-  final user;
+  final User user;
   String deadline;
 
   TaskWidget({
     @required this.index,
     @required this.body,
-    this.user,
+    @required this.user,
   }) {
     this.taskID = this.body['id'];
     this.title = this.body.values.toList()[1];
@@ -51,7 +51,7 @@ class TaskWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute
-          (builder: (context) => UpdateTaskPage(title, subtasks,
+          (builder: (context) => UpdateTaskPage(user.userID, title, subtasks,
             taskID, deadline)));
       },
       child: Container(

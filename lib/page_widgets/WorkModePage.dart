@@ -8,40 +8,31 @@ import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'dart:math' as math;
 
+import 'SelectTaskPage.dart';
 import 'UpdateTaskPage.dart';
 
 class WorkModePage extends StatefulWidget {
 
-//  final String title;
   final Future<String> subtasks;
-//  int taskID;
-//  var deadline;
   final User user;
-  final Future<String> data;
 
   WorkModePage({
-    this.data,
     this.user,
     this.subtasks
 });
 
   @override
-  WorkModeState createState() => WorkModeState(data: data, user: user, subtasks: subtasks);
+  WorkModeState createState() => WorkModeState(user: user, subtasks: subtasks);
 
 }
 
 class WorkModeState extends State<WorkModePage>
     with TickerProviderStateMixin {
 
-//  final String title;
   final Future<String> subtasks;
-//  int taskID;
-//  var deadline;
   final User user;
-  final Future<String> data;
 
   WorkModeState({
-    this.data,
     this.user,
     this.subtasks
   });
@@ -87,25 +78,10 @@ class WorkModeState extends State<WorkModePage>
 
 //    print(jsonEncode(body));
 
-    String dataResponse = await data;
-    List<dynamic> list = jsonDecode(dataResponse);
-    Map<String, dynamic> map = list[0];
-    print(map);
-    String title = map["name"];
-    print(title);
-    int taskID = map["id"];
-    print(taskID);
-    String deadline = map["deadline"];
-    print(deadline);
-
-    Future<String> subtasks = _getSubTasks(taskID);
-
-
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                UpdateTaskPage(title, subtasks, taskID, deadline)));
+            builder: (context) => SelectTaskPage(user)));
   }
 
   static MethodChannel platform = const MethodChannel('flutter/enprogress');
