@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:EnProgress/user/User.dart';
 
 class TaskWidget extends StatelessWidget {
 

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:drp29/top_level/Globals.dart';
-import 'package:drp29/user/User.dart';
-import 'package:drp29/widgets/TaskWidget.dart';
+import 'package:EnProgress/top_level/Globals.dart';
+import 'package:EnProgress/user/User.dart';
+import 'package:EnProgress/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
