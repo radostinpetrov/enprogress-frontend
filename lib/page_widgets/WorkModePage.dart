@@ -41,7 +41,7 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
 
   String get timerString {
     Duration duration = controller.duration * controller.value;
-    return '${duration.inHours}:${(duration.inMinutes % 60)}:${(duration.inSeconds % 60)
+    return '${duration.inHours}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}:${(duration.inSeconds % 60)
           .toString()
           .padLeft(2, '0')}';
 
