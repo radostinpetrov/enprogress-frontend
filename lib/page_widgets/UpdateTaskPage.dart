@@ -126,6 +126,7 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                                       .copyWith(accentColor: Colors.green),
                                   child: NumberPicker.integer(
                                     initialValue: decoded[index]['percentage'],
+                                    step: 10,
                                     minValue: 0,
                                     maxValue: 100,
                                     onChanged: (newValue) => setState(() {

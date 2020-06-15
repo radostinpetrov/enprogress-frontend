@@ -9,7 +9,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="drp29"
+        android:label="EnProgress"
         android:icon="@mipmap/ic_launcher">
         <activity
 

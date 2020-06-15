@@ -154,7 +154,9 @@ class WorkModeState extends State<WorkModePage>
             ),
             FlatButton(
               child: Text("Yes"),
-              onPressed: () {
+              onPressed: () async {
+                await platform.invokeMethod(
+                    "turnDoNotDisturbModeOff");
                 Navigator.pop(context, true);
               },
             )
@@ -259,9 +261,14 @@ class WorkModeState extends State<WorkModePage>
                                                 await platform.invokeMethod(
                                                     "turnDoNotDisturbModeOn");
                                               }
-                                              if (controller.isAnimating)
+                                              if (controller.isAnimating) {
                                                 controller.stop();
+                                                await platform.invokeMethod(
+                                                    "turnDoNotDisturbModeOff");
+                                              }
                                               else {
+                                                await platform.invokeMethod(
+                                                    "turnDoNotDisturbModeOn");
                                                 controller.reverse(
                                                     from:
                                                         controller.value == 0.0
