@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:EnProgress/top_level/Globals.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:EnProgress/user/User.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'dart:math' as math;
@@ -26,13 +28,106 @@ class WorkModePage extends StatefulWidget {
 }
 
 class WorkModeState extends State<WorkModePage>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
 
   final User user;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  var initialisationSettingsAndroid;
+  var initialisationSettingsIOS;
+  var initialisationSettings;
 
   WorkModeState({
     @required this.user,
   });
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    initialisationSettingsAndroid = AndroidInitializationSettings("app_icon");
+    initialisationSettingsIOS = IOSInitializationSettings(
+      onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+    );
+    initialisationSettings = new InitializationSettings(initialisationSettingsAndroid, initialisationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initialisationSettings, onSelectNotification: onSelectNotification);
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(minutes: _workModeDuration,
+          hours: _workModeHours),
+    );
+    controller.addListener(() async {
+      if (controller.value == 0.0) {
+        setState(() {
+          _isTiming = false;
+        });
+
+        await platform.invokeMethod("turnDoNotDisturbModeOff");
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _showNotification();
+    }
+    super.didChangeAppLifecycleState(state);
+  }
+
+  Future<dynamic> onDidReceiveLocalNotification(int id, String title, String body, String payload) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text(title),
+        content: Text(body),
+        actions: <Widget>[
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: Text("Ok"),
+            onPressed: null,
+          )
+        ],
+      )
+    );
+  }
+
+  Future<dynamic> onSelectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint("$payload");
+    }
+    await platform.invokeMethod("turnDoNotDisturbModeOn");
+    controller.reverse(from:
+    controller.value == 0.0
+        ? 1.0
+        : controller.value);
+  }
+
+  void _showNotification() async {
+    await platform.invokeMethod("turnDoNotDisturbModeOff");
+    controller.stop();
+    await _demoNotification();
+  }
+
+  Future<void> _demoNotification() async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'channel ID',
+        'channel name',
+        'channel description',
+        importance: Importance.Max,
+        priority: Priority.High,
+        ticker: 'test ticker');
+    var iOSChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, iOSChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(0, "Come baaaaack!", "You were doing so well! Don't slack off!", platformChannelSpecifics, payload: "test payload");
+  }
 
   AnimationController controller;
 
@@ -75,30 +170,6 @@ class WorkModeState extends State<WorkModePage>
   }
 
   static MethodChannel platform = const MethodChannel('flutter/enprogress');
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      vsync: this,
-      duration: Duration(minutes: _workModeDuration,
-      hours: _workModeHours),
-    );
-    controller.addListener(() async {
-      if (controller.value == 0.0) {
-        setState(() {
-          _isTiming = false;
-        });
-
-        await platform.invokeMethod("turnDoNotDisturbModeOff");
-      }
-    });
-  }
-
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
 
   Future<bool> _warnAboutExitingWorkMode() {
     // flutter defined function
