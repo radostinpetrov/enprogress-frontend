@@ -116,7 +116,7 @@ class FriendsPageState extends State<FriendsPage> {
                   },
                 ),
               ),
-              Spacer(),
+              Spacer(flex: 5),
               Row(
                 children: <Widget>[
                   Expanded(

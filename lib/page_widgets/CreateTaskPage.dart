@@ -321,7 +321,8 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       onTap: () {
         if (conditions()) {
           _makePostRequest();
-          Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              MyApp()));
         } else {
           setState(() {
             error = true;

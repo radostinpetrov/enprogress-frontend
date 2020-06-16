@@ -6,9 +6,15 @@ import 'package:EnProgress/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:EnProgress/top_level/Globals.dart';
 import 'package:EnProgress/user/User.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
+import 'dart:convert';
+import 'package:EnProgress/utilities.dart';
+
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 User user;
 String _email = " ";
@@ -16,33 +22,201 @@ String _password = " ";
 String _username = " ";
 int userID = -1;
 
-Future<dynamic> _getUserInfo() async {
-  try {
-    Uri uri = Uri.parse(Globals.serverIP + "users?email=" + user.firebaseUser.email
-        .toString());
-    Response resp = await Client().get(uri);
-    Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
-    _username = jsonResp['name'];
-    userID = jsonResp['id'];
-    user = User(_username, userID, user.firebaseUser);
-  } catch (e) {
-    print(e);
-  }
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+String FCMToken = "";
+
+class LandingPage extends StatefulWidget {
+  @override
+  LandingPageState createState() => LandingPageState();
 }
 
-class LandingPage extends StatelessWidget {
+class LandingPageState extends State<LandingPage> {
+  final Client client = Client();
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseMessaging.requestNotificationPermissions();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        String payload = message['data']['payload'].toString();
+        print("onMessageeeeeeeee: ${message['data']['payload']}");
+        print("yeet");
+        showNotification(message['notification']['title'],
+            message['notification']['body'], message['data']['payload']);
+
+        // TODO: REMOVE IF CANCLLED
+        if (payload.startsWith("Accepted:")) {
+          int _requestID = int.parse(payload.substring(9));
+          // Get workmoderequest from DB
+          WorkModeRequest workModeRequest =
+              await getWorkModeRequest(_requestID);
+          scheduledWorkModeNotification(_requestID, workModeRequest);
+        }
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+      },
+    );
+
+    // Code for local notification initialization
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: onSelectNotification);
+  }
+
+  Future onSelectNotification(String payload) async {
+    if (payload.startsWith('WorkModeRequest:')) {
+      int _requestID = int.parse(payload.substring(16));
+      Alert(
+          context: context,
+          image: Image.asset('images/icons8-study-100.png'),
+          title: 'Work Mode Request',
+          desc:
+              'You have received a work mode request from [USERNAME]. Would you like to study together?',
+          buttons: [
+            DialogButton(
+              onPressed: () async {
+                await acceptWorkModeRequest(_requestID);
+                Navigator.pop(context, true);
+              },
+              child: Text(
+                "Accept",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              color: Colors.green,
+            ),
+            DialogButton(
+              onPressed: () async {
+                await refuseWorkModeRequest(_requestID);
+                Navigator.pop(context, false);
+              },
+              child: Text(
+                "Refuse",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              color: Colors.red,
+            )
+          ]).show();
+    } else if (payload.startsWith("Started:")) {
+      int _requestID = int.parse(payload.substring(8));
+      WorkModeRequest workModeRequest = await getWorkModeRequest(_requestID);
+
+      // Calculate remaining time and set up work mode
+      int remainingTime = workModeRequest.duration -
+          ((DateTime.now().millisecondsSinceEpoch -
+                      workModeRequest.start_time.millisecondsSinceEpoch) /
+                  1000)
+              .round();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WorkModePage(
+                  data: null,
+                  user: user,
+                  subtasks: null,
+                  remainingTime: remainingTime)));
+    } else {
+      print("goofed it");
+    }
+  }
+
+  Future acceptWorkModeRequest(int requestID) async {
+    // Get workmoderequest from DB
+    WorkModeRequest workModeRequest = await getWorkModeRequest(requestID);
+
+    // Send confirmation to sender
+    String senderToken =
+        await Utilities.getFCMTokenByID(workModeRequest.fk_sender_id);
+    await Utilities.sendFcmMessage(
+        user.username + ' has accepted your request to work together',
+        'A notification will remind you of your study session',
+        senderToken,
+        'Accepted:' + requestID.toString());
+
+    // Create scheduled notification
+    scheduledWorkModeNotification(requestID, workModeRequest);
+  }
+
+  Future<WorkModeRequest> getWorkModeRequest(int requestID) async {
+//    print("over hyaaaaa");
+    Uri uri = Uri.parse(
+        'https://enprogressbackend.herokuapp.com/workmoderequests/' +
+            requestID.toString());
+    Response response = await client.get(uri);
+//    print("yoop " + response.body);
+    var data = json.decode(response.body)[0];
+    return WorkModeRequest(data['fk_sender_id'], data['fk_recipient_id'],
+        DateTime.parse(data['start_time']), data['duration']);
+  }
+
+  Future refuseWorkModeRequest(int requestID) async {
+    // Get workmoderequest from DB
+    WorkModeRequest workModeRequest = await getWorkModeRequest(requestID);
+
+    // Send refusal to sender
+    String senderToken =
+        await Utilities.getFCMTokenByID(workModeRequest.fk_sender_id);
+    await Utilities.sendFcmMessage(
+        user.username + ' has refused your request to work together',
+        'Unfortunately they are busy, try again a different time!',
+        senderToken,
+        'Refused:' + requestID.toString());
+  }
+
+  // TODO: CREATE GET USER INFO FUNCTION!!
+  Future scheduledWorkModeNotification(
+      int requestID, WorkModeRequest workModeRequest) async {
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+            'second channel ID', 'second Channel title', 'second channel body',
+            priority: Priority.High,
+            importance: Importance.Max,
+            ticker: 'test');
+
+    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
+    NotificationDetails notificationDetails =
+        NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+    await flutterLocalNotificationsPlugin.schedule(
+        1,
+        'It\'s time to work!',
+        '[USERNAME] is waiting for you, join them now!',
+        workModeRequest.start_time.add(Duration(hours: 1)),
+        notificationDetails,
+        payload: "Started:" + requestID.toString());
+  }
+
+  Future showNotification(String title, String body, String payload) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: payload,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<FirebaseUser>(
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (context, snapshot) {
-
-//        if (snapshot.hasData) {
-//          return HomePage(snapshot.data.)
-//        } else {
-//          return LoginPage();
-//        }
-
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.data == null) {
             return SignInPage();
@@ -80,7 +254,7 @@ class SignInPageState extends State<SignInPage> {
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    Map<String, dynamic> body = {'name': _username, 'email': "moe@moe.com"};
+    Map<String, dynamic> body = {'name': _username, 'email': _email};
     Response resp =
         await Client().post(uri, headers: headers, body: json.encode(body));
     userID = json.decode(resp.body)['id'];
@@ -89,8 +263,8 @@ class SignInPageState extends State<SignInPage> {
   Future<void> _signInWithEmail() async {
     try {
       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: "moe@moe.com", password: _password);
-      await _getUserInfo();
+          .signInWithEmailAndPassword(email: _email, password: _password);
+      await _setUserInfo();
     } catch (e) {
       print(e); // TODO: show dialog with error
     }
@@ -231,6 +405,32 @@ class HomePage extends StatefulWidget {
 
   @override
   HomePageState createState() => HomePageState();
+}
+
+Future<dynamic> _setUserInfo() async {
+  try {
+    // Get user info (username, id)
+    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users?email=" +
+        user.firebaseUser.email.toString());
+    final Client client = Client();
+    Response resp = await client.get(uri);
+    Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
+    _username = jsonResp['name'];
+    userID = jsonResp['id'];
+    user = User(_username, userID, user.firebaseUser);
+
+    // Update user fcm_token
+    FCMToken = await _firebaseMessaging.getToken();
+    Map<String, String> headers = {"Content-type": "application/json"};
+    Map<String, dynamic> body = {'fcm_token': FCMToken};
+    uri = Uri.parse(
+        "https://enprogressbackend.herokuapp.com/users/" + userID.toString());
+    Response response =
+        await client.patch(uri, headers: headers, body: jsonEncode(body));
+//    print(response.body);
+  } catch (e) {
+    print(e);
+  }
 }
 
 class HomePageState extends State<HomePage> {
