@@ -41,6 +41,7 @@ dependencies:
   notification_permissions: 0.4.4
   permission_handler: 5.0.1
   rflutter_alert: ^1.0.3
+  syncfusion_flutter_gauges: ^18.1.56
   flutter_driver:
     sdk: flutter
   test: any

@@ -254,7 +254,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
             ]),
         child: Column(children: [
           Text(
-            'Add Progress Measures',
+            'Add Subtasks',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,
