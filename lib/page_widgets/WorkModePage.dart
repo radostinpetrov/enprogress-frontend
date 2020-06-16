@@ -157,15 +157,19 @@ class WorkModeState extends State<WorkModePage>
   int _workModeHours = 0;
   int _workModeMinutes = 0;
   int _workModeDuration = 0;
-  double _totalTimeWorked = 0;
+  int _totalTimeWorked = 0;
 
   _PostUserPointsAndUpdateTask(context) async {
+//    print("controller value is " + controller.duration.inSeconds.toString());
     if (controller.value > 0) {
-      _totalTimeWorked -= controller.value;
+      _totalTimeWorked -= controller.duration.inSeconds;
     }
 
+
+    int pointsAwarded = (_totalTimeWorked.floor() / 60).floor();
+
     Map<String, dynamic> body = {
-      'points': (_totalTimeWorked.floor() / 60).floor()
+      'points': (pointsAwarded < 0) ? 0 : pointsAwarded
     };
 
     Map<String, String> headers = {"Content-type": "application/json"};
@@ -175,7 +179,11 @@ class WorkModeState extends State<WorkModePage>
     Response response =
     await patch(url, headers: headers, body: jsonEncode(body));
 
+    _totalTimeWorked = 0;
+//    print(_totalTimeWorked);
+
 //    print(jsonEncode(body));
+//    print(response.body);
 
     Navigator.push(
         context,
@@ -342,9 +350,26 @@ class WorkModeState extends State<WorkModePage>
                                                         minutes: _workModeMinutes,
                                                         hours: _workModeHours);
                                                     _totalTimeWorked +=
-                                                        _workModeDuration;
+                                                        _workModeMinutes*60 +
+                                                            _workModeHours*3600;
+//                                                    print("the work mode "
+//                                                        "duration is " +
+//                                                        _totalTimeWorked
+//                                                            .toString());
                                                     await platform.invokeMethod(
                                                         "turnDoNotDisturbModeOn");
+                                                  } else {
+                                                    int time = _workModeMinutes*60 +
+                                                        _workModeHours*3600;
+                                                    if (_totalTimeWorked !=
+                                                        time) {
+                                                      _totalTimeWorked +=
+                                                          time - _totalTimeWorked;
+                                                    }
+//                                                    print("the new "
+//                                                        "duration is " +
+//                                                        _totalTimeWorked
+//                                                            .toString());
                                                   }
                                                   if (controller.isAnimating) {
                                                     controller.stop();

@@ -27,9 +27,11 @@ class Globals {
     primarySwatch: Globals.colorSwatch,
     fontFamily: "Montserrat",
     textTheme: TextTheme(
-      headline1: TextStyle(fontSize: 500, inherit: true, color: Colors.white, letterSpacing: 4,
+      headline1: TextStyle(fontSize: 30, inherit: true, color: Colors.white,
+          letterSpacing: 4,
           fontWeight: FontWeight.w300),
-      bodyText2: TextStyle(fontSize: 500, inherit: true, color: Colors.white, letterSpacing: 4,
+      bodyText2: TextStyle(fontSize: 25, inherit: true, color: Colors.white,
+          letterSpacing: 4,
           fontWeight: FontWeight.w300)
     ),
     iconTheme: IconThemeData(

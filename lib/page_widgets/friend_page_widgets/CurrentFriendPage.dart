@@ -174,6 +174,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
       backgroundColor: Globals.primaryBlue,
       body: SafeArea(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Spacer(flex: 2),
             Expanded(
@@ -193,7 +194,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
             ),
             Spacer(flex: 1),
             Expanded(
-              flex: 23,
+              flex: 50,
               child: Hero(
                 tag: "current_friend" + widget.index.toString(),
                 child: Container(
@@ -275,7 +276,6 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                   ),
               ),
             ),
-            Spacer(flex: 9,),
             Padding(
               padding: EdgeInsets.only(top: 50.0),
               child: FloatingActionButton.extended(
@@ -286,6 +286,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                 label: Text('Start working together!'),
               ),
             ),
+            Spacer(flex: 2),
           ],
         )
       ),
