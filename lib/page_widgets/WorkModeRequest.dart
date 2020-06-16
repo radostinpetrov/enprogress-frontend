@@ -11,4 +11,8 @@ class WorkModeRequest {
     this.duration = duration;
   }
 
+  @override
+  String toString() {
+    return "Sid :" + fk_sender_id.toString() + " Rid: " + fk_recipient_id.toString() + " st: " + start_time.toIso8601String() + " d: " + duration.toString();
+  }
 }

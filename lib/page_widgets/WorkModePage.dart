@@ -120,7 +120,14 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
     });
 
     if (remainingTime != null) {
+      print("seeting time");
       controller.duration = Duration(minutes: remainingTime);
+      _isTiming = true;
+      controller.reverse(
+          from:
+          controller.value == 0.0
+              ? 1.0
+              : controller.value);
     }
   }
 

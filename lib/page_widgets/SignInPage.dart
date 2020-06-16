@@ -27,7 +27,8 @@ String _email = " ";
 String _password = " ";
 String _username = " ";
 int userID = -1;
-FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 String FCMToken = "";
@@ -38,29 +39,34 @@ class LandingPage extends StatefulWidget {
 }
 
 class LandingPageState extends State<LandingPage> {
+  final Client client = Client();
+
   @override
   void initState() {
     super.initState();
-
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
+        String payload = message['data']['payload'].toString();
         print("onMessageeeeeeeee: ${message['data']['payload']}");
-        print("we out here");
-        if (message['data']['payload'].toString().startsWith('WorkModeRequest:')) {
-          print("yeet");
-          _showWorkModeRequestNotification(message['notification']['title'],
-              message['notification']['body']);
+        print("yeet");
+        showNotification(message['notification']['title'],
+            message['notification']['body'], message['data']['payload']);
+
+        // TODO: REMOVE IF CANCLLED
+        if (payload.startsWith("Accepted:")) {
+          int _requestID = int.parse(payload.substring(9));
+          // Get workmoderequest from DB
+          WorkModeRequest workModeRequest =
+              await getWorkModeRequest(_requestID);
+          scheduledWorkModeNotification(_requestID, workModeRequest);
         }
-//        onSelectNotification(message['notification']['body']);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
-//        onSelectNotification(message['body']);
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
-//        onSelectNotification(message['body']);
       },
     );
 
@@ -76,12 +82,8 @@ class LandingPageState extends State<LandingPage> {
   }
 
   Future onSelectNotification(String payload) async {
-    print("in select");
     if (payload.startsWith('WorkModeRequest:')) {
-      print("yeahyeah");
-//      int _requestID = int.parse(payload.substring(15));
-//      print("id is: " + _requestID.toString());
-      int _requestID = 0;
+      int _requestID = int.parse(payload.substring(16));
       Alert(
           context: context,
           image: Image.asset('images/icons8-study-100.png'),
@@ -91,7 +93,7 @@ class LandingPageState extends State<LandingPage> {
           buttons: [
             DialogButton(
               onPressed: () async {
-                await _acceptWorkModeRequest(_requestID);
+                await acceptWorkModeRequest(_requestID);
                 Navigator.pop(context, true);
               },
               child: Text(
@@ -102,7 +104,7 @@ class LandingPageState extends State<LandingPage> {
             ),
             DialogButton(
               onPressed: () async {
-                await _refuseWorkModeRequest(_requestID);
+                await refuseWorkModeRequest(_requestID);
                 Navigator.pop(context, false);
               },
               child: Text(
@@ -112,10 +114,9 @@ class LandingPageState extends State<LandingPage> {
               color: Colors.red,
             )
           ]).show();
-    } else if (payload.startsWith('Accepted:')) {
+    } else if (payload.startsWith("Started:")) {
       int _requestID = int.parse(payload.substring(8));
-      // Get workmoderequest
-      WorkModeRequest workModeRequest = await _getWorkModeRequest(_requestID);
+      WorkModeRequest workModeRequest = await getWorkModeRequest(_requestID);
 
       // Calculate remaining time and set up work mode
       int remainingTime = workModeRequest.duration -
@@ -136,41 +137,42 @@ class LandingPageState extends State<LandingPage> {
     }
   }
 
-  // TODO: HANDLE ACCEPT NOTIFICATIONS (take user to work mode with remaining time)
-  Future _acceptWorkModeRequest(int requestID) async {
-    print("YEEtYEET " + requestID.toString());
+  Future acceptWorkModeRequest(int requestID) async {
+    // Get workmoderequest from DB
+    WorkModeRequest workModeRequest = await getWorkModeRequest(requestID);
 
     // Send confirmation to sender
-    String senderToken = await Utilities.getFCMTokenByID(requestID);
+    String senderToken =
+        await Utilities.getFCMTokenByID(workModeRequest.fk_sender_id);
     await Utilities.sendFcmMessage(
         user.username + ' has accepted your request to work together',
         'A notification will remind you of your study session',
         senderToken,
         'Accepted:' + requestID.toString());
 
-    // Get workmoderequest from DB
-    WorkModeRequest workModeRequest = await _getWorkModeRequest(requestID);
-
     // Create scheduled notification
-    _scheduledWorkModeNotification(workModeRequest);
+    scheduledWorkModeNotification(requestID, workModeRequest);
   }
 
-  final Client client = Client();
-
-  Future<WorkModeRequest> _getWorkModeRequest(int requestID) async {
+  Future<WorkModeRequest> getWorkModeRequest(int requestID) async {
+//    print("over hyaaaaa");
     Uri uri = Uri.parse(
         'https://enprogressbackend.herokuapp.com/workmoderequests/' +
             requestID.toString());
     Response response = await client.get(uri);
-    print(response.body);
+//    print("yoop " + response.body);
     var data = json.decode(response.body)[0];
     return WorkModeRequest(data['fk_sender_id'], data['fk_recipient_id'],
-        data['start_time'], data['duration']);
+        DateTime.parse(data['start_time']), data['duration']);
   }
 
-  Future _refuseWorkModeRequest(int requestID) async {
+  Future refuseWorkModeRequest(int requestID) async {
+    // Get workmoderequest from DB
+    WorkModeRequest workModeRequest = await getWorkModeRequest(requestID);
+
     // Send refusal to sender
-    String senderToken = await Utilities.getFCMTokenByID(requestID);
+    String senderToken =
+        await Utilities.getFCMTokenByID(workModeRequest.fk_sender_id);
     await Utilities.sendFcmMessage(
         user.username + ' has refused your request to work together',
         'Unfortunately they are busy, try again a different time!',
@@ -179,7 +181,8 @@ class LandingPageState extends State<LandingPage> {
   }
 
   // TODO: CREATE GET USER INFO FUNCTION!!
-  Future _scheduledWorkModeNotification(WorkModeRequest workModeRequest) async {
+  Future scheduledWorkModeNotification(
+      int requestID, WorkModeRequest workModeRequest) async {
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
             'second channel ID', 'second Channel title', 'second channel body',
@@ -188,18 +191,19 @@ class LandingPageState extends State<LandingPage> {
             ticker: 'test');
 
     IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
-
     NotificationDetails notificationDetails =
         NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+//    print("idiiiiis: " + workModeRequest.start_time.toIso8601String());
     await flutterLocalNotificationsPlugin.schedule(
         1,
         'It\'s time to work!',
         '[USERNAME] is waiting for you, join them now!',
         workModeRequest.start_time,
-        notificationDetails);
+        notificationDetails,
+        payload: "Started:" + requestID.toString());
   }
 
-  Future _showWorkModeRequestNotification(String title, String body) async {
+  Future showNotification(String title, String body, String payload) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
         'your channel id', 'your channel name', 'your channel description',
         importance: Importance.Max, priority: Priority.High);
@@ -211,7 +215,7 @@ class LandingPageState extends State<LandingPage> {
       title,
       body,
       platformChannelSpecifics,
-      payload: 'WorkModeRequest:',
+      payload: payload,
     );
   }
 
@@ -243,32 +247,6 @@ class SignInPage extends StatefulWidget {
   SignInPageState createState() => SignInPageState();
 }
 
-Future<dynamic> _setUserInfo() async {
-  try {
-    // Get user info (username, id)
-    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users?email=" +
-        user.firebaseUser.email.toString());
-    final Client client = Client();
-    Response resp = await client.get(uri);
-    Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
-    _username = jsonResp['name'];
-    userID = jsonResp['id'];
-    user = User(_username, userID, user.firebaseUser);
-
-    // Update user fcm_token
-    FCMToken = await _firebaseMessaging.getToken();
-    Map<String, String> headers = {"Content-type": "application/json"};
-    Map<String, dynamic> body = {'fcm_token': FCMToken};
-    uri = Uri.parse(
-        "https://enprogressbackend.herokuapp.com/users/" + userID.toString());
-    Response response =
-        await client.patch(uri, headers: headers, body: jsonEncode(body));
-//    print(response.body);
-  } catch (e) {
-    print(e);
-  }
-}
-
 class SignInPageState extends State<SignInPage> {
   Future<void> _signInAnonymously() async {
     try {
@@ -278,12 +256,12 @@ class SignInPageState extends State<SignInPage> {
     }
   }
 
-  _makePostRequest() async {
+  _postUserToBackend() async {
     final Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users");
 
     Map<String, String> headers = {"Content-type": "application/json"};
 
-    Map<String, dynamic> body = {'name': _username, 'email': "moe@moe.com"};
+    Map<String, dynamic> body = {'name': _username, 'email': _email};
     Response resp =
         await Client().post(uri, headers: headers, body: json.encode(body));
     userID = json.decode(resp.body)['id'];
@@ -291,8 +269,8 @@ class SignInPageState extends State<SignInPage> {
 
   Future<void> _signInWithEmail() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: "moe@moe.com", password: _password);
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: _email, password: _password);
       await _setUserInfo();
     } catch (e) {
       print(e); // TODO: show dialog with error
@@ -301,7 +279,7 @@ class SignInPageState extends State<SignInPage> {
 
   Future<void> _registerWithEmail() async {
     try {
-      await _makePostRequest();
+      await _postUserToBackend();
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: _email, password: _password);
     } catch (e) {
@@ -428,6 +406,32 @@ class HomePage extends StatefulWidget {
 
   @override
   HomePageState createState() => HomePageState();
+}
+
+Future<dynamic> _setUserInfo() async {
+  try {
+    // Get user info (username, id)
+    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users?email=" +
+        user.firebaseUser.email.toString());
+    final Client client = Client();
+    Response resp = await client.get(uri);
+    Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
+    _username = jsonResp['name'];
+    userID = jsonResp['id'];
+    user = User(_username, userID, user.firebaseUser);
+
+    // Update user fcm_token
+    FCMToken = await _firebaseMessaging.getToken();
+    Map<String, String> headers = {"Content-type": "application/json"};
+    Map<String, dynamic> body = {'fcm_token': FCMToken};
+    uri = Uri.parse(
+        "https://enprogressbackend.herokuapp.com/users/" + userID.toString());
+    Response response =
+        await client.patch(uri, headers: headers, body: jsonEncode(body));
+//    print(response.body);
+  } catch (e) {
+    print(e);
+  }
 }
 
 class HomePageState extends State<HomePage> {

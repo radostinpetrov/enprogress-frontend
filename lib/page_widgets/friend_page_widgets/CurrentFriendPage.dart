@@ -145,9 +145,10 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
         buttons: [
           DialogButton(
             onPressed: () async {
-              await _sendWorkModeRequest(WorkModeRequest(
+              // TODO: MINUS 1 HOUR FROM TIME (timezone weird thingy)
+              await Utilities.postWorkModeRequest(WorkModeRequest(
                   user.userID, 111, _selectedDateTime, _duration));
-              await _postWorkModeRequest(WorkModeRequest(
+              await Utilities.sendWorkModeRequest(user.username, WorkModeRequest(
                   user.userID, 111, _selectedDateTime, _duration));
               Navigator.pop(context, true);
             },
@@ -167,44 +168,6 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
           )
         ]).show();
   }
-
-  Future<int> _postWorkModeRequest(WorkModeRequest workModeRequest) async {
-    Uri uri =
-        Uri.parse("https://enprogressbackend.herokuapp.com/workmoderequests");
-    Map<String, String> headers = {"Content-type": "application/json"};
-    Map<String, dynamic> body = {
-      'fk_sender_id': workModeRequest.fk_sender_id,
-      'fk_recipient_id': workModeRequest.fk_recipient_id,
-      'start_time': workModeRequest.start_time,
-      'duration': workModeRequest.duration
-    };
-    Response response = await client.post(uri,
-        headers: headers, body: json.encode(body, toEncodable: Utilities.myEncode));
-    print(response.body);
-    print(json.decode(response.body)['id']);
-    return json.decode(response.body)['id'];
-  }
-
-  Future<bool> _sendWorkModeRequest(WorkModeRequest workModeRequest) async {
-    // Get friend's FCM token
-    String recipientToken = await Utilities.getFCMTokenByID(userID);
-
-    // Post workmoderequest
-    int requestID = await _postWorkModeRequest(workModeRequest);
-
-    // Send FCM message to recipient
-    return await Utilities.sendFcmMessage(
-        user.username + ' would like to work with you',
-        'From ' +
-            workModeRequest.start_time.hour.toString() +
-            ':' +
-            workModeRequest.start_time.minute.toString() +
-            ' for ' +
-            workModeRequest.duration.toString() +
-            ' minutes.',
-        recipientToken, 'WorkModeRequest:' + requestID.toString());
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -323,11 +286,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
             padding: EdgeInsets.only(top: 50.0),
             child: FloatingActionButton.extended(
               onPressed: () async {
-                if (await _showRequestSyncWorkMode()) {
-                  print("hyaa");
-                } else {
-                  print("ovaahya");
-                }
+                await _showRequestSyncWorkMode();
               },
               backgroundColor: Colors.teal,
               label: Text('Start working together!'),
