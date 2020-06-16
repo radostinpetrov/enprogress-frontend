@@ -27,9 +27,9 @@ class Utilities {
     Client client = Client();
     Response response = await client.get(uri);
     String fcmToken;
-//    print("the response is: " + response.body);
 
     fcmToken = json.decode(response.body)[0]['fcm_token'];
+    print("the response is: " + response.body);
 
     return fcmToken;
   }
@@ -108,15 +108,15 @@ class Utilities {
   }
 
 
-  static void updateFCMToken(int userID) async {
-    // Update user fcm_token
-    String FCMToken = await _firebaseMessaging.getToken();
-    Map<String, String> headers = {"Content-type": "application/json"};
-    Map<String, dynamic> body = {'fcm_token': FCMToken};
-    Uri uri = Uri.parse(
-        "https://enprogressbackend.herokuapp.com/users/" + userID.toString());
-    Response response =
-        await client.patch(uri, headers: headers, body: jsonEncode(body));
-  }
+//  static void updateFCMToken(int userID) async {
+//    // Update user fcm_token
+//    String FCMToken = await _firebaseMessaging.getToken();
+//    Map<String, String> headers = {"Content-type": "application/json"};
+//    Map<String, dynamic> body = {'fcm_token': FCMToken};
+//    Uri uri = Uri.parse(
+//        "https://enprogressbackend.herokuapp.com/users/" + userID.toString());
+//    Response response =
+//        await client.patch(uri, headers: headers, body: jsonEncode(body));
+//  }
 
 }

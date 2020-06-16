@@ -193,12 +193,11 @@ class LandingPageState extends State<LandingPage> {
     IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
     NotificationDetails notificationDetails =
         NotificationDetails(androidNotificationDetails, iosNotificationDetails);
-//    print("idiiiiis: " + workModeRequest.start_time.toIso8601String());
     await flutterLocalNotificationsPlugin.schedule(
         1,
         'It\'s time to work!',
         '[USERNAME] is waiting for you, join them now!',
-        workModeRequest.start_time,
+        workModeRequest.start_time.add(Duration(hours: 1)),
         notificationDetails,
         payload: "Started:" + requestID.toString());
   }

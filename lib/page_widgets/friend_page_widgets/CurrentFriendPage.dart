@@ -146,10 +146,9 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
           DialogButton(
             onPressed: () async {
               // TODO: MINUS 1 HOUR FROM TIME (timezone weird thingy)
-              await Utilities.postWorkModeRequest(WorkModeRequest(
-                  user.userID, 111, _selectedDateTime, _duration));
+              print("Friend id is: " + widget.id.toString());
               await Utilities.sendWorkModeRequest(user.username, WorkModeRequest(
-                  user.userID, 111, _selectedDateTime, _duration));
+                  user.userID, widget.id, _selectedDateTime, _duration));
               Navigator.pop(context, true);
             },
             child: Text(
