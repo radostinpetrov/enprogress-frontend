@@ -81,7 +81,9 @@ class TasksPageState extends State<TasksPage> {
           case(ConnectionState.none):
             return new Text("Not active");
           case(ConnectionState.waiting):
-            return new Text("Loading...");
+            return Center(
+              child: Globals.loadingWidget,
+            );
           case(ConnectionState.active):
             return new Text("Active");
           default:
@@ -116,7 +118,9 @@ class TasksPageState extends State<TasksPage> {
           case(ConnectionState.none):
             return new Text("Not active");
           case(ConnectionState.waiting):
-            return new Text("Loading...");
+            return Center(
+              child: Globals.loadingWidget,
+            );
           case(ConnectionState.active):
             return new Text("Active");
           default:
@@ -231,7 +235,9 @@ class TasksPageState extends State<TasksPage> {
                 case (ConnectionState.none):
                   return new Text("Not active");
                 case (ConnectionState.waiting):
-                  return new Text("Loading...");
+                  return Center(
+                    child: Globals.loadingWidget,
+                  );
                 case (ConnectionState.active):
                   return new Text("Active");
                 default:

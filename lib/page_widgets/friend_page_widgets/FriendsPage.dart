@@ -1,15 +1,23 @@
 import 'dart:convert';
 import 'package:EnProgress/top_level/Globals.dart';
+import 'package:EnProgress/user/User.dart';
 import 'package:EnProgress/widgets/FriendWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 class FriendsPage extends StatefulWidget {
+
+  final User user;
+
+  FriendsPage({
+    @required this.user,
+  });
+
   @override
-  _FriendsPageState createState() => _FriendsPageState();
+  FriendsPageState createState() => FriendsPageState(user: user);
 }
 
-class _FriendsPageState extends State<FriendsPage> {
+class FriendsPageState extends State<FriendsPage> {
   final Client client = new Client();
   final uri = Uri.parse(Globals.serverIP + "users");
   TextEditingController addFriend = TextEditingController();
@@ -18,6 +26,11 @@ class _FriendsPageState extends State<FriendsPage> {
       GlobalKey<RefreshIndicatorState>();
 
   String friends;
+  User user;
+
+  FriendsPageState({
+    @required this.user,
+  });
 
   @override
   void initState() {
