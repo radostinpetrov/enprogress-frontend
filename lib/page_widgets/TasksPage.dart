@@ -187,7 +187,6 @@ class TasksPageState extends State<TasksPage> {
 
   Column _currentTaskSubpage(List<dynamic> filteredDecoded) {
 
-    int _taskID = filteredDecoded[_currentIndex]["id"];
     DateTime deadline = DateTime.parse(filteredDecoded[_currentIndex]["deadline"]);
 
     return Column(
@@ -303,6 +302,7 @@ class TasksPageState extends State<TasksPage> {
 
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -328,8 +328,8 @@ class TasksPageState extends State<TasksPage> {
                     Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                context, MaterialPageRoute(builder: (context)
+                            Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context)
                             => ArchivePage(data: tasks, user: user,)));
                           },
                           child: Icon(Icons.archive, color: Colors.white,),
@@ -338,9 +338,12 @@ class TasksPageState extends State<TasksPage> {
                     Spacer(flex: 3,),
                     Expanded(
                         child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => CreateTaskPage(user)));
+                          onTap: () async {
+                            await Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) =>
+                                    CreateTaskPage(user)));
+                            Navigator.of(context).popAndPushNamed("/");
+//                            print("ROUTE "+Navigator.ro);
                           },
                           child: Icon(Icons.add, color: Colors.white,),
                         )

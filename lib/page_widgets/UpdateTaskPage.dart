@@ -183,8 +183,9 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                 )),
             onTap: () {
               _makePutRequest();
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => MyApp()));
+              Navigator.popUntil(
+                  context, ModalRoute.withName("/"));
+              Navigator.of(context).popAndPushNamed("/");
             },
           )
         ],

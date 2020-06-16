@@ -1,20 +1,14 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'dart:io';
+import 'dart:convert';
 
-import 'package:EnProgress/page_widgets/ArchivePage.dart';
-import 'package:EnProgress/page_widgets/CreateTaskPage.dart';
 import 'package:EnProgress/page_widgets/TasksPage.dart';
 import 'package:EnProgress/page_widgets/WorkModePage.dart';
 import 'package:EnProgress/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:EnProgress/top_level/Globals.dart';
 import 'package:EnProgress/user/User.dart';
-import 'package:EnProgress/widgets/FloatingButton.dart';
-import 'package:EnProgress/widgets/TaskWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
-import 'dart:convert';
 
 User user;
 String _email = " ";
@@ -306,8 +300,15 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  _asyncGetUserInfo() async {
+    await _getUserInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (user.userID == null || user.userID == -1) {
+      _asyncGetUserInfo();
+    }
 
     List<Widget> children = [
       FriendsPage(),

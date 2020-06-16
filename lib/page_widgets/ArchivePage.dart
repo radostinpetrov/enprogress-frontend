@@ -71,6 +71,7 @@ class ArchivePage extends StatelessWidget {
                             shrinkWrap: true,
                             itemBuilder: (_, index) {
                               return TaskWidget(
+                                user: user,
                                 index: index,
                                 body: filteredDecoded[index],
                               );
@@ -83,42 +84,6 @@ class ArchivePage extends StatelessWidget {
                   },
                 ),
               ),
-              Spacer(flex: 3,),
-              Expanded(
-                flex: 4,
-                child: Row(
-                  children: <Widget>[
-                    Spacer(flex: 5,),
-                    Expanded(
-                      flex: 5,
-                      child: FlatButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskPage(user)));
-                        },
-                        color: Globals.buttonColor,
-                        child: Container(
-                          child: Text("Add new task", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ),
-//                    Spacer(flex: 3,),
-//                    Expanded(
-//                      flex: 5,
-//                      child: FlatButton(
-//                        onPressed: () {
-////                          Navigator.push(context, MaterialPageRoute(builder: (context) => WorkModePage()));
-//                        },
-//                        color: Globals.buttonColor,
-//                        child: Container(
-//                          child: Text("Study mode", textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
-//                        ),
-//                      ),
-//                    ),
-                    Spacer(flex: 5,),
-                  ],
-                ),
-              ),
-              Spacer(flex: 2,)
             ],
           )
       ),
