@@ -16,12 +16,33 @@ String _password = " ";
 String _username = " ";
 int userID = -1;
 
+Future<dynamic> _getUserInfo() async {
+  try {
+    Uri uri = Uri.parse(Globals.serverIP + "users?email=" + user.firebaseUser.email
+        .toString());
+    Response resp = await Client().get(uri);
+    Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
+    _username = jsonResp['name'];
+    userID = jsonResp['id'];
+    user = User(_username, userID, user.firebaseUser);
+  } catch (e) {
+    print(e);
+  }
+}
+
 class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<FirebaseUser>(
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (context, snapshot) {
+
+//        if (snapshot.hasData) {
+//          return HomePage(snapshot.data.)
+//        } else {
+//          return LoginPage();
+//        }
+
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.data == null) {
             return SignInPage();
@@ -45,20 +66,6 @@ class SignInPage extends StatefulWidget {
   SignInPageState createState() => SignInPageState();
 }
 
-Future<dynamic> _getUserInfo() async {
-  try {
-    Uri uri = Uri.parse(Globals.serverIP + "users?email=" + user.firebaseUser.email
-        .toString());
-    Response resp = await Client().get(uri);
-    Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
-    _username = jsonResp['name'];
-    userID = jsonResp['id'];
-    user = User(_username, userID, user.firebaseUser);
-  } catch (e) {
-    print(e);
-  }
-}
-
 class SignInPageState extends State<SignInPage> {
   Future<void> _signInAnonymously() async {
     try {
@@ -67,7 +74,6 @@ class SignInPageState extends State<SignInPage> {
       print(e); // TODO: show dialog with error
     }
   }
-
 
   _makePostRequest() async {
     final Uri uri = Uri.parse(Globals.serverIP + "users");
@@ -109,8 +115,8 @@ class SignInPageState extends State<SignInPage> {
     return Scaffold(
       appBar: AppBar(title: Text('Sign in')),
       body: Center(
-          child: Column(
-        children: [
+        child: Column(
+          children: [
 //          RaisedButton(
 //            child: Text(
 //              'Sign in anonymously',
@@ -118,7 +124,7 @@ class SignInPageState extends State<SignInPage> {
 //            ),
 //            onPressed: _signInAnonymously,
 //          ),
-          Padding(
+            Padding(
               padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
               child: Column(
                 children: [
@@ -175,37 +181,39 @@ class SignInPageState extends State<SignInPage> {
                     onSaved: (value) => _password = value.trim(),
                   ),
                 ],
-              )),
-          Column(
-            children: [
-              RaisedButton(
-                child: Text(
-                  'Sign in with email',
-                  style: TextStyle(fontSize: 20.0, color: Colors.white),
+              )
+            ),
+            Column(
+              children: [
+                RaisedButton(
+                  child: Text(
+                    'Sign in with email',
+                    style: TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
+                  onPressed: () {
+                    _username = _usernamecontroller.text.toString();
+                    _email = _emailcontroller.text.toString();
+                    _password = _passwordcontroller.text.toString();
+                    _signInWithEmail();
+                  },
                 ),
-                onPressed: () {
-                  _username = _usernamecontroller.text.toString();
-                  _email = _emailcontroller.text.toString();
-                  _password = _passwordcontroller.text.toString();
-                  _signInWithEmail();
-                },
-              ),
-              RaisedButton(
-                child: Text(
-                  'Register with email',
-                  style: TextStyle(fontSize: 20.0, color: Colors.white),
+                RaisedButton(
+                  child: Text(
+                    'Register with email',
+                    style: TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
+                  onPressed: () {
+                    _username = _usernamecontroller.text.toString();
+                    _email = _emailcontroller.text.toString();
+                    _password = _passwordcontroller.text.toString();
+                    _registerWithEmail();
+                  },
                 ),
-                onPressed: () {
-                  _username = _usernamecontroller.text.toString();
-                  _email = _emailcontroller.text.toString();
-                  _password = _passwordcontroller.text.toString();
-                  _registerWithEmail();
-                },
-              ),
-            ],
-          ),
-        ],
-      )),
+              ],
+            ),
+          ],
+        )
+      ),
     );
   }
 }
@@ -223,27 +231,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
 
-  // Stuff for android communcation
-//  static MethodChannel platform = const MethodChannel('flutter/enprogress');
-//
-//
-//  Future<dynamic> myUtilsHandler(MethodCall methodCall) async {
-//    switch (methodCall.method) {
-//      case 'foo':
-//        return 'some string';
-//      case 'bar':
-//        return 123.0;
-//      default:
-//      // todo - throw not implemented
-//    }
-//  }
-//
-//  @override
-//  initState() {
-//    super.initState();
-//    platform.setMethodCallHandler((call) => myUtilsHandler(call));
-//
-//  }
+  int _currentIndex = 1;
 
   Future<void> _signOut() async {
     try {
@@ -253,25 +241,11 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  int _currentIndex = 1;
-
-  final uri = Uri.parse(Globals.serverIP + "tasks");
-  final Client client = new Client();
-
   void _onNavBarTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
-
-
-//  Future<void> _signOut() async {
-//    try {
-//      await FirebaseAuth.instance.signOut();
-//    } catch (e) {
-//      print(e); // TODO: show dialog with error
-//    }
-//  }
 
 
   /// *     Widgets   ***/
@@ -300,41 +274,63 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  _asyncGetUserInfo() async {
-    await _getUserInfo();
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (user.userID == null || user.userID == -1) {
-      _asyncGetUserInfo();
-    }
 
-    List<Widget> children = [
-      FriendsPage(),
-      TasksPage(user: user, signoutCallback: _signOut),
-      WorkModePage(user: user),
-    ];
+    BottomNavigationBar bottomNavigationBar = _bottomNavigationBar();
 
-    return Scaffold(
-      bottomNavigationBar: _bottomNavigationBar(),
-      backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
-      body: SafeArea(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 100,
-                child: children[_currentIndex],
+    return FutureBuilder<dynamic>(
+      future: _getUserInfo(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        switch (snapshot.connectionState) {
+          case(ConnectionState.none):
+            return new Text("Not active");
+          case(ConnectionState.waiting):
+            return Scaffold(
+              backgroundColor: Globals.primaryBlue,
+              bottomNavigationBar: bottomNavigationBar,
+              body: SafeArea(
+                child: Center(
+                  child: Globals.loadingWidget
+                )
               ),
-              Expanded(
-                flex: 1,
-                child: Divider(
-                  color: Colors.white,
+            );
+          case(ConnectionState.active):
+            return new Text("Active");
+          default:
+            if (snapshot.hasError)
+              return new Text("An error occurred while connecting to the server :(",
+                textAlign: TextAlign.center,);
+            else {
+              List<Widget> children = [
+                FriendsPage(user: user),
+                TasksPage(user: user, signoutCallback: _signOut),
+                WorkModePage(user: user),
+              ];
+
+              return Scaffold(
+                bottomNavigationBar: bottomNavigationBar,
+                backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
+                body: SafeArea(
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 100,
+                        child: children[_currentIndex],
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Divider(
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              )
-            ],
-        ),
-      ),
+              );
+            }
+        }
+      },
     );
   }
 }

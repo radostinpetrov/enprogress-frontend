@@ -40,5 +40,9 @@ class Globals {
       minWidth: 200,
     )
   );
+
+  static CircularProgressIndicator loadingWidget = CircularProgressIndicator(
+    backgroundColor: Colors.lightBlue,
+  );
 }
 
