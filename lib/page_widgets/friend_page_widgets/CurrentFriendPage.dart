@@ -276,21 +276,19 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
               ),
             ),
             Spacer(flex: 9,),
+            Padding(
+              padding: EdgeInsets.only(top: 50.0),
+              child: FloatingActionButton.extended(
+                onPressed: () async {
+                  await _showRequestSyncWorkMode();
+                },
+                backgroundColor: Colors.teal,
+                label: Text('Start working together!'),
+              ),
+            ),
           ],
         )
       ),
     );
   }
 }
-/*
-Padding(
-            padding: EdgeInsets.only(top: 50.0),
-            child: FloatingActionButton.extended(
-              onPressed: () async {
-                await _showRequestSyncWorkMode();
-              },
-              backgroundColor: Colors.teal,
-              label: Text('Start working together!'),
-            ),
-          ),
- */

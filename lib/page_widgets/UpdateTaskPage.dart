@@ -75,121 +75,121 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
       backgroundColor: Globals.primaryBlue,
       body: SafeArea(
           child: Column(
-        children: <Widget>[
-          Spacer(),
-          Center(
-              child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Text(
-              "Updating " + title,
-              style: Theme.of(context).textTheme.headline1,
-            ),
-          )),
-          Spacer(),
-          Divider(color: Colors.white),
-          Expanded(
-            flex: 20,
-            child: FutureBuilder<String>(
-              future: subtasks,
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                switch (snapshot.connectionState) {
-                  case (ConnectionState.none):
-                    return new Text("Not active");
-                  case (ConnectionState.waiting):
-                    return new Text("Loading...");
-                  case (ConnectionState.active):
-                    return new Text("Active");
-                  default:
-                    if (snapshot.hasError)
-                      return new Text("Error :(");
-                    else {
-                      this.decoded = jsonDecode(snapshot.data);
+            children: <Widget>[
+              Spacer(),
+              Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      "Updating " + title,
+                      style: Theme.of(context).textTheme.headline1,
+                    ),
+                  )),
+              Spacer(),
+              Divider(color: Colors.white),
+              Expanded(
+                flex: 20,
+                child: FutureBuilder<String>(
+                  future: subtasks,
+                  builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    switch (snapshot.connectionState) {
+                      case (ConnectionState.none):
+                        return new Text("Not active");
+                      case (ConnectionState.waiting):
+                        return new Text("Loading...");
+                      case (ConnectionState.active):
+                        return new Text("Active");
+                      default:
+                        if (snapshot.hasError)
+                          return new Text("Error :(");
+                        else {
+                          this.decoded = jsonDecode(snapshot.data);
 //                      print("this is the decoded list: " + decoded.toString());
-                      return new ListView.separated(
-                        shrinkWrap: true,
-                        itemBuilder: (_, index) {
+                          return new ListView.separated(
+                            shrinkWrap: true,
+                            itemBuilder: (_, index) {
 //                          print(decoded);
-                          return Row(
-                            children: <Widget>[
-                              Spacer(),
-                              Expanded(
-                                flex: 5,
-                                child: Text(
-                                  decoded[index].values.toList()[1],
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                ),
-                              ),
-                              Spacer(),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  decoded[index]['percentage'].toString() + "%",
-                                ),
-                              ),
-                              Icon(Icons.arrow_forward),
-                              Theme(
-                                  data: Globals.theme
-                                      .copyWith(accentColor: Colors.green),
-                                  child: NumberPicker.integer(
-                                    initialValue: decoded[index]['percentage'],
-                                    step: 10,
-                                    minValue: 0,
-                                    maxValue: 100,
-                                    onChanged: (newValue) => setState(() {
+                              return Row(
+                                children: <Widget>[
+                                  Spacer(),
+                                  Expanded(
+                                    flex: 5,
+                                    child: Text(
+                                      decoded[index].values.toList()[1],
+                                      style: Theme.of(context).textTheme.bodyText2,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      decoded[index]['percentage'].toString() + "%",
+                                    ),
+                                  ),
+                                  Icon(Icons.arrow_forward),
+                                  Theme(
+                                      data: Globals.theme
+                                          .copyWith(accentColor: Colors.green),
+                                      child: NumberPicker.integer(
+                                        initialValue: decoded[index]['percentage'],
+                                        step: 10,
+                                        minValue: 0,
+                                        maxValue: 100,
+                                        onChanged: (newValue) => setState(() {
 //                                      print(index);
 //                                      print(newValue);
-                                      updatedPercentages[index] = newValue;
-                                    }),
-                                  )),
-                              Text("%")
-                            ],
+                                          updatedPercentages[index] = newValue;
+                                        }),
+                                      )),
+                                  Text("%")
+                                ],
+                              );
+                            },
+                            separatorBuilder: (_, index) => Divider(
+                              color: Colors.white,
+                            ),
+                            itemCount: decoded.length,
                           );
-                        },
-                        separatorBuilder: (_, index) => Divider(
-                          color: Colors.white,
-                        ),
-                        itemCount: decoded.length,
-                      );
+                        }
                     }
-                }
-              },
-            ),
-          ),
-          InkWell(
-            child: Container(
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Colors.white70,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(25.0),
-                        bottomRight: Radius.circular(25.0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.green,
-                        offset: Offset(1, 1),
-                        blurRadius: 20,
-                      )
-                    ]),
-                child: Text(
-                  'Update',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Colors.black,
-                  ),
-                )),
-            onTap: () {
-              _makePutRequest();
-              Navigator.popUntil(
-                  context, ModalRoute.withName("/"));
-              Navigator.of(context).popAndPushNamed("/");
-            },
-          )
-        ],
-      )),
+                  },
+                ),
+              ),
+              InkWell(
+                child: Container(
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: Colors.white70,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(25.0),
+                            bottomRight: Radius.circular(25.0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.green,
+                            offset: Offset(1, 1),
+                            blurRadius: 20,
+                          )
+                        ]),
+                    child: Text(
+                      'Update',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                    )),
+                onTap: () {
+                  _makePutRequest();
+                  Navigator.popUntil(
+                      context, ModalRoute.withName("/"));
+                  Navigator.of(context).popAndPushNamed("/");
+                },
+              )
+            ],
+          )),
     );
   }
 }

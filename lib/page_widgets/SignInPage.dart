@@ -11,10 +11,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
-import 'dart:convert';
 import 'package:EnProgress/utilities.dart';
 
 import 'package:rflutter_alert/rflutter_alert.dart';
+
+import 'WorkModeRequest.dart';
 
 User user;
 String _email = " ";
@@ -122,9 +123,7 @@ class LandingPageState extends State<LandingPage> {
           context,
           MaterialPageRoute(
               builder: (context) => WorkModePage(
-                  data: null,
                   user: user,
-                  subtasks: null,
                   remainingTime: remainingTime)));
     } else {
       print("goofed it");
@@ -439,7 +438,7 @@ class HomePageState extends State<HomePage> {
   Future<dynamic> userInfo;
 
   HomePageState() {
-    this.userInfo = _getUserInfo();
+    this.userInfo = _setUserInfo();
   }
 
   Future<void> _signOut() async {
