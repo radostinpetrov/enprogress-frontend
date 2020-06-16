@@ -12,6 +12,7 @@ import 'package:EnProgress/widgets/FloatingButton.dart';
 import 'package:EnProgress/widgets/TaskWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:EnProgress/top_level/Globals.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -313,85 +314,98 @@ class TasksPageState extends State<TasksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Globals.primaryBlue,
-      body: SafeArea(
-        child: Column(
-            children: <Widget>[
-              Spacer(flex: 1,),
-              Expanded(
-                flex: 4,
-                child: Row(
-                  children: <Widget>[
-                    Spacer(),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          signoutCallback();
-                        },
-                        child: Icon(Icons.power_settings_new, color: Colors.white,),
-                      )
-                    ),
-                    Spacer(flex: 3,),
-                    Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context)
-                            => ArchivePage(data: tasks, user: user,)));
-                          },
-                          child: Icon(Icons.archive, color: Colors.white,),
-                        )
-                    ),
-                    Spacer(flex: 3,),
-                    Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            await Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) =>
-                                    CreateTaskPage(user)));
-                            Navigator.of(context).popAndPushNamed("/");
-//                            print("ROUTE "+Navigator.ro);
-                          },
-                          child: Icon(Icons.add, color: Colors.white,),
-                        )
-                    ),
-                    Spacer()
-                  ],
-                ),
-              ),
-              Spacer(),
-              Expanded(
-                child: Divider(color: Colors.black,),
-              ),
-              Expanded(
-                flex: 30,
-                child: _futureBuilder0(context),
-              ),
-              Spacer(flex: 2,),
-              Expanded(
-                flex: 1,
-                child: Row(
-                  children: <Widget>[
-                    Spacer(flex: 1,),
-                    Expanded(
-                      flex: 4,
-                      child: Container(
-                        height: 10,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          color: Colors.white10,
+      body: RefreshIndicator(
+        onRefresh: () {
+          setState(() {
+            this.tasks = _getTasks();
+          });
+          return tasks;
+        },
+        backgroundColor: Colors.white,
+        color: Colors.lightBlue,
+        child: Scrollable(
+          axisDirection: AxisDirection.down,
+          viewportBuilder: (BuildContext context, ViewportOffset offset) {
+            return Column(
+                children: <Widget>[
+                  Spacer(flex: 1,),
+                  Expanded(
+                    flex: 4,
+                    child: Row(
+                      children: <Widget>[
+                        Spacer(),
+                        Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                signoutCallback();
+                              },
+                              child: Icon(Icons.power_settings_new, color: Colors.white,),
+                            )
                         ),
-                      ),
+                        Spacer(flex: 3,),
+                        Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context)
+                                    => ArchivePage(data: tasks, user: user,)));
+                              },
+                              child: Icon(Icons.archive, color: Colors.white,),
+                            )
+                        ),
+                        Spacer(flex: 3,),
+                        Expanded(
+                            child: GestureDetector(
+                              onTap: () async {
+                                await Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context) =>
+                                        CreateTaskPage(user)));
+                                Navigator.of(context).popAndPushNamed("/");
+//                            print("ROUTE "+Navigator.ro);
+                              },
+                              child: Icon(Icons.add, color: Colors.white,),
+                            )
+                        ),
+                        Spacer()
+                      ],
                     ),
-                    Spacer(flex: 1,),
-                  ],
-                ),
-              ),
+                  ),
+                  Spacer(),
+                  Expanded(
+                    child: Divider(color: Colors.black,),
+                  ),
+                  Expanded(
+                    flex: 30,
+                    child: _futureBuilder0(context),
+                  ),
+                  Spacer(flex: 2,),
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: <Widget>[
+                        Spacer(flex: 1,),
+                        Expanded(
+                          flex: 4,
+                          child: Container(
+                            height: 10,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              color: Colors.white10,
+                            ),
+                          ),
+                        ),
+                        Spacer(flex: 1,),
+                      ],
+                    ),
+                  ),
 //              Spacer(flex: 5,),
-              Expanded(
-                flex: 45,
-                child: _futureBuilder1(context),
-              ),
-            ]
+                  Expanded(
+                    flex: 45,
+                    child: _futureBuilder1(context),
+                  ),
+                ]
+            );
+          },
         ),
       ),
     );

@@ -48,7 +48,7 @@ class LandingPage extends StatelessWidget {
             return SignInPage();
           }
           user = User(_username, userID, snapshot.data);
-          return HomePage(user);
+          return HomePage();
         } else {
           return Scaffold(
             body: Center(
@@ -114,6 +114,7 @@ class SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Sign in')),
+      resizeToAvoidBottomPadding: false,
       body: Center(
         child: Column(
           children: [
@@ -124,93 +125,101 @@ class SignInPageState extends State<SignInPage> {
 //            ),
 //            onPressed: _signInAnonymously,
 //          ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _usernamecontroller,
-                    maxLines: 1,
-                    keyboardType: TextInputType.text,
-                    autofocus: true,
-                    autovalidate: true,
-                    decoration: InputDecoration(
-                        hintText: 'Username',
-                        icon: Icon(
-                          Icons.supervised_user_circle,
-                          color: Colors.grey,
-                        )),
-                    validator: (value) =>
-                        value.isEmpty ? 'Username can\'t be empty' : null,
-                    onSaved: (String value) {
-                      _username = value.trim();
-                    },
-                  ),
-                  TextFormField(
-                    controller: _emailcontroller,
-                    maxLines: 1,
-                    keyboardType: TextInputType.emailAddress,
-                    autofocus: true,
-                    autovalidate: true,
-                    decoration: InputDecoration(
-                        hintText: 'Email',
-                        icon: Icon(
-                          Icons.mail,
-                          color: Colors.grey,
-                        )),
-                    validator: (value) =>
-                        value.isEmpty ? 'Email can\'t be empty' : null,
-                    onSaved: (String value) {
-                      _email = value.trim();
-                    },
-                  ),
-                  TextFormField(
-                    controller: _passwordcontroller,
-                    maxLines: 1,
-                    obscureText: true,
-                    autofocus: true,
-                    autovalidate: true,
-                    decoration: InputDecoration(
-                        hintText: 'Password',
-                        icon: Icon(
-                          Icons.lock,
-                          color: Colors.grey,
-                        )),
-                    validator: (value) =>
-                        value.isEmpty ? 'Password can\'t be empty' : null,
-                    onSaved: (value) => _password = value.trim(),
-                  ),
-                ],
-              )
+            Spacer(flex: 10,),
+            Expanded(
+              flex: 6,
+              child: TextFormField(
+                controller: _usernamecontroller,
+                maxLines: 1,
+                keyboardType: TextInputType.text,
+                autofocus: true,
+                autovalidate: true,
+                decoration: InputDecoration(
+                    hintText: 'Username',
+                    icon: Icon(
+                      Icons.supervised_user_circle,
+                      color: Colors.grey,
+                    )),
+                validator: (value) =>
+                value.isEmpty ? 'Username can\'t be empty' : null,
+                onSaved: (String value) {
+                  _username = value.trim();
+                },
+              ),
             ),
-            Column(
-              children: [
-                RaisedButton(
-                  child: Text(
-                    'Sign in with email',
-                    style: TextStyle(fontSize: 20.0, color: Colors.white),
-                  ),
-                  onPressed: () {
-                    _username = _usernamecontroller.text.toString();
-                    _email = _emailcontroller.text.toString();
-                    _password = _passwordcontroller.text.toString();
-                    _signInWithEmail();
-                  },
-                ),
-                RaisedButton(
-                  child: Text(
-                    'Register with email',
-                    style: TextStyle(fontSize: 20.0, color: Colors.white),
-                  ),
-                  onPressed: () {
-                    _username = _usernamecontroller.text.toString();
-                    _email = _emailcontroller.text.toString();
-                    _password = _passwordcontroller.text.toString();
-                    _registerWithEmail();
-                  },
-                ),
-              ],
+            Expanded(
+              flex: 6,
+              child: TextFormField(
+                controller: _emailcontroller,
+                maxLines: 1,
+                keyboardType: TextInputType.emailAddress,
+                autofocus: true,
+                autovalidate: true,
+                decoration: InputDecoration(
+                    hintText: 'Email',
+                    icon: Icon(
+                      Icons.mail,
+                      color: Colors.grey,
+                    )),
+                validator: (value) =>
+                value.isEmpty ? 'Email can\'t be empty' : null,
+                onSaved: (String value) {
+                  _email = value.trim();
+                },
+              ),
             ),
+            Expanded(
+              flex: 6,
+              child: TextFormField(
+                controller: _passwordcontroller,
+                maxLines: 1,
+                obscureText: true,
+                autofocus: true,
+                autovalidate: true,
+                decoration: InputDecoration(
+                    hintText: 'Password',
+                    icon: Icon(
+                      Icons.lock,
+                      color: Colors.grey,
+                    )),
+                validator: (value) =>
+                value.isEmpty ? 'Password can\'t be empty' : null,
+                onSaved: (value) => _password = value.trim(),
+              ),
+            ),
+            Spacer(flex: 2,),
+            Expanded(
+              flex: 4,
+              child: RaisedButton(
+                child: Text(
+                  'Sign in with email',
+                  style: TextStyle(fontSize: 20.0, color: Colors.white),
+                ),
+                onPressed: () {
+                  _username = _usernamecontroller.text.toString();
+                  _email = _emailcontroller.text.toString();
+                  _password = _passwordcontroller.text.toString();
+                  _signInWithEmail();
+                },
+              ),
+            ),
+            Spacer(flex: 2,),
+            Expanded(
+              flex: 4,
+              child: RaisedButton(
+                child: Text(
+                  'Register with email',
+                  style: TextStyle(fontSize: 20.0, color: Colors.white),
+                ),
+                onPressed: () {
+                  _username = _usernamecontroller.text.toString();
+                  _email = _emailcontroller.text.toString();
+                  _password = _passwordcontroller.text.toString();
+                  _registerWithEmail();
+                },
+              ),
+            ),
+            Spacer(flex: 15,)
           ],
         )
       ),
@@ -219,11 +228,6 @@ class SignInPageState extends State<SignInPage> {
 }
 
 class HomePage extends StatefulWidget {
-  User _user;
-
-  HomePage(User user) {
-    this._user = user;
-  }
 
   @override
   HomePageState createState() => HomePageState();
@@ -232,6 +236,11 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
 
   int _currentIndex = 1;
+  Future<dynamic> userInfo;
+
+  HomePageState() {
+    this.userInfo = _getUserInfo();
+  }
 
   Future<void> _signOut() async {
     try {
@@ -251,6 +260,12 @@ class HomePageState extends State<HomePage> {
   /// *     Widgets   ***/
 
   BottomNavigationBar _bottomNavigationBar() {
+
+    TextStyle navTextStyle = TextStyle(
+      color: Colors.white,
+      letterSpacing: 2.5,
+    );
+
     return BottomNavigationBar(
       backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
       unselectedItemColor: Colors.white,
@@ -260,15 +275,15 @@ class HomePageState extends State<HomePage> {
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
             icon: Icon(Icons.person_pin),
-            title: Text("Friends"),
+            title: Text("Friends", style: navTextStyle,),
         ),
         BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
-            title: Text("Tasks")
+            title: Text("Tasks", style: navTextStyle,)
         ),
         BottomNavigationBarItem(
             icon: Icon(Icons.timer),
-            title: Text("Study")
+            title: Text("Study", style: navTextStyle,)
         ),
       ],
     );
@@ -280,7 +295,7 @@ class HomePageState extends State<HomePage> {
     BottomNavigationBar bottomNavigationBar = _bottomNavigationBar();
 
     return FutureBuilder<dynamic>(
-      future: _getUserInfo(),
+      future: userInfo,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         switch (snapshot.connectionState) {
           case(ConnectionState.none):
