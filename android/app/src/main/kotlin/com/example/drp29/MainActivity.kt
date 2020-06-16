@@ -17,10 +17,15 @@ import android.util.Log
 import android.os.Bundle
 import java.util.HashMap
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+
+
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "flutter/enprogress"
-
+    
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
@@ -33,28 +38,39 @@ class MainActivity : FlutterActivity() {
                     result.error("UNAVAILABLE", "Battery level not available.", null)
                 }
             } else if (call.method == "turnDoNotDisturbModeOn") {
-
                 val mNotificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
-
 
                 if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
                     startActivityForResult(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS), NotificationManager.INTERRUPTION_FILTER_NONE);
-                    result.success(0)
                 }
+
+                mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
 
                 result.success(1)
             } else if (call.method == "turnDoNotDisturbModeOff") {
                 val mNotificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
-
 
                 if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
                     startActivityForResult(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS), NotificationManager.INTERRUPTION_FILTER_NONE);
-                    result.success(0)
                 }
 
+                mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+
                 result.success(1)
+            } else if(call.method == "requestNotificationSchedulingPermissions") {
+                android.util.Log.v(TAG, "BitchBitchBitchBitchBitchBitchBitchBitchBitch")
+                android.util.Log.v(TAG, "BitchBitchBitchBitchBitchBitchBitchBitchBitch")
+                requestPermissions(arrayOf(Manifest.permission.RECEIVE_BOOT_COMPLETED), 1)
+
+                if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_BOOT_COMPLETED) != PackageManager.PERMISSION_GRANTED)
+                {
+                    // Permission is not granted
+                    android.util.Log.v(TAG, "BitchBitchBitchBitchBitchBitchBitchBitchBitch")
+                    requestPermissions(arrayOf(Manifest.permission.RECEIVE_BOOT_COMPLETED), 1)
+
+//                    ActivityCompat.requestPermissions(MainActivity.this, permissionArray, requestCode);
+                }
+
             } else {
                 result.notImplemented()
             }
@@ -77,7 +93,7 @@ class MainActivity : FlutterActivity() {
 //    private val VERBOSE = true
 //
 //
-//    private val TAG = "SampleActivity"
+    private val TAG = "SampleActivity"
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
 //        if (VERBOSE) Log.v(TAG, "+++ ON CREATE +++")

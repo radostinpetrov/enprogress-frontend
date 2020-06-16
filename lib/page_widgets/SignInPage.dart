@@ -5,9 +5,11 @@ import 'package:drp29/page_widgets/ArchivePage.dart';
 import 'package:drp29/page_widgets/CreateTaskPage.dart';
 import 'package:drp29/page_widgets/TasksPage.dart';
 import 'package:drp29/page_widgets/WorkModePage.dart';
+import 'package:drp29/page_widgets/WorkModeRequest.dart';
 import 'package:drp29/page_widgets/friend_page_widgets/FriendsPage.dart';
 import 'package:drp29/top_level/Globals.dart';
 import 'package:drp29/user/User.dart';
+import 'package:drp29/utilities.dart';
 import 'package:drp29/widgets/FloatingButton.dart';
 import 'package:drp29/widgets/TaskWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,6 +19,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
+
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 User user;
 String _email = " ";
@@ -41,8 +45,13 @@ class LandingPageState extends State<LandingPage> {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        _showNotificationWithDefaultSound(message['notification']['title'], message['notification']['body']);
+        print("onMessageeeeeeeee: ${message['data']['payload']}");
+        print("we out here");
+        if (message['data']['payload'].toString().startsWith('WorkModeRequest:')) {
+          print("yeet");
+          _showWorkModeRequestNotification(message['notification']['title'],
+              message['notification']['body']);
+        }
 //        onSelectNotification(message['notification']['body']);
       },
       onLaunch: (Map<String, dynamic> message) async {
@@ -57,28 +66,140 @@ class LandingPageState extends State<LandingPage> {
 
     // Code for local notification initialization
     var initializationSettingsAndroid =
-    AndroidInitializationSettings('app_icon');
+        AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = IOSInitializationSettings();
     var initializationSettings = InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
-
   }
 
   Future onSelectNotification(String payload) async {
-    print("oh nana");
-    showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text("This is a notification"),
-          content: Text(
-              "This is the description of the notification. Payload: $payload"),
-        ));
+    print("in select");
+    if (payload.startsWith('WorkModeRequest:')) {
+      print("yeahyeah");
+//      int _requestID = int.parse(payload.substring(15));
+//      print("id is: " + _requestID.toString());
+      int _requestID = 0;
+      Alert(
+          context: context,
+          image: Image.asset('images/icons8-study-100.png'),
+          title: 'Work Mode Request',
+          desc:
+              'You have received a work mode request from [USERNAME]. Would you like to study together?',
+          buttons: [
+            DialogButton(
+              onPressed: () async {
+                await _acceptWorkModeRequest(_requestID);
+                Navigator.pop(context, true);
+              },
+              child: Text(
+                "Accept",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              color: Colors.green,
+            ),
+            DialogButton(
+              onPressed: () async {
+                await _refuseWorkModeRequest(_requestID);
+                Navigator.pop(context, false);
+              },
+              child: Text(
+                "Refuse",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              color: Colors.red,
+            )
+          ]).show();
+    } else if (payload.startsWith('Accepted:')) {
+      int _requestID = int.parse(payload.substring(8));
+      // Get workmoderequest
+      WorkModeRequest workModeRequest = await _getWorkModeRequest(_requestID);
+
+      // Calculate remaining time and set up work mode
+      int remainingTime = workModeRequest.duration -
+          ((DateTime.now().millisecondsSinceEpoch -
+                      workModeRequest.start_time.millisecondsSinceEpoch) /
+                  1000)
+              .round();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WorkModePage(
+                  data: null,
+                  user: user,
+                  subtasks: null,
+                  remainingTime: remainingTime)));
+    } else {
+      print("goofed it");
+    }
   }
 
-  Future _showNotificationWithDefaultSound(String title, String body) async {
+  // TODO: HANDLE ACCEPT NOTIFICATIONS (take user to work mode with remaining time)
+  Future _acceptWorkModeRequest(int requestID) async {
+    print("YEEtYEET " + requestID.toString());
+
+    // Send confirmation to sender
+    String senderToken = await Utilities.getFCMTokenByID(requestID);
+    await Utilities.sendFcmMessage(
+        user.username + ' has accepted your request to work together',
+        'A notification will remind you of your study session',
+        senderToken,
+        'Accepted:' + requestID.toString());
+
+    // Get workmoderequest from DB
+    WorkModeRequest workModeRequest = await _getWorkModeRequest(requestID);
+
+    // Create scheduled notification
+    _scheduledWorkModeNotification(workModeRequest);
+  }
+
+  final Client client = Client();
+
+  Future<WorkModeRequest> _getWorkModeRequest(int requestID) async {
+    Uri uri = Uri.parse(
+        'https://enprogressbackend.herokuapp.com/workmoderequests/' +
+            requestID.toString());
+    Response response = await client.get(uri);
+    print(response.body);
+    var data = json.decode(response.body)[0];
+    return WorkModeRequest(data['fk_sender_id'], data['fk_recipient_id'],
+        data['start_time'], data['duration']);
+  }
+
+  Future _refuseWorkModeRequest(int requestID) async {
+    // Send refusal to sender
+    String senderToken = await Utilities.getFCMTokenByID(requestID);
+    await Utilities.sendFcmMessage(
+        user.username + ' has refused your request to work together',
+        'Unfortunately they are busy, try again a different time!',
+        senderToken,
+        'Refused:' + requestID.toString());
+  }
+
+  // TODO: CREATE GET USER INFO FUNCTION!!
+  Future _scheduledWorkModeNotification(WorkModeRequest workModeRequest) async {
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+            'second channel ID', 'second Channel title', 'second channel body',
+            priority: Priority.High,
+            importance: Importance.Max,
+            ticker: 'test');
+
+    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
+
+    NotificationDetails notificationDetails =
+        NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+    await flutterLocalNotificationsPlugin.schedule(
+        1,
+        'It\'s time to work!',
+        '[USERNAME] is waiting for you, join them now!',
+        workModeRequest.start_time,
+        notificationDetails);
+  }
+
+  Future _showWorkModeRequestNotification(String title, String body) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
         'your channel id', 'your channel name', 'your channel description',
         importance: Importance.Max, priority: Priority.High);
@@ -90,9 +211,10 @@ class LandingPageState extends State<LandingPage> {
       title,
       body,
       platformChannelSpecifics,
-      payload: 'Default_Sound',
+      payload: 'WorkModeRequest:',
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<FirebaseUser>(
@@ -124,7 +246,8 @@ class SignInPage extends StatefulWidget {
 Future<dynamic> _setUserInfo() async {
   try {
     // Get user info (username, id)
-    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users?email=" + user.firebaseUser.email.toString());
+    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users?email=" +
+        user.firebaseUser.email.toString());
     final Client client = Client();
     Response resp = await client.get(uri);
     Map<String, dynamic> jsonResp = json.decode(resp.body).elementAt(0);
@@ -135,11 +258,11 @@ Future<dynamic> _setUserInfo() async {
     // Update user fcm_token
     FCMToken = await _firebaseMessaging.getToken();
     Map<String, String> headers = {"Content-type": "application/json"};
-    Map<String, dynamic> body = {
-      'fcm_token': FCMToken
-    };
-    uri = Uri.parse("https://enprogressbackend.herokuapp.com/users/" + userID.toString());
-    Response response = await client.patch(uri, headers: headers, body: jsonEncode(body));
+    Map<String, dynamic> body = {'fcm_token': FCMToken};
+    uri = Uri.parse(
+        "https://enprogressbackend.herokuapp.com/users/" + userID.toString());
+    Response response =
+        await client.patch(uri, headers: headers, body: jsonEncode(body));
 //    print(response.body);
   } catch (e) {
     print(e);
@@ -155,7 +278,6 @@ class SignInPageState extends State<SignInPage> {
     }
   }
 
-
   _makePostRequest() async {
     final Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users");
 
@@ -169,8 +291,8 @@ class SignInPageState extends State<SignInPage> {
 
   Future<void> _signInWithEmail() async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: "moe@moe.com", password: _password);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: "moe@moe.com", password: _password);
       await _setUserInfo();
     } catch (e) {
       print(e); // TODO: show dialog with error
@@ -309,7 +431,6 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-
   // Stuff for android communcation
 //  static MethodChannel platform = const MethodChannel('flutter/enprogress');
 //
@@ -355,7 +476,9 @@ class HomePageState extends State<HomePage> {
     if (user.userID == null || user.userID == -1) {
       await _setUserInfo();
     }
-    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/tasks?fk_user_id=" + userID.toString());
+    Uri uri = Uri.parse(
+        "https://enprogressbackend.herokuapp.com/tasks?fk_user_id=" +
+            userID.toString());
     Response resp = await Client().get(uri);
     return resp.body;
   }
@@ -368,7 +491,6 @@ class HomePageState extends State<HomePage> {
 //    }
 //  }
 
-
   /// *     Widgets   ***/
 
   BottomNavigationBar _bottomNavigationBar() {
@@ -380,51 +502,48 @@ class HomePageState extends State<HomePage> {
       currentIndex: _currentIndex,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-            icon: Icon(Icons.person_pin),
-            title: Text("Friends"),
+          icon: Icon(Icons.person_pin),
+          title: Text("Friends"),
         ),
         BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            title: Text("Tasks")
-        ),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.timer),
-            title: Text("Study")
-        ),
+            icon: Icon(Icons.assignment), title: Text("Tasks")),
+        BottomNavigationBarItem(icon: Icon(Icons.timer), title: Text("Study")),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     Future<String> data = _getTasks();
-    Widget tasksPage = TasksPage(user: user, data: data, signoutCallback: _signOut);
-
+    Widget tasksPage =
+        TasksPage(user: user, data: data, signoutCallback: _signOut);
 
     List<Widget> children = [
       FriendsPage(),
       tasksPage,
-      WorkModePage(data: data, user: user,),
+      WorkModePage(
+        data: data,
+        user: user,
+      ),
     ];
 
     return Scaffold(
       bottomNavigationBar: _bottomNavigationBar(),
       backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
       body: SafeArea(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 100,
-                child: children[_currentIndex],
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 100,
+              child: children[_currentIndex],
+            ),
+            Expanded(
+              flex: 1,
+              child: Divider(
+                color: Colors.white,
               ),
-              Expanded(
-                flex: 1,
-                child: Divider(
-                  color: Colors.white,
-                ),
-              )
-            ],
+            )
+          ],
         ),
       ),
     );

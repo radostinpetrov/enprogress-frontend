@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drp29/page_widgets/SignInPage.dart';
+import 'package:drp29/page_widgets/WorkModeRequest.dart';
 import 'package:drp29/top_level/Globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+
+import '../../utilities.dart';
 
 class CurrentFriendPage extends StatefulWidget {
   final int index;
@@ -52,7 +55,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
     return separated;
   }
 
-  DateTime selectedDateTime;
+  DateTime _selectedDateTime;
 
   //TODO: make sure time < current time
   Future<TimeOfDay> _selectTime(BuildContext context) {
@@ -64,7 +67,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
     );
   }
 
-  int _studyMinutes = 10;
+  int _duration = 10;
 
   Future<bool> _showRequestSyncWorkMode() {
     return Alert(
@@ -74,15 +77,17 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
         image: Image.asset('images/icons8-study-100.png'),
         content: Table(
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          border: TableBorder.symmetric(inside: BorderSide(width: 1.0), outside: BorderSide(width: 0.5, color: Colors.grey)),
+          border: TableBorder.symmetric(
+              inside: BorderSide(width: 1.0),
+              outside: BorderSide(width: 0.5, color: Colors.grey)),
           defaultColumnWidth: IntrinsicColumnWidth(),
           children: [
             TableRow(
               children: [
-                Center (
+                Center(
                   child: Text(
-                  'Duration',
-                  style: TextStyle(fontSize: 15),
+                    'Duration',
+                    style: TextStyle(fontSize: 15),
                   ),
                 ),
                 Theme(
@@ -98,7 +103,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                       step: 10,
                       highlightSelectedValue: true,
                       onChanged: (value) => setState(() {
-                        _studyMinutes = value;
+                        _duration = value;
                       }),
                     ),
                   ),
@@ -107,9 +112,9 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
             ),
             TableRow(
               children: [
-                Padding (
+                Padding(
                   padding: EdgeInsets.all(5.0),
-                  child: Center (
+                  child: Center(
                     child: Text(
                       'Start time',
                       style: TextStyle(fontSize: 15),
@@ -124,7 +129,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                       if (selectedTime == null) return;
 
                       setState(() {
-                        selectedDateTime = DateTime(
+                        _selectedDateTime = DateTime(
                           selectedDate.year,
                           selectedDate.month,
                           selectedDate.day,
@@ -140,7 +145,10 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
         buttons: [
           DialogButton(
             onPressed: () async {
-              await _sendWorkModeRequest(selectedDateTime, _studyMinutes, 111);
+              await _sendWorkModeRequest(WorkModeRequest(
+                  user.userID, 111, _selectedDateTime, _duration));
+              await _postWorkModeRequest(WorkModeRequest(
+                  user.userID, 111, _selectedDateTime, _duration));
               Navigator.pop(context, true);
             },
             child: Text(
@@ -159,52 +167,45 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
           )
         ]).show();
   }
-  Future<bool> _sendWorkModeRequest(DateTime startTime, int duration, int userID) async {
+
+  Future<int> _postWorkModeRequest(WorkModeRequest workModeRequest) async {
+    Uri uri =
+        Uri.parse("https://enprogressbackend.herokuapp.com/workmoderequests");
+    Map<String, String> headers = {"Content-type": "application/json"};
+    Map<String, dynamic> body = {
+      'fk_sender_id': workModeRequest.fk_sender_id,
+      'fk_recipient_id': workModeRequest.fk_recipient_id,
+      'start_time': workModeRequest.start_time,
+      'duration': workModeRequest.duration
+    };
+    Response response = await client.post(uri,
+        headers: headers, body: json.encode(body, toEncodable: Utilities.myEncode));
+    print(response.body);
+    print(json.decode(response.body)['id']);
+    return json.decode(response.body)['id'];
+  }
+
+  Future<bool> _sendWorkModeRequest(WorkModeRequest workModeRequest) async {
     // Get friend's FCM token
-    String recipientToken = await _getFCMTokenByID(userID);
+    String recipientToken = await Utilities.getFCMTokenByID(userID);
+
+    // Post workmoderequest
+    int requestID = await _postWorkModeRequest(workModeRequest);
 
     // Send FCM message to recipient
-    return await sendFcmMessage(user.username + ' would like to work with you', 'From '
-        + selectedDateTime.hour.toString() + ':' + selectedDateTime.minute.toString() +
-        ' for ' + _studyMinutes.toString() + ' minutes.', recipientToken);
-  }
-  
-  Future<String> _getFCMTokenByID(int userID) async {
-    Uri uri = Uri.parse("https://enprogressbackend.herokuapp.com/users/" + userID.toString());
-    Response response = await client.get(uri);
-    return json.decode(response.body)[0]['fcm_token'];
-  }
-
-  static Future<bool> sendFcmMessage(String title, String message, String recipientToken) async {
-    try {
-      var url = 'https://fcm.googleapis.com/fcm/send';
-      var header = {
-        "Content-Type": "application/json",
-        "Authorization":
-        "key=AAAAtChCW9c:APA91bFB8Il2OZLpctWxp3GGPdEGmu5J3P29KREf-wSW0hfxNIB5Z8xEBfoqzVI5Sj-nsPNdM3Omg2mCJRxnAiAAUZvC2kihg-lizb2rRF-FAYO9gfmsBFzdyF_Uizf5wUYo9pZgjPso",
-      };
-      var request = {
-        'notification': {'title': title, 'body': message},
-        'data': {
-          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-          'type': 'COMMENT'
-        },
-        'priority' : 'high',
-        'to': recipientToken,
-      };
-
-      var client = new Client();
-      await client.post(url, headers: header, body: json.encode(request));
-      return true;
-    } catch (e) {
-      print(e);
-      return false;
-    }
+    return await Utilities.sendFcmMessage(
+        user.username + ' would like to work with you',
+        'From ' +
+            workModeRequest.start_time.hour.toString() +
+            ':' +
+            workModeRequest.start_time.minute.toString() +
+            ' for ' +
+            workModeRequest.duration.toString() +
+            ' minutes.',
+        recipientToken, 'WorkModeRequest:' + requestID.toString());
   }
 
-  Future<bool> _sendRequest() async {
-    return true;
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

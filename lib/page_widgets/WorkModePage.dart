@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drp29/user/User.dart';
+import 'package:drp29/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
@@ -18,12 +19,13 @@ class WorkModePage extends StatefulWidget {
 //  var deadline;
   final User user;
   final Future<String> data;
+  final int remainingTime;
 
-  WorkModePage({this.data, this.user, this.subtasks});
+  WorkModePage({this.data, this.user, this.subtasks, this.remainingTime});
 
   @override
-  WorkModeState createState() =>
-      WorkModeState(data: data, user: user, subtasks: subtasks);
+  WorkModeState createState() => WorkModeState(
+      data: data, user: user, subtasks: subtasks, remainingTime: remainingTime);
 }
 
 class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
@@ -34,8 +36,9 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
 //  var deadline;
   final User user;
   final Future<String> data;
+  final int remainingTime;
 
-  WorkModeState({this.data, this.user, this.subtasks});
+  WorkModeState({this.data, this.user, this.subtasks, this.remainingTime});
 
   AnimationController controller;
 
@@ -99,8 +102,6 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
                 UpdateTaskPage(title, subtasks, taskID, deadline)));
   }
 
-  static MethodChannel platform = const MethodChannel('flutter/enprogress');
-
   @override
   void initState() {
     super.initState();
@@ -114,17 +115,16 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
           _isTiming = false;
         });
 
-        await platform.invokeMethod("turnDoNotDisturbModeOff");
+        await Utilities.platform.invokeMethod("turnDoNotDisturbModeOff");
       }
     });
+
+    if (remainingTime != null) {
+      controller.duration = Duration(minutes: remainingTime);
+    }
   }
 
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  var alertStyle = AlertStyle(
+  AlertStyle alertStyle = AlertStyle(
     animationType: AnimationType.fromBottom,
     isCloseButton: false,
     isOverlayTapDismiss: false,
@@ -156,7 +156,7 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () async {
-            await platform.invokeMethod("turnDoNotDisturbModeOff");
+            await Utilities.platform.invokeMethod("turnDoNotDisturbModeOff");
             Navigator.pop(context, true);
           },
           color: Colors.red,
@@ -259,8 +259,9 @@ class WorkModeState extends State<WorkModePage> with TickerProviderStateMixin {
                                                     seconds: _workModeDuration);
                                                 _totalTimeWorked +=
                                                     _workModeDuration;
-                                                await platform.invokeMethod(
-                                                    "turnDoNotDisturbModeOn");
+                                                await Utilities.platform
+                                                    .invokeMethod(
+                                                        "turnDoNotDisturbModeOn");
                                               }
                                               if (controller.isAnimating)
                                                 controller.stop();
