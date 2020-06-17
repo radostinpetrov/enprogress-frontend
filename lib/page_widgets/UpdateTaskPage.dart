@@ -181,8 +181,9 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                                   children: <Widget>[
                                     Spacer(flex: 2,),
                                     Expanded(
-                                      flex: 9,
-                                      child: AutoSizeText(
+                                      flex: 8,
+                                      child: FittedBox(fit: BoxFit.scaleDown,child:
+                                      AutoSizeText(
                                         decoded[index].values.toList()[1],
                                         style: TextStyle(
                                           color: Color(0xDFFFFFFF),
@@ -191,7 +192,7 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                                         maxLines: 1,
                                         textAlign: TextAlign.center,
                                       ),
-                                    ),
+                                    )),
                                     Spacer(),
 //                                  Expanded(
 //                                    flex: 2,

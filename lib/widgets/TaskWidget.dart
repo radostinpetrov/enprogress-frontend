@@ -71,11 +71,11 @@ class TaskWidget extends StatelessWidget {
               Spacer(flex: 2,),
               Expanded(
                 flex: 15,
-                child: AutoSizeText(
+                child: FittedBox(fit: BoxFit.scaleDown, child: AutoSizeText(
                   title,
                   textAlign: TextAlign.center,
                   maxLines: 1,
-                ),
+                )),
               ),
               Expanded(
                 flex: 15,

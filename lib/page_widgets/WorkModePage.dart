@@ -294,7 +294,7 @@ class WorkModeState extends State<WorkModePage>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Spacer(
-                        flex: 1,
+                        flex: 2,
                       ),
                       Text(studyBuddyName == null
                           ? ' '
