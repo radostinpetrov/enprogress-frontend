@@ -73,7 +73,7 @@ class ArchivePage extends StatelessWidget {
                               return TaskWidget(
                                 user: user,
                                 index: index,
-                                body: filteredDecoded[index],
+                                task: filteredDecoded[index],
                               );
                             },
                             separatorBuilder: (_, index) => Divider(),

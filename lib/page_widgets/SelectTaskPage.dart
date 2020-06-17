@@ -76,9 +76,10 @@ class SelectTaskPage extends StatelessWidget {
                     shrinkWrap: true,
                     itemBuilder: (_, index) {
                       return TaskWidget(
+                        clickable: true,
                         index: index,
                         user: user,
-                        body: filteredDecoded[index],
+                        task: filteredDecoded[index],
                       );
                     },
                     separatorBuilder: (_, index) => Divider(),

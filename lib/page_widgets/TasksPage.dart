@@ -152,9 +152,10 @@ class TasksPageState extends State<TasksPage> {
       itemCount: filteredDecoded.length,
       itemBuilder: (BuildContext context, int index) {
         return TaskWidget(
+          clickable: true,
           user: user,
           index: index,
-          body: filteredDecoded[index],
+          task: filteredDecoded[index],
         );
       },
     );
