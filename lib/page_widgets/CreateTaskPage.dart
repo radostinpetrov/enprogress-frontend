@@ -173,11 +173,11 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                 topLeft: Radius.circular(25.0),
                 bottomRight: Radius.circular(25.0)),
             boxShadow: [
-              BoxShadow(
-                color: Colors.red,
-                offset: Offset(10, 10),
-                blurRadius: 20,
-              )
+//              BoxShadow(
+//                color: Colors.red,
+//                offset: Offset(10, 10),
+//                blurRadius: 20,
+//              )
             ]),
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Text(
@@ -246,15 +246,15 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                 topRight: Radius.circular(25.0),
                 bottomLeft: Radius.circular(25.0)),
             boxShadow: [
-              BoxShadow(
-                color: Colors.red,
-                offset: Offset(-10, 10),
-                blurRadius: 20,
-              )
+//              BoxShadow(
+//                color: Colors.red,
+//                offset: Offset(-10, 10),
+//                blurRadius: 20,
+//              )
             ]),
         child: Column(children: [
           Text(
-            'Add Progress Measures',
+            'Add Subtasks',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,

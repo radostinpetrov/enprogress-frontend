@@ -10,6 +10,8 @@ import 'package:http/http.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
+
 
 import '../../utilities.dart';
 
@@ -168,6 +170,62 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
         ]).show();
   }
 
+  _setRanges(value) {
+    return [
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 0,
+          endValue:
+          20,
+          color: (value > 0) ? Color(
+              0xFFFF0000) : Colors.grey),
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 21,
+          endValue: 40,
+          color: (value > 20) ? Color(
+              0xFFEF7215) : Colors.grey),
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 41,
+          endValue:
+          60,
+          color: (value > 40) ? Color(
+              0xFFFFBF00) : Colors.grey),
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 61,
+          endValue: 80,
+          color: (value > 60) ? Color(
+              0xFFD5E35B): Colors.grey),
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 81,
+          endValue:
+          100,
+          color: (value > 81) ? Color(
+              0xFF39FF14) : Colors.grey),
+    ];
+  }
+
+  _setEmoji(value) {
+    if (value == 0) {
+      return Icons.sentiment_very_dissatisfied;
+    } else if (value < 21) {
+      return Icons.sentiment_dissatisfied;
+    } else if (value < 61) {
+      return Icons.sentiment_neutral;
+    } else if (value < 81) {
+      return Icons.sentiment_satisfied;
+    }
+    return Icons.sentiment_very_satisfied;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,7 +258,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Globals.buttonColor,
+                    color: Globals.primaryBlue,
                   ),
                   height: 800,
                   width: 340,
@@ -235,31 +293,51 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                                       scrollDirection: Axis.horizontal,
                                       itemCount: separated[index].length,
                                       itemBuilder: (_, newIndex) {
-                                        return
-                                            Container(
-                                              width: 170,
-                                              child: CircularPercentIndicator(
-                                                radius: 120.0,
-                                                lineWidth: 13.0,
-                                                animation: true,
-                                                percent:
-                                                  separated[index][newIndex]['percentage'] / 100,
-                                                center: Text(
-                                                  separated[index][newIndex]['percentage'].toString() + "%",
-                                                  style: Theme.of(context)
-                                                      .textTheme.bodyText2,
-                                                ),
-                                                footer: FittedBox(
-                                                  fit: BoxFit.fitWidth,
-                                                  child: Text(
-                                                    separated[index][newIndex]['name'],
-                                                    softWrap: true,
-                                                    style: Theme.of(context)
-                                                        .textTheme.bodyText2,
+                                        return Container(
+                                            width: 170,
+                                            child: Column(
+                                                children: [
+                                                  Expanded(child: SfRadialGauge(
+                                                      axes: [
+                                                        RadialAxis(showLabels: false,
+                                                            showAxisLine: true,
+                                                            showTicks: false,
+
+                                                            minimum: 0,
+                                                            maximum: 100,
+                                                            axisLineStyle: AxisLineStyle(
+                                                              cornerStyle: CornerStyle
+                                                                  .bothCurve,
+                                                              color: Colors
+                                                                  .transparent,
+
+                                                            ),
+                                                            ranges: _setRanges
+                                                              (
+                                                                separated[index][newIndex]['percentage']),
+                                                            annotations: [
+                                                              GaugeAnnotation(
+                                                                  widget: Container(
+                                                                    padding: EdgeInsets
+                                                                        .only(
+                                                                        left: 10),
+                                                                    child: Icon(
+                                                                      _setEmoji(
+                                                                          separated[index][newIndex]['percentage']),
+                                                                      size: 90,
+                                                                    ),
+                                                                  )
+                                                              )
+                                                            ]
+                                                        )
+                                                      ]
+                                                  )),
+                                                  Text
+                                                    (separated[index][newIndex]['name'],
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(fontSize: 20),
                                                   )
-                                                ),
-                                              )
-                                            );
+                                                ]));
                                       },
                                       separatorBuilder: (_, index) {
                                         return SizedBox(width: 0);

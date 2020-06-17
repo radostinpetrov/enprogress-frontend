@@ -16,21 +16,24 @@ class TaskWidget extends StatelessWidget {
 
   final int index;
   String title;
-  final Map<String, dynamic> body;
+  final Map<String, dynamic> task;
   Future<String> subtasks;
   int taskID;
   final User user;
   String deadline;
 
+  bool clickable;
+
   TaskWidget({
     @required this.index,
-    @required this.body,
+    @required this.task,
     @required this.user,
+    this.clickable = false,
   }) {
-    this.taskID = this.body['id'];
-    this.title = this.body.values.toList()[1];
-    this.subtasks = _getSubTasks(this.body.values.toList()[0]);
-    this.deadline = this.body.values.toList()[3];
+    this.taskID = this.task['id'];
+    this.title = this.task.values.toList()[1];
+    this.subtasks = _getSubTasks(this.task.values.toList()[0]);
+    this.deadline = this.task.values.toList()[3];
   }
 
   Future<String> _getSubTasks(int id) async {
@@ -50,9 +53,11 @@ class TaskWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute
-          (builder: (context) => UpdateTaskPage(user.userID, title, subtasks,
-            taskID, deadline)));
+        if (clickable) {
+          Navigator.push(context, MaterialPageRoute
+            (builder: (context) => UpdateTaskPage(taskWidget: this, index: index, user: user, title: title, subtasks: subtasks,
+              taskID: taskID, deadline: deadline)));
+        }
       },
       child: Container(
           width: MediaQuery.of(context).size.width,

@@ -300,7 +300,7 @@ class WorkModeState extends State<WorkModePage>
                                       children: <Widget>[
                                         SizedBox(height: 90),
                                         AutoSizeText(
-                                          "Work Mode Timer: $_workModeHours hrs $_workModeMinutes mins", //Work Mode Timer: $_workModeHours hrs $_workModeMinutes mins
+                                          "", //Work Mode Timer: $_workModeHours hrs $_workModeMinutes mins
                                           maxLines: 1,
                                           style: TextStyle(
 //                                              fontSize: 20.0,
