@@ -232,6 +232,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       );
                     print(selectedDate);
                     print(selectedDate.hour);
+                    updateSubmitColor("");
                     });
                   })],
           ),
@@ -281,7 +282,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
             ],
           ),
           Container(
-              constraints: BoxConstraints(maxHeight: 200),
+              constraints: BoxConstraints(maxHeight: 300),
               child: AnimatedList(
                 key: _listKey,
                 initialItemCount: 0,
@@ -297,19 +298,12 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-              color: Colors.white70,
+              color: submitColor,
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(25.0),
                   bottomRight: Radius.circular(25.0)),
-              boxShadow: [
-                BoxShadow(
-                  color: submitColor, // (conditions() ? Colors.green :
-                  // Colors.amber)
-                  offset: Offset(10, 10),
-                  blurRadius: 20,
-                )
-              ]),
+              ),
           child: Text(
             'Create Task',
             style: TextStyle(
