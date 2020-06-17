@@ -196,7 +196,7 @@ class LandingPageState extends State<LandingPage> {
         NotificationDetails(androidNotificationDetails, iosNotificationDetails);
     print('we finna schedule for ' + workModeRequest.start_time.toIso8601String());
     await flutterLocalNotificationsPlugin.schedule(
-        1,
+        Utils.getNotificationID(),
         'It\'s time to work!',
         await Utils.getUsername(userID) + 'is waiting for you, join them now!',
         workModeRequest.start_time,
@@ -212,7 +212,7 @@ class LandingPageState extends State<LandingPage> {
     var platformChannelSpecifics = new NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-      0,
+      Utils.getNotificationID(),
       title,
       body,
       platformChannelSpecifics,

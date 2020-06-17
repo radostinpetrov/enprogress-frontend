@@ -164,8 +164,11 @@ class WorkModeState extends State<WorkModePage>
     var platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSChannelSpecifics);
 
-    await flutterLocalNotificationsPlugin.show(0, "Come baaaaack!",
-        "You were doing so well! Don't slack off!", platformChannelSpecifics,
+    await flutterLocalNotificationsPlugin.show(
+        Utils.getNotificationID(),
+        "Come baaaaack!",
+        "You were doing so well! Don't slack off!",
+        platformChannelSpecifics,
         payload: "test payload");
   }
 
@@ -280,7 +283,6 @@ class WorkModeState extends State<WorkModePage>
             builder: (context, child) {
               return Stack(
                 children: <Widget>[
-
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
@@ -297,8 +299,8 @@ class WorkModeState extends State<WorkModePage>
                       Text(studyBuddyName == null
                           ? ' '
                           : 'Currently studying with ' +
-                          studyBuddyName +
-                          '. Keep up the good work!'),
+                              studyBuddyName +
+                              '. Keep up the good work!'),
                       Expanded(
                         flex: 30,
                         child: Align(

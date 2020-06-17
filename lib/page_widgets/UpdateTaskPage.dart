@@ -241,7 +241,7 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                           _makePutRequest();
                           Navigator.popUntil(
                             context, ModalRoute.withName("/"));
-                            Navigator.of(context).popAndPushNamed("/");
+//                            Navigator.of(context).popAndPushNamed("/");
                         },
                         child: Container(
                           height: 40,

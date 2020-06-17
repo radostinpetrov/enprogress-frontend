@@ -12,6 +12,11 @@ class Utils {
   static final Client client = Client();
   static BuildContext context;
   static User user;
+  static int _notificationID = 0;
+
+  static int getNotificationID() {
+    return _notificationID++;
+  }
 
   static Future<String> getUsername(int userID) async {
     Uri uri = Uri.parse(Globals.serverIP + "users/" + userID.toString());

@@ -138,9 +138,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
                           selectedTime.hour,
                           selectedTime.minute,
                         );
-                        print('before' + _selectedDateTime.toIso8601String());
                         _selectedDateTime = _selectedDateTime.subtract(Duration(hours: 1));
-                        print('after' + _selectedDateTime.toIso8601String());
                       });
                     }),
               ],
