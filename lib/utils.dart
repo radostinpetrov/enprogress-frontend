@@ -98,7 +98,7 @@ class Utils {
     return await Utils.sendFcmMessage(
         senderUsername + ' would like to work with you',
         'From ' +
-            workModeRequest.start_time.hour.toString() +
+            (workModeRequest.start_time.hour + 1).toString() +
             ':' +
             workModeRequest.start_time.minute.toString().padLeft(2, '0') +
             ' for ' +
