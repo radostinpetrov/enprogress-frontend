@@ -94,6 +94,28 @@ class TasksPageState extends State<TasksPage> {
                 }
               }
               this.filteredDecoded = filteredDecoded;
+
+              if (filteredDecoded.length == 0) {
+                this.subtasks = Future<String>(() {
+                  return "";
+                });
+                return Center(
+                  child: Container(
+                    width: 300,
+                    height: 100,
+                    child: AutoSizeText(
+                          "Click + to create a task",
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        letterSpacing: 1.5,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                );
+              }
+
               this.subtasks =
                   _getSubTasks(filteredDecoded[_currentIndex]["id"]);
               return _carouselSlider0(filteredDecoded);
@@ -245,6 +267,10 @@ class TasksPageState extends State<TasksPage> {
   }
 
   Column _currentTaskSubpage(List<dynamic> filteredDecoded) {
+    if (filteredDecoded.length == 0) {
+      return Column();
+    }
+
     DateTime deadline =
         DateTime.parse(filteredDecoded[_currentIndex]["deadline"]);
 

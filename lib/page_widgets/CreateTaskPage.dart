@@ -282,7 +282,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
             ],
           ),
           Container(
-              constraints: BoxConstraints(maxHeight: 300),
+              constraints: BoxConstraints(maxHeight: 200),
               child: AnimatedList(
                 key: _listKey,
                 initialItemCount: 0,
