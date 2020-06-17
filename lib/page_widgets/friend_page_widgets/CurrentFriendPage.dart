@@ -13,7 +13,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 
-import '../../utilities.dart';
+import '../../utils.dart';
 
 class CurrentFriendPage extends StatefulWidget {
   final int index;
@@ -149,7 +149,7 @@ class CurrentFriendPageState extends State<CurrentFriendPage> {
             onPressed: () async {
               // TODO: MINUS 1 HOUR FROM TIME (timezone weird thingy)
               print("Friend id is: " + widget.id.toString());
-              await Utilities.sendWorkModeRequest(user.username, WorkModeRequest(
+              await Utils.sendWorkModeRequest(user.username, WorkModeRequest(
                   user.userID, widget.id, _selectedDateTime, _duration));
               Navigator.pop(context, true);
             },

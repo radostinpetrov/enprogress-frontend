@@ -1,35 +1,34 @@
 import 'dart:convert';
 
-import 'package:EnProgress/page_widgets/WorkModePage.dart';
 import 'package:EnProgress/page_widgets/WorkModeRequest.dart';
+import 'package:EnProgress/top_level/Globals.dart';
 import 'package:EnProgress/user/User.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
-class Utilities {
+class Utils {
   static MethodChannel platform = const MethodChannel('flutter/enprogress');
   static final Client client = Client();
-  static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  static  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   static BuildContext context;
   static User user;
 
+  static Future<String> getUsername(int userID) async {
+    Uri uri = Uri.parse(Globals.serverIP + "users/" + userID.toString());
+    Response response = await client.get(uri);
+    Map<String, dynamic> data = json.decode(response.body)[0];
+    return data['name'];
+  }
 
   static Future<String> getFCMTokenByID(int userID) async {
     print("Getting fcm for id: " + userID.toString());
     Uri uri = Uri.parse(
-        "https://enprogressbackend.herokuapp.com/users/" + userID.toString());
-    Client client = Client();
+        Globals.serverIP + "users/" + userID.toString());
     Response response = await client.get(uri);
     String fcmToken;
 
-    fcmToken = json.decode(response.body)[0]['fcm_token'];
     print("the response is: " + response.body);
+    fcmToken = json.decode(response.body)[0]['fcm_token'];
 
     return fcmToken;
   }
@@ -58,6 +57,7 @@ class Utilities {
       await client.post(url, headers: header, body: json.encode(request));
       return true;
     } catch (e) {
+      print('Message shoudda been title: ' + title + " body: " + message);
       print(e);
       return false;
     }
@@ -81,7 +81,7 @@ class Utilities {
       'duration': workModeRequest.duration
     };
     Response response = await client.post(uri,
-        headers: headers, body: json.encode(body, toEncodable: Utilities.myEncode));
+        headers: headers, body: json.encode(body, toEncodable: Utils.myEncode));
 //    print(response.body);
 //    print(json.decode(response.body)['id']);
     return json.decode(response.body)['id'];
@@ -89,13 +89,13 @@ class Utilities {
 
   static Future<bool> sendWorkModeRequest(String senderUsername, WorkModeRequest workModeRequest) async {
     // Get friend's FCM token
-    String recipientToken = await Utilities.getFCMTokenByID(workModeRequest.fk_recipient_id);
+    String recipientToken = await Utils.getFCMTokenByID(workModeRequest.fk_recipient_id);
 
     // Post workmoderequest
     int requestID = await postWorkModeRequest(workModeRequest);
 
     // Send FCM message to recipient
-    return await Utilities.sendFcmMessage(
+    return await Utils.sendFcmMessage(
         senderUsername + ' would like to work with you',
         'From ' +
             workModeRequest.start_time.hour.toString() +

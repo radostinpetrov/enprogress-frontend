@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
-import 'package:EnProgress/utilities.dart';
+import 'package:EnProgress/utils.dart';
 
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -44,7 +44,6 @@ class LandingPageState extends State<LandingPage> {
       onMessage: (Map<String, dynamic> message) async {
         String payload = message['data']['payload'].toString();
         print("onMessageeeeeeeee: ${message['data']['payload']}");
-        print("yeet");
         showNotification(message['notification']['title'],
             message['notification']['body'], message['data']['payload']);
 
@@ -54,7 +53,8 @@ class LandingPageState extends State<LandingPage> {
           // Get workmoderequest from DB
           WorkModeRequest workModeRequest =
               await getWorkModeRequest(_requestID);
-          scheduledWorkModeNotification(_requestID, workModeRequest);
+          scheduledWorkModeNotification(
+              _requestID, workModeRequest, workModeRequest.fk_recipient_id);
         }
       },
       onLaunch: (Map<String, dynamic> message) async {
@@ -77,14 +77,18 @@ class LandingPageState extends State<LandingPage> {
   }
 
   Future onSelectNotification(String payload) async {
+    print("we selectin in signinpage" + payload);
     if (payload.startsWith('WorkModeRequest:')) {
       int _requestID = int.parse(payload.substring(16));
+      WorkModeRequest workModeRequest = await getWorkModeRequest(_requestID);
+      String username = await Utils.getUsername(workModeRequest.fk_sender_id);
       Alert(
           context: context,
           image: Image.asset('images/icons8-study-100.png'),
           title: 'Work Mode Request',
-          desc:
-              'You have received a work mode request from [USERNAME]. Would you like to study together?',
+          desc: 'You have received a work mode request from ' +
+              username +
+              '. Would you like to study together?',
           buttons: [
             DialogButton(
               onPressed: () async {
@@ -113,21 +117,25 @@ class LandingPageState extends State<LandingPage> {
       int _requestID = int.parse(payload.substring(8));
       WorkModeRequest workModeRequest = await getWorkModeRequest(_requestID);
 
-      // Calculate remaining time and set up work mode
-      int remainingTime = workModeRequest.duration -
-          ((DateTime.now().millisecondsSinceEpoch -
-                      workModeRequest.start_time.millisecondsSinceEpoch) /
-                  1000)
-              .round();
+      // Set studyBuddyName
+      String senderName = await Utils.getUsername(workModeRequest.fk_sender_id);
+      String recipientName =
+          await Utils.getUsername(workModeRequest.fk_recipient_id);
+      String studyBuddyName =
+          senderName != user.username ? senderName : recipientName;
+
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => WorkModePage(
-                  user: user,
-                  remainingTime: remainingTime)));
+                    user: user,
+                    workModeRequest: workModeRequest,
+                    studyBuddyName: studyBuddyName,
+                  )));
     } else {
       print("goofed it");
     }
+    return;
   }
 
   Future acceptWorkModeRequest(int requestID) async {
@@ -136,22 +144,22 @@ class LandingPageState extends State<LandingPage> {
 
     // Send confirmation to sender
     String senderToken =
-        await Utilities.getFCMTokenByID(workModeRequest.fk_sender_id);
-    await Utilities.sendFcmMessage(
+        await Utils.getFCMTokenByID(workModeRequest.fk_sender_id);
+    await Utils.sendFcmMessage(
         user.username + ' has accepted your request to work together',
         'A notification will remind you of your study session',
         senderToken,
         'Accepted:' + requestID.toString());
 
     // Create scheduled notification
-    scheduledWorkModeNotification(requestID, workModeRequest);
+    scheduledWorkModeNotification(
+        requestID, workModeRequest, workModeRequest.fk_sender_id);
   }
 
   Future<WorkModeRequest> getWorkModeRequest(int requestID) async {
 //    print("over hyaaaaa");
     Uri uri = Uri.parse(
-        'https://enprogressbackend.herokuapp.com/workmoderequests/' +
-            requestID.toString());
+        Globals.serverIP + 'workmoderequests/' + requestID.toString());
     Response response = await client.get(uri);
 //    print("yoop " + response.body);
     var data = json.decode(response.body)[0];
@@ -165,8 +173,8 @@ class LandingPageState extends State<LandingPage> {
 
     // Send refusal to sender
     String senderToken =
-        await Utilities.getFCMTokenByID(workModeRequest.fk_sender_id);
-    await Utilities.sendFcmMessage(
+        await Utils.getFCMTokenByID(workModeRequest.fk_sender_id);
+    await Utils.sendFcmMessage(
         user.username + ' has refused your request to work together',
         'Unfortunately they are busy, try again a different time!',
         senderToken,
@@ -175,7 +183,7 @@ class LandingPageState extends State<LandingPage> {
 
   // TODO: CREATE GET USER INFO FUNCTION!!
   Future scheduledWorkModeNotification(
-      int requestID, WorkModeRequest workModeRequest) async {
+      int requestID, WorkModeRequest workModeRequest, int userID) async {
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
             'second channel ID', 'second Channel title', 'second channel body',
@@ -186,11 +194,12 @@ class LandingPageState extends State<LandingPage> {
     IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
     NotificationDetails notificationDetails =
         NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+    print('we finna schedule for ' + workModeRequest.start_time.toIso8601String());
     await flutterLocalNotificationsPlugin.schedule(
         1,
         'It\'s time to work!',
-        '[USERNAME] is waiting for you, join them now!',
-        workModeRequest.start_time.add(Duration(hours: 1)),
+        await Utils.getUsername(userID) + 'is waiting for you, join them now!',
+        workModeRequest.start_time,
         notificationDetails,
         payload: "Started:" + requestID.toString());
   }
@@ -289,8 +298,8 @@ class SignInPageState extends State<SignInPage> {
       appBar: AppBar(title: Text('Sign in')),
       resizeToAvoidBottomPadding: false,
       body: Center(
-        child: Column(
-          children: [
+          child: Column(
+        children: [
 //          RaisedButton(
 //            child: Text(
 //              'Sign in anonymously',
@@ -298,110 +307,116 @@ class SignInPageState extends State<SignInPage> {
 //            ),
 //            onPressed: _signInAnonymously,
 //          ),
-            Spacer(flex: 10,),
-            Expanded(
-              flex: 6,
-              child: TextFormField(
-                controller: _usernamecontroller,
-                maxLines: 1,
-                keyboardType: TextInputType.text,
-                autofocus: true,
-                autovalidate: true,
-                decoration: InputDecoration(
-                    hintText: 'Username',
-                    icon: Icon(
-                      Icons.supervised_user_circle,
-                      color: Colors.grey,
-                    )),
-                validator: (value) =>
-                value.isEmpty ? 'Username can\'t be empty' : null,
-                onSaved: (String value) {
-                  _username = value.trim();
-                },
-              ),
+          Spacer(
+            flex: 10,
+          ),
+          Expanded(
+            flex: 6,
+            child: TextFormField(
+              controller: _usernamecontroller,
+              maxLines: 1,
+              keyboardType: TextInputType.text,
+              autofocus: true,
+              autovalidate: true,
+              decoration: InputDecoration(
+                  hintText: 'Username',
+                  icon: Icon(
+                    Icons.supervised_user_circle,
+                    color: Colors.grey,
+                  )),
+              validator: (value) =>
+                  value.isEmpty ? 'Username can\'t be empty' : null,
+              onSaved: (String value) {
+                _username = value.trim();
+              },
             ),
-            Expanded(
-              flex: 6,
-              child: TextFormField(
-                controller: _emailcontroller,
-                maxLines: 1,
-                keyboardType: TextInputType.emailAddress,
-                autofocus: true,
-                autovalidate: true,
-                decoration: InputDecoration(
-                    hintText: 'Email',
-                    icon: Icon(
-                      Icons.mail,
-                      color: Colors.grey,
-                    )),
-                validator: (value) =>
-                value.isEmpty ? 'Email can\'t be empty' : null,
-                onSaved: (String value) {
-                  _email = value.trim();
-                },
-              ),
+          ),
+          Expanded(
+            flex: 6,
+            child: TextFormField(
+              controller: _emailcontroller,
+              maxLines: 1,
+              keyboardType: TextInputType.emailAddress,
+              autofocus: true,
+              autovalidate: true,
+              decoration: InputDecoration(
+                  hintText: 'Email',
+                  icon: Icon(
+                    Icons.mail,
+                    color: Colors.grey,
+                  )),
+              validator: (value) =>
+                  value.isEmpty ? 'Email can\'t be empty' : null,
+              onSaved: (String value) {
+                _email = value.trim();
+              },
             ),
-            Expanded(
-              flex: 6,
-              child: TextFormField(
-                controller: _passwordcontroller,
-                maxLines: 1,
-                obscureText: true,
-                autofocus: true,
-                autovalidate: true,
-                decoration: InputDecoration(
-                    hintText: 'Password',
-                    icon: Icon(
-                      Icons.lock,
-                      color: Colors.grey,
-                    )),
-                validator: (value) =>
-                value.isEmpty ? 'Password can\'t be empty' : null,
-                onSaved: (value) => _password = value.trim(),
-              ),
+          ),
+          Expanded(
+            flex: 6,
+            child: TextFormField(
+              controller: _passwordcontroller,
+              maxLines: 1,
+              obscureText: true,
+              autofocus: true,
+              autovalidate: true,
+              decoration: InputDecoration(
+                  hintText: 'Password',
+                  icon: Icon(
+                    Icons.lock,
+                    color: Colors.grey,
+                  )),
+              validator: (value) =>
+                  value.isEmpty ? 'Password can\'t be empty' : null,
+              onSaved: (value) => _password = value.trim(),
             ),
-            Spacer(flex: 2,),
-            Expanded(
-              flex: 4,
-              child: RaisedButton(
-                child: Text(
-                  'Sign in with email',
-                  style: TextStyle(fontSize: 20.0, color: Colors.white),
-                ),
-                onPressed: () {
-                  _username = _usernamecontroller.text.toString();
-                  _email = _emailcontroller.text.toString();
-                  _password = _passwordcontroller.text.toString();
-                  _signInWithEmail();
-                },
+          ),
+          Spacer(
+            flex: 2,
+          ),
+          Expanded(
+            flex: 4,
+            child: RaisedButton(
+              child: Text(
+                'Sign in with email',
+                style: TextStyle(fontSize: 20.0, color: Colors.white),
               ),
+              onPressed: () {
+                _username = _usernamecontroller.text.toString();
+                _email = _emailcontroller.text.toString();
+                _password = _passwordcontroller.text.toString();
+                _signInWithEmail();
+              },
             ),
-            Spacer(flex: 2,),
-            Expanded(
-              flex: 4,
-              child: RaisedButton(
-                child: Text(
-                  'Register with email',
-                  style: TextStyle(fontSize: 20.0, color: Colors.white),
-                ),
-                onPressed: () {
-                  _username = _usernamecontroller.text.toString();
-                  _email = _emailcontroller.text.toString();
-                  _password = _passwordcontroller.text.toString();
-                  _registerWithEmail();
-                },
+          ),
+          Spacer(
+            flex: 2,
+          ),
+          Expanded(
+            flex: 4,
+            child: RaisedButton(
+              child: Text(
+                'Register with email',
+                style: TextStyle(fontSize: 20.0, color: Colors.white),
               ),
+              onPressed: () {
+                _username = _usernamecontroller.text.toString();
+                _email = _emailcontroller.text.toString();
+                _password = _passwordcontroller.text.toString();
+                _registerWithEmail();
+              },
             ),
-            Spacer(flex: 15,)
-          ],
-        )
-      ),
+          ),
+          Spacer(
+            flex: 15,
+          )
+        ],
+      )),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-
   @override
   HomePageState createState() => HomePageState();
 }
@@ -433,7 +448,6 @@ Future<dynamic> _setUserInfo() async {
 }
 
 class HomePageState extends State<HomePage> {
-
   int _currentIndex = 1;
   Future<dynamic> userInfo;
 
@@ -455,11 +469,9 @@ class HomePageState extends State<HomePage> {
     });
   }
 
-
   /// *     Widgets   ***/
 
   BottomNavigationBar _bottomNavigationBar() {
-
     TextStyle navTextStyle = TextStyle(
       color: Colors.white,
       letterSpacing: 2.5,
@@ -473,48 +485,52 @@ class HomePageState extends State<HomePage> {
       currentIndex: _currentIndex,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-            icon: Icon(Icons.person_pin),
-            title: Text("Friends", style: navTextStyle,),
+          icon: Icon(Icons.person_pin),
+          title: Text(
+            "Friends",
+            style: navTextStyle,
+          ),
         ),
         BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
-            title: Text("Tasks", style: navTextStyle,)
-        ),
+            title: Text(
+              "Tasks",
+              style: navTextStyle,
+            )),
         BottomNavigationBarItem(
             icon: Icon(Icons.timer),
-            title: Text("Study", style: navTextStyle,)
-        ),
+            title: Text(
+              "Study",
+              style: navTextStyle,
+            )),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     BottomNavigationBar bottomNavigationBar = _bottomNavigationBar();
 
     return FutureBuilder<dynamic>(
       future: userInfo,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         switch (snapshot.connectionState) {
-          case(ConnectionState.none):
+          case (ConnectionState.none):
             return new Text("Not active");
-          case(ConnectionState.waiting):
+          case (ConnectionState.waiting):
             return Scaffold(
               backgroundColor: Globals.primaryBlue,
               bottomNavigationBar: bottomNavigationBar,
-              body: SafeArea(
-                child: Center(
-                  child: Globals.loadingWidget
-                )
-              ),
+              body: SafeArea(child: Center(child: Globals.loadingWidget)),
             );
-          case(ConnectionState.active):
+          case (ConnectionState.active):
             return new Text("Active");
           default:
             if (snapshot.hasError)
-              return new Text("An error occurred while connecting to the server :(",
-                textAlign: TextAlign.center,);
+              return new Text(
+                "An error occurred while connecting to the server :(",
+                textAlign: TextAlign.center,
+              );
             else {
               List<Widget> children = [
                 FriendsPage(user: user),
@@ -524,7 +540,8 @@ class HomePageState extends State<HomePage> {
 
               return Scaffold(
                 bottomNavigationBar: bottomNavigationBar,
-                backgroundColor: _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
+                backgroundColor:
+                    _currentIndex != 2 ? Globals.primaryBlue : Colors.amber,
                 body: SafeArea(
                   child: Column(
                     children: <Widget>[

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Globals {
+  static bool DEBUG = true;
 //  static Color primaryBlue = Colors.white;
   static Color primaryBlue = Color(0xFF1D1C4D);
   static Color primaryOrange = Color(0xFFD07948);
