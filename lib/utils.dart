@@ -100,7 +100,7 @@ class Utils {
         'From ' +
             workModeRequest.start_time.hour.toString() +
             ':' +
-            workModeRequest.start_time.minute.toString() +
+            workModeRequest.start_time.minute.toString().padLeft(2, '0') +
             ' for ' +
             workModeRequest.duration.toString() +
             ' minutes.',
