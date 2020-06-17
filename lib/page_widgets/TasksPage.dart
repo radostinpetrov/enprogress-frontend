@@ -1,21 +1,19 @@
 import 'dart:convert';
 
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:EnProgress/page_widgets/ArchivePage.dart';
 import 'package:EnProgress/page_widgets/CreateTaskPage.dart';
 import 'package:EnProgress/page_widgets/SignInPage.dart';
-import 'package:EnProgress/page_widgets/WorkModePage.dart';
-import 'package:EnProgress/page_widgets/WorkingFriendsPage.dart';
-import 'package:EnProgress/user/User.dart';
-import 'package:EnProgress/widgets/FloatingButton.dart';
-import 'package:EnProgress/widgets/TaskWidget.dart';
-import 'package:flutter/material.dart';
 import 'package:EnProgress/top_level/Globals.dart';
+import 'package:EnProgress/user/User.dart';
+import 'package:EnProgress/widgets/TaskWidget.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
+
 
 class TasksPage extends StatefulWidget {
   final User user;
@@ -188,6 +186,63 @@ class TasksPageState extends State<TasksPage> {
     return separated;
   }
 
+
+  _setRanges(value) {
+    return [
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 0,
+          endValue:
+          20,
+          color: (value > 0) ? Color(
+              0xFFFF0000) : Colors.grey),
+      GaugeRange(
+        startWidth: 20,
+        endWidth: 20,
+        startValue: 21,
+        endValue: 40,
+        color: (value > 20) ? Color(
+            0xFFEF7215) : Colors.grey),
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 41,
+          endValue:
+          60,
+          color: (value > 40) ? Color(
+              0xFFFFBF00) : Colors.grey),
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 61,
+          endValue: 80,
+          color: (value > 60) ? Color(
+              0xFFD5E35B): Colors.grey),
+      GaugeRange(
+          startWidth: 20,
+          endWidth: 20,
+          startValue: 81,
+          endValue:
+          100,
+          color: (value > 81) ? Color(
+              0xFF39FF14) : Colors.grey),
+    ];
+  }
+
+  _setEmoji(value) {
+    if (value == 0) {
+      return Icons.sentiment_very_dissatisfied;
+    } else if (value < 21) {
+      return Icons.sentiment_dissatisfied;
+    } else if (value < 61) {
+      return Icons.sentiment_neutral;
+    } else if (value < 81) {
+      return Icons.sentiment_satisfied;
+    }
+    return Icons.sentiment_very_satisfied;
+  }
+
   Column _currentTaskSubpage(List<dynamic> filteredDecoded) {
     DateTime deadline =
         DateTime.parse(filteredDecoded[_currentIndex]["deadline"]);
@@ -273,31 +328,50 @@ class TasksPageState extends State<TasksPage> {
                                 itemBuilder: (_, newIndex) {
                                   return Container(
                                       width: 170,
-                                      child: CircularPercentIndicator(
-                                          radius: 80.0,
-                                          lineWidth: 11.0,
-                                          animation: true,
-                                          percent: separated[index][newIndex]
-                                                  ['percentage'] /
-                                              100,
-                                          center: Text(
-                                              separated[index][newIndex]
-                                                          ['percentage']
-                                                      .toString() +
-                                                  "%",
-                                              style: TextStyle(
-                                                  letterSpacing: 1,
-                                                  fontSize: 14)),
-                                          footer: FittedBox(
-                                            fit: BoxFit.fitWidth,
-                                            child: Text(
-                                                separated[index][newIndex]
-                                                    ['name'],
-                                                textAlign: TextAlign.center,
-                                                softWrap: true,
-//                                                          textWidthBasis: t,
-                                                style: TextStyle(fontSize: 20)),
-                                          )));
+                                      child: Column(
+                                          children: [
+                                            Expanded(child: SfRadialGauge(
+                                                axes: [
+                                                  RadialAxis(showLabels: false,
+                                                      showAxisLine: true,
+                                                      showTicks: false,
+
+                                                      minimum: 0,
+                                                      maximum: 100,
+                                                      axisLineStyle: AxisLineStyle(
+                                                        cornerStyle: CornerStyle
+                                                            .bothCurve,
+                                                        color: Colors
+                                                            .transparent,
+
+                                                      ),
+                                                      ranges: _setRanges
+                                                        (
+                                                          separated[index][newIndex]['percentage']),
+                                                      annotations: [
+                                                        GaugeAnnotation(
+                                                            widget: Container(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                  left: 10),
+                                                              child: Icon(
+                                                                _setEmoji(
+                                                                    separated[index][newIndex]['percentage']),
+                                                                size: 90,
+                                                              ),
+                                                            )
+                                                        )
+                                                      ]
+                                                  )
+                                                ]
+                                            )),
+                                            Text
+                                              (
+                                              separated[index][newIndex]['name'],
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontSize: 20),
+                                            )
+                                          ]));
                                 },
                                 separatorBuilder: (_, index) {
                                   return SizedBox(width: 0);
