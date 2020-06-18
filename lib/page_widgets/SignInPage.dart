@@ -124,10 +124,13 @@ class LandingPageState extends State<LandingPage> {
       String studyBuddyName =
           senderName != user.username ? senderName : recipientName;
 
+      print(ModalRoute.of(context).settings.name);
+      print("reqID is " + _requestID.toString());
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => WorkModePage(
+                    reqID: _requestID,
                     user: user,
                     workModeRequest: workModeRequest,
                     studyBuddyName: studyBuddyName,
@@ -135,6 +138,7 @@ class LandingPageState extends State<LandingPage> {
     } else {
       print("goofed it");
     }
+    print("I AM HERE");
     return;
   }
 

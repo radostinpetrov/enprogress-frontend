@@ -240,8 +240,13 @@ class _UpdateTaskPageState extends State<UpdateTaskPage> {
                         splashColor: Globals.primaryBlue,
                         onTap: () {
                           _makePutRequest();
-                          Navigator.popUntil(
-                            context, ModalRoute.withName("/"));
+//                          print("IN UPDATE: " + ModalRoute.of(context)
+//                              .settings.name);
+
+                          Navigator.of(context).popUntil((route) => route.isFirst);
+
+//                          Navigator.popUntil(
+//                            context, ModalRoute.withName("/"));
 //                            Navigator.of(context).popAndPushNamed("/");
                         },
                         child: Container(

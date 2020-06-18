@@ -22,8 +22,10 @@ class WorkModePage extends StatefulWidget {
   final User user;
   final WorkModeRequest workModeRequest;
   final String studyBuddyName;
+  int reqID;
 
   WorkModePage({
+    this.reqID,
     @required this.user,
     this.workModeRequest,
     this.studyBuddyName,
@@ -31,6 +33,7 @@ class WorkModePage extends StatefulWidget {
 
   @override
   WorkModeState createState() => WorkModeState(
+      reqID: reqID,
       user: user,
       workModeRequest: workModeRequest,
       studyBuddyName: studyBuddyName);
@@ -41,6 +44,7 @@ class WorkModeState extends State<WorkModePage>
   final User user;
   String studyBuddyName = " ";
   WorkModeRequest workModeRequest = null;
+  int reqID = -1;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   var initialisationSettingsAndroid;
@@ -48,6 +52,7 @@ class WorkModeState extends State<WorkModePage>
   var initialisationSettings;
 
   WorkModeState({
+    this.reqID,
     @required this.user,
     this.workModeRequest,
     this.studyBuddyName,
@@ -63,8 +68,8 @@ class WorkModeState extends State<WorkModePage>
     );
     initialisationSettings = new InitializationSettings(
         initialisationSettingsAndroid, initialisationSettingsIOS);
-    //flutterLocalNotificationsPlugin.initialize(initialisationSettings,
-    //    onSelectNotification: onSelectNotification);
+//    flutterLocalNotificationsPlugin.initialize(initialisationSettings,
+//        onSelectNotification: onSelectNotification);
     controller = AnimationController(
       vsync: this,
       duration: Duration(minutes: _workModeDuration, hours: _workModeHours),
@@ -187,6 +192,18 @@ class WorkModeState extends State<WorkModePage>
   int _workModeMinutes = 0;
   int _workModeDuration = 0;
   int _totalTimeWorked = 0;
+
+  _deleteRequest() async {
+    if (workModeRequest != null) {
+      print("ID is " + reqID.toString());
+
+      Map<String, String> headers = {"Content-type": "application/json"};
+
+      String url = Globals.serverIP + "workmoderequests/" + reqID.toString();
+      Response response = await delete(url, headers: headers);
+      print(response.body);
+    }
+  }
 
   Future _PostUserPointsAndUpdateTask(context) async {
 //    print("controller value is " + controller.duration.inSeconds.toString());
@@ -446,6 +463,7 @@ class WorkModeState extends State<WorkModePage>
                                       child: FloatingActionButton.extended(
                                         heroTag: "finishBtn",
                                         onPressed: () {
+                                          _deleteRequest();
                                           _PostUserPointsAndUpdateTask(context);
 //                                          Navigator.pop(context);
                                         },
