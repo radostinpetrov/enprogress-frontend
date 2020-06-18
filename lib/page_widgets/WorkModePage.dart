@@ -63,8 +63,8 @@ class WorkModeState extends State<WorkModePage>
     );
     initialisationSettings = new InitializationSettings(
         initialisationSettingsAndroid, initialisationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initialisationSettings,
-        onSelectNotification: onSelectNotification);
+    //flutterLocalNotificationsPlugin.initialize(initialisationSettings,
+    //    onSelectNotification: onSelectNotification);
     controller = AnimationController(
       vsync: this,
       duration: Duration(minutes: _workModeDuration, hours: _workModeHours),
@@ -151,6 +151,9 @@ class WorkModeState extends State<WorkModePage>
   void _showNotification() async {
     await platform.invokeMethod("turnDoNotDisturbModeOff");
     controller.stop();
+    setState(() {
+      _isTiming = false;
+    });
     await _demoNotification();
   }
 
