@@ -32,6 +32,9 @@ local.properties
 .pub/
 /build/
 pubspec.lock
+.gradle/
+_.gradle/
+.metadata
 
 # Web related
 lib/generated_plugin_registrant.dart
